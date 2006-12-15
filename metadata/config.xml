@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.0">
+	
+	<!-- Basic Module Properties -->
+	<id>formEntry</id>
+	<name>@MODULE_NAME@</name>
+	<version>@MODULE_VERSION@</version>
+	<package>org.openmrs.module.formEntry</package>
+	<author>Ben Wolfe</author>
+	<description>
+			OpenMRS Form Entry Module
+	</description>
+
+	<activator>org.openmrs.module.formEntry.FormEntryActivator</activator>
+	
+	<!-- /Basic Module Properties -->
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+	<!-- Required Privileges -->
+	<privilege>
+		<name>Form Entry</name>
+		<description>Allows user to access Form Entry pages/functions</description>
+	</privilege>
+	
+	<!-- /Required Privileges -->
+
+	<!-- Required Global Properties -->
+	<globalProperty>
+		<property>formEntry.infopath_output_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>This property should point to a filesystem directory.  When an XSN is uploaded for a form it will be saved here.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>formEntry.infopath_server_url</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
+	</globalProperty>
+	<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
+	<globalProperty>
+		<property>formEntry.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>Welcome!</defaultValue>
+		<description>The text seen in the infopath taskpane upon first logging in</description>
+	</globalProperty>
+	<globalProperty>
+		<property>formEntry.infopath_archive_date_format</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>dd-MMM-yyyy-HHmmss</defaultValue>
+		<description></description>
+	</globalProperty>
+	<globalProperty>
+		<property>formEntry.infopath_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			This property should point to a filesystem directory. If undefined (empty), XSNs will not be archived.
+			If the directory is defined and available, every time an XSN is uploaded the old XSN
+			will be renamed and copied to this directory.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>formEntry.infopath_taskpane_refresh_sec</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			The number of seconds between taskpane refreshes.  This keeps the taskpane from
+			logging people out on longer forms
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>formEntry.infopath_taskpane_keepalive_min</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			The number of minutes to keep refreshing the taskpane before allowing 
+			the login to lapse
+		</description>
+	</globalProperty>
+	
+	<!-- /Required Global Properties -->
+
+	<!-- Extensions -->
+
+	<!--
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>org.openmrs.module.basicModule.extension.html.AdminList</class>
+	</extension>
+	-->
+
+	<!-- /Extensions -->
+	
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DWRFormEntryService">
+				<param name="class" value="org.openmrs.module.formEntry.web.DWRFormEntryService"/>
+				<include method="enterForm"/>
+			</create>
+		</allow>
+
+		<signature>
+			<![CDATA[
+			import org.openmrs.module.formEntry.web.DWRFormEntryService;
+			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
+			]]>
+		</signature>	
+	</dwr>
+	
+</module>
