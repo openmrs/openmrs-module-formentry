@@ -92,12 +92,10 @@
 
 	<!-- Extensions -->
 
-	<!--
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>org.openmrs.module.basicModule.extension.html.AdminList</class>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryAdminList</class>
 	</extension>
-	-->
 
 	<!-- /Extensions -->
 	

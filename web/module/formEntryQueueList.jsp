@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View FormEntry Queue" otherwise="/login.htm" redirect="/admin/formentry/formEntryQueue.list" />
+<openmrs:require privilege="View FormEntry Queue" otherwise="/login.htm" redirect="/module/formEntry/formEntryQueue.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>

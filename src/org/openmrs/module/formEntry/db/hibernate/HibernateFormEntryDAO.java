@@ -52,7 +52,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			throws DAOException {
 		
 		FormEntryQueue feq;
-		feq = (FormEntryQueue) sessionFactory.getCurrentSession().get(formEntry.FormEntryQueue.class,
+		feq = (FormEntryQueue) sessionFactory.getCurrentSession().get(FormEntryQueue.class,
 				formEntryQueueId);
 
 		return feq;

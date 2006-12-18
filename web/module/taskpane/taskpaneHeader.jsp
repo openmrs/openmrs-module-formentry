@@ -12,8 +12,8 @@
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		
-		<openmrs:htmlInclude file="/formentry/taskpane/taskpane.css" />
-		<openmrs:htmlInclude file="/formentry/taskpane/taskpane.js" />
+		<openmrs:htmlInclude file="/moduleResources/formEntry/taskpane.css" />
+		<openmrs:htmlInclude file="/moduleResources/formEntry/taskpane.js" />
 		<meta http-equiv="msthemecompatible" content="yes" />
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="expires" content="-1" />
