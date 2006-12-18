@@ -14,13 +14,13 @@
 				<prop key="/module/formEntry/xsnUpload.form">xsnUploadForm</prop>
 				
 				<!-- Dynamic FormEntry -->
-				<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
-				<prop key="**/batchForm.form">batchFormEntryController</prop>
-				<prop key="**/patientForm.form">patientFormEntryController</prop>
+				<prop key="/module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
+				<prop key="/module/formEntry/batchForm.form">batchFormEntryController</prop>
+				<prop key="/module/formEntry/patientForm.form">patientFormEntryController</prop>
 					
 			</props>
 		</property>
-	</bean>	
+	</bean>
 	
 	<bean parent="serviceContext">
 		<property name="moduleService">
