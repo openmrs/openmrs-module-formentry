@@ -34,7 +34,7 @@
 	}
 </script>
 
-<form method="post" action="${pageContext.request.contextPath}/formEntryQueueDownload">
+<form method="post" action="${pageContext.request.contextPath}/moduleServlet/formEntry/formEntryQueueDownload">
 	<b class="boxHeader"><spring:message code="formEntry.FormEntryQueue.multiple" />:</b>
 	<div class="box">
 		<table>

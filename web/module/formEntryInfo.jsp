@@ -11,6 +11,7 @@
 
 <%@ page import="org.openmrs.api.context.Context" %>
 <%
+	Thread.currentThread().setContextClassLoader(org.openmrs.util.OpenmrsClassLoader.getInstance());
 	pageContext.setAttribute("formEntryVars", ((org.openmrs.module.formEntry.FormEntryService)Context.getService(org.openmrs.module.formEntry.FormEntryService.class)).getSystemVariables());
 %>
 	

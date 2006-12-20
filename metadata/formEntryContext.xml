@@ -8,15 +8,16 @@
     <bean id="formEntryUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     	<property name="mappings">
             <props>
-				<prop key="/formTaskpane.htm">formTaskpaneRedirect</prop>
-				<prop key="/module/formEntry/formEntryQueue.form">formEntryQueueForm</prop>
-				<prop key="/module/formEntry/formEntryQueue.list">formEntryQueueList</prop>
-				<prop key="/module/formEntry/xsnUpload.form">xsnUploadForm</prop>
+	            <prop key="**/module/formEntry/taskpane/tribe.htm">tribeListTaskpane</prop>
+				<prop key="**/formTaskpane.htm">formTaskpaneRedirect</prop>
+				<prop key="**/module/formEntry/formEntryQueue.form">formEntryQueueForm</prop>
+				<prop key="**/module/formEntry/formEntryQueue.list">formEntryQueueList</prop>
+				<prop key="**/module/formEntry/xsnUpload.form">xsnUploadForm</prop>
 				
 				<!-- Dynamic FormEntry -->
-				<prop key="/module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
-				<prop key="/module/formEntry/batchForm.form">batchFormEntryController</prop>
-				<prop key="/module/formEntry/patientForm.form">patientFormEntryController</prop>
+				<prop key="**/module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
+				<prop key="**/module/formEntry/batchForm.form">batchFormEntryController</prop>
+				<prop key="**/module/formEntry/patientForm.form">patientFormEntryController</prop>
 					
 			</props>
 		</property>
@@ -98,6 +99,13 @@
 		<property name="formView"><value>/module/formEntry/dynamic/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
+	
+	<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
+		<property name="commandName"><value>tribes</value></property>
+		<property name="commandClass"><value>java.util.List</value></property>
+		<property name="formView"><value>/module/formEntry/taskpane/tribe</value></property>
+		<property name="successView"><value>/module/formEntry/taskpane/tribe</value></property>
+	</bean>	
 	
 	<!-- /Controllers -->
 	
