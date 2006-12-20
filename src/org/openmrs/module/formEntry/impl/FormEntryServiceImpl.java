@@ -27,6 +27,7 @@ import org.openmrs.module.formEntry.FormEntryConstants;
 import org.openmrs.module.formEntry.FormEntryError;
 import org.openmrs.module.formEntry.FormEntryQueue;
 import org.openmrs.module.formEntry.FormEntryService;
+import org.openmrs.module.formEntry.FormSchemaBuilder;
 import org.openmrs.module.formEntry.db.FormEntryDAO;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -548,6 +549,16 @@ public class FormEntryServiceImpl implements FormEntryService {
 	public Integer getFormEntryErrorSize() {
 		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
 		return getFormEntryDAO().getFormEntryErrorSize();
+	}
+	
+	/**
+	 * Returns XML Schema for form based on the defined fields
+	 * 
+	 * @param form
+	 * @return XML Schema for form
+	 */
+	public String getSchema(Form form) {
+		return new FormSchemaBuilder(form).getSchema();
 	}
 	
 	public void garbageCollect() {

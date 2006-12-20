@@ -7,14 +7,14 @@
 				return false;
 			}
 			else { 
-				url = '${pageContext.request.contextPath}/formDownload?target=formEntry&formId=' + formId + '&patientId=${patient.patientId}';
+				url = '${pageContext.request.contextPath}/moduleServlet/formEntry/formDownload?target=formEntry&formId=' + formId + '&patientId=${patient.patientId}';
 			}
 			window.location = url;
 		}
 	</script>
 	
 	<div id="selectForm">
-		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/formDownload">			
+		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/moduleServlet/formEntry/formDownload">			
 			Add an encounter: 			 
 			<select id="formSelect" name="formId">
 				<option value="" selected></option>

@@ -37,7 +37,10 @@
 		<name>Form Entry</name>
 		<description>Allows user to access Form Entry pages/functions</description>
 	</privilege>
-	
+	<privilege>
+		<name>Upload XSN</name>
+		<description>Allows user to upload/overwrite the XSNs defined for forms</description>
+	</privilege>
 	<!-- /Required Privileges -->
 
 	<!-- Required Global Properties -->
@@ -94,9 +97,13 @@
 
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>org.openmrs.module.formEntry.extension.html.FormEntryAdminList</class>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryAdminExt</class>
 	</extension>
-
+	<extension>
+		<point>org.openmrs.admin.forms.formHeader</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormHeaderExt</class>
+	</extension>
+	
 	<!-- /Extensions -->
 	
 	<dwr>
@@ -105,14 +112,51 @@
 				<param name="class" value="org.openmrs.module.formEntry.web.DWRFormEntryService"/>
 				<include method="enterForm"/>
 			</create>
+			
+			<create creator="new" javascript="DWRPatientService2">
+				<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
+				<include method="getSimilarPatients"/>
+			</create>
+			
 		</allow>
 
 		<signature>
 			<![CDATA[
 			import org.openmrs.module.formEntry.web.DWRFormEntryService;
 			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
+			
+			import org.openmrs.web.dwr.DWRPatientService;
+			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
+			
 			]]>
 		</signature>	
 	</dwr>
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
+	<servlet>
+		<servlet-name>formDownload</servlet-name>
+		<servlet-class>org.openmrs.module.formEntry.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>forms</servlet-name>
+		<servlet-class>org.openmrs.module.formEntry.web.XsnDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>formUpload</servlet-name>
+		<servlet-class>org.openmrs.module.formEntry.web.FormUploadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>formEntryQueueDownload</servlet-name>
+		<servlet-class>org.openmrs.module.formEntry.web.FormEntryQueueDownloadServlet</servlet-class>
+	</servlet>
+	
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<servlet>
+		<servlet-name>formEntryQueueProcessor</servlet-name>
+		<servlet-class>org.openmrs.module.formEntry.web.FormEntryQueueProcessorServlet</servlet-class>
+	</servlet>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	
 	
 </module>

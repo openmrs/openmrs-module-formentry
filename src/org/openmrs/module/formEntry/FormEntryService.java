@@ -207,6 +207,8 @@ public interface FormEntryService {
 	@Transactional(readOnly=true)
 	public Integer getFormEntryErrorSize();
 
+	public String getSchema(Form form);
+	
 	public void garbageCollect();
 
 }

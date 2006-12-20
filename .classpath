@@ -11,6 +11,9 @@
 	<classpathentry kind="lib" path="lib/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.1.jar"/>
 
+	<!-- Needed to access the OpenmrsClassLoader and such -->
+	<classpathentry kind="lib" path="lib/catalina.jar"/>
+	
 	<!-- Needed for the references to the org.openmrs.web  -->
 	<classpathentry kind="lib" path="lib/web-openmrs-api-1.0.47.1220.jar"/>
 	

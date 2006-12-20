@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.openmrs.module.Extension;
 
-public class FormEntryAdminList extends Extension {
+public class FormEntryAdminExt extends Extension {
 
 	public Extension.MEDIA_TYPE getMediaType() {
 		return Extension.MEDIA_TYPE.html;

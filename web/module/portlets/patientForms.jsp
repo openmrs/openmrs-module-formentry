@@ -42,7 +42,7 @@ Parameters
 			
 			dojo.event.topic.subscribe("fSearch/select", 
 				function(msg) {
-					document.location = "${pageContext.request.contextPath}/formDownload?target=formEntry&patientId=${patient.patientId}&formId=" + msg.objs[0].formId;
+					document.location = "${pageContext.request.contextPath}/moduleServlet/formEntry/formDownload?target=formEntry&patientId=${patient.patientId}&formId=" + msg.objs[0].formId;
 					startDownloading();
 				}
 			);
