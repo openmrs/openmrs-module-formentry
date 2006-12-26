@@ -14,6 +14,8 @@
 
 	<activator>org.openmrs.module.formEntry.FormEntryActivator</activator>
 	
+	<!-- <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
+	
 	<!-- /Basic Module Properties -->
 	
 	<!-- Internationalization -->
