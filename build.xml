@@ -35,6 +35,11 @@
 	<target name="compile-module" depends="init" description="Compiles the module">
 		<mkdir dir="build" />
 		
+		<!-- Copy other source data to the build folder -->
+		<copy todir="build">
+			<fileset dir="src/" excludes="**/*.java" />
+		</copy>
+		
 		<!--  Compile module java files -->
 		<javac destdir="build" classpathref="classpath">
 			<src path="src/" />

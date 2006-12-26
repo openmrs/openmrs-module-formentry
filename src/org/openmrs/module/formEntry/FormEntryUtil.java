@@ -4,13 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +17,7 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 public class FormEntryUtil {
@@ -68,10 +67,13 @@ public class FormEntryUtil {
 		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
 		Class c = FormEntryUtil.class;
+		/*
 		URL url = c.getResource(xsnFolderPath);
 		File xsnFolder = null;
 		try {
-			xsnFolder = new File(url.getFile().replaceAll("%20", " "));
+			log.error("url.getFile: " + url.getFile());
+			log.error("xsnFolderPath - : " + xsnFolderPath);
+			xsnFolder = OpenmrsUtil.url2file(url);
 		}
 		catch (Exception e) {
 			String err = "Unable to open starter xsn: " + xsnFolderPath + " : " + url;
@@ -79,13 +81,13 @@ public class FormEntryUtil {
 			throw new IOException(err);
 		}
 		
-		if (!xsnFolder.exists()) {
+		if (xsnFolder == null || !xsnFolder.exists()) {
 			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			err += ". Absolute path: " + xsnFolder.getAbsolutePath();
+			if (xsnFolder != null) err += ". Absolute path: " + xsnFolder.getAbsolutePath();
 			log.error(err);
 			throw new FileNotFoundException(err);
 		}
-
+		
 		// temp directory to hold the new xsn contents
 		File tempDir = FormEntryUtil.createTempDirectory("XSN");
 		if (tempDir == null)
@@ -106,6 +108,44 @@ public class FormEntryUtil {
 					out.close();
 			}
 		}
+		*/
+		
+		// get the location of the starter documents
+		URL url = c.getResource(xsnFolderPath);
+		if (url == null) {
+			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
+			log.error(err);
+			throw new FileNotFoundException(err);
+		}
+		
+		// directory to store the starter xsn in 
+		File tempDir = FormEntryUtil.createTempDirectory("XSN");
+		if (tempDir == null)
+			throw new IOException("Failed to create temporary directory");
+		
+		// get the jar location and the file location
+		if (!"jar".equals(url.getProtocol()))
+			throw new IOException("Expected the url protocol to be 'jar', not: " + url.getProtocol());
+		
+		String extForm = url.toExternalForm();
+		// trim out "jar:file:/"
+		extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
+		
+		log.debug("url external form: " + extForm);
+		
+		int i = extForm.indexOf("!");
+		String jarPath = extForm.substring(0, i);
+		String filePath = extForm.substring(i+2); // skip over both the '!' and the '/'
+		
+		log.debug("jarPath: " + jarPath);
+		log.debug("filePath: " + filePath);
+		
+		File jarFile = new File(jarPath);
+		if (!jarFile.exists())
+			throw new IOException("Cannot find jar at: " + jarFile);
+		
+		ModuleUtil.expandJar(jarFile, tempDir, filePath, false);
+		
 		return tempDir;
 	}
 

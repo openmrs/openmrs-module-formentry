@@ -1,9 +1,10 @@
 package org.openmrs.module.formEntry.extension.html;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.openmrs.module.Extension;
+import org.openmrs.util.InsertedOrderComparator;
 
 public class FormEntryFormHeaderExt extends Extension {
 
@@ -20,7 +21,7 @@ public class FormEntryFormHeaderExt extends Extension {
 
 	public Map<String, String> getLinks() {
 		
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
 		if (formId != null) {
 			map.put("moduleServlet/formEntry/formDownload?target=schema&formId=" + formId, "Form.downloadSchema");
@@ -33,5 +34,6 @@ public class FormEntryFormHeaderExt extends Extension {
 		
 		return map;
 	}
+	
 	
 }
