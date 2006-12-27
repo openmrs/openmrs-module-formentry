@@ -123,7 +123,7 @@ function pickConcept(nodeName, concept, createConceptList) {
 
 //	hide taskpane
 function closeTaskPane() {
-     window.location = "index.jsp";
+     window.location = "index.htm";
 }
 
 function reloadPage() {

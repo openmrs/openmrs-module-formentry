@@ -43,7 +43,7 @@
 		<!-- <%= request.getParameter("jsessionid") %> -->
 
 		<script type="text/javascript">
-			document.location = "${pageContext.request.contextPath}/formentry/taskpane/index.htm";
+			document.location = "${pageContext.request.contextPath}/module/formEntry/taskpane/index.htm";
 		</script>
 
 	</c:if>

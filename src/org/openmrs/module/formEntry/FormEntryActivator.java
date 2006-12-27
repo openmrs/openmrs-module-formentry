@@ -98,6 +98,10 @@ public class FormEntryActivator implements Activator {
 			throw new ModuleException("Global property 'formEntry.infopath_archive_date_format' must be defined if 'formEntry.infopath_archive_dir' is defined");
 		
 		
+		// TODO change patientForms.goBackOnEntry to formEntry.patientForms.goBackOnEntry
+		
+		// TODO change process form entry task from org.openmrs.scheduler.tasks.ProcessFormEntryQueueTask
+		// to org.openmrs.module.formEntry.ProcessFormEntryQueueTask
 	}
 	
 	/**

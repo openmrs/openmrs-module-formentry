@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Upload XSN" otherwise="/login.htm" redirect="/admin/formentry/xsnUpload.form" />
+<openmrs:require privilege="Upload XSN" otherwise="/login.htm" redirect="/module/formEntry/xsnUpload.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>

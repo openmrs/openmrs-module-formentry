@@ -57,7 +57,7 @@ public class FormEntryUtil {
 	/**
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
 	 * to play with in Infopath.  Should be used similar to 
-	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * <code>org.openmrs.module.formEntry.FormEntryUtil.expandXsn(java.lang.String)</code>
 	 * @return File directory holding blank xsn contents
 	 * @throws IOException
 	 */

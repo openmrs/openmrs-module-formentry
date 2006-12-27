@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
 
 <module configVersion="1.0">
 	
-	<!-- Basic Module Properties -->
+	<!-- Base Module Properties -->
 	<id>formEntry</id>
 	<name>@MODULE_NAME@</name>
 	<version>@MODULE_VERSION@</version>
@@ -11,28 +12,30 @@
 	<description>
 			OpenMRS Form Entry Module
 	</description>
-
 	<activator>org.openmrs.module.formEntry.FormEntryActivator</activator>
-	
 	<!-- <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
+	<!-- /Base Module Properties -->
 	
-	<!-- /Basic Module Properties -->
 	
-	<!-- Internationalization -->
-	<!-- All message codes should start with moduleId.* -->
-	<messages>
-		<lang>en</lang>
-		<file>messages.properties</file>
-	</messages>
-	<messages>
-		<lang>fr</lang>
-		<file>messages_fr.properties</file>
-	</messages>
-	<messages>
-		<lang>es</lang>
-		<file>messages_es.properties</file>
-	</messages>
-	<!-- /Internationalization -->
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryAdminExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formHeader</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formListHeader</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormListHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.patientDashboardTab</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryPatientDashboardTabExt</class>
+	</extension>
+	<!-- /Extensions -->
+
 
 	<!-- Required Privileges -->
 	<privilege>
@@ -43,7 +46,12 @@
 		<name>Upload XSN</name>
 		<description>Allows user to upload/overwrite the XSNs defined for forms</description>
 	</privilege>
+	<privilege>
+		<name>Patient Dashboard - View Forms Section</name>
+		<description>Allows user to view the Forms tab on the patient dashboard</description>
+	</privilege>
 	<!-- /Required Privileges -->
+
 
 	<!-- Required Global Properties -->
 	<globalProperty>
@@ -56,8 +64,8 @@
 		<defaultValue></defaultValue>
 		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
 	</globalProperty>
-	<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
 	<globalProperty>
+		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
 		<property>formEntry.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>Welcome!</defaultValue>
 		<description>The text seen in the infopath taskpane upon first logging in</description>
@@ -92,22 +100,17 @@
 			the login to lapse
 		</description>
 	</globalProperty>
-	
+	<globalProperty>
+		<property>formEntry.patientForms.goBackOnEntry</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>true</defaultValue>
+		<description>
+			'true' means have the browser go back to the find patient page after picking a form
+			from the patientForms tab on the patient dashboard page
+		</description>
+	</globalProperty>
 	<!-- /Required Global Properties -->
-
-	<!-- Extensions -->
-
-	<extension>
-		<point>org.openmrs.admin.list</point>
-		<class>org.openmrs.module.formEntry.extension.html.FormEntryAdminExt</class>
-	</extension>
-	<extension>
-		<point>org.openmrs.admin.forms.formHeader</point>
-		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormHeaderExt</class>
-	</extension>
 	
-	<!-- /Extensions -->
-	
+
 	<dwr>
 		<allow>
 			<create creator="new" javascript="DWRFormEntryService">
@@ -134,6 +137,7 @@
 		</signature>	
 	</dwr>
 	
+	
 	<!-- Servlets -->
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
 	<servlet>
@@ -159,6 +163,23 @@
 		<servlet-class>org.openmrs.module.formEntry.web.FormEntryQueueProcessorServlet</servlet-class>
 	</servlet>
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<!-- /Servlets -->
 	
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
 	
 </module>

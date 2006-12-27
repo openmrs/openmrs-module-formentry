@@ -18,7 +18,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Provides a servlet through which an XSN is downloaded. This class differs
- * from org.openmrs.formentry.FormDownloadServlet in that this class /will not/
+ * from org.openmrs.module.formEntry.FormDownloadServlet in that this class /will not/
  * modify the template or schema files inside of the xsn. This class simply
  * writes the named schema to the response
  * 
