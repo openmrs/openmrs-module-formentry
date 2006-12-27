@@ -41,14 +41,15 @@ public class XsnUploadFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-
+			
+			Form form = null;
 			try {
 				// handle xsn upload
 				if (request instanceof MultipartHttpServletRequest) {
 					MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
 					MultipartFile xsnFile = multipartRequest.getFile("xsnFile");
 					if (xsnFile != null && !xsnFile.isEmpty()) {
-						Form form = PublishInfoPath.publishXSN(xsnFile.getInputStream());
+						form = PublishInfoPath.publishXSN(xsnFile.getInputStream());
 						String msg = getMessageSourceAccessor().getMessage("formEntry.xsn.saved", new String[] {form.getName()});
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msg);
 					}
@@ -60,7 +61,13 @@ public class XsnUploadFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formEntry.xsn.not.saved");
 				return showForm(request, response, errors);
 			}
-			view = getSuccessView();
+			
+			// redirect to the form's schema design if a successful upload occurred
+			if (form != null)
+				view = request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId();
+			else
+				view = getSuccessView();
+			
 			return new ModelAndView(new RedirectView(view));
 		}
 		

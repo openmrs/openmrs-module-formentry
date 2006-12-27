@@ -16,7 +16,7 @@ import org.openmrs.util.FormUtil;
  * 
  * @author Burke Mamlin
  * @version 1.0
- * @see org.openmrs.formentry.FormSchemaBuilder
+ * @see org.openmrs.module.formEntry.FormSchemaBuilder
  */
 public class FormSchemaFragment {
 

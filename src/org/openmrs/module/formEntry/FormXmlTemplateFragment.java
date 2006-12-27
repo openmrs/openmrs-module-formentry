@@ -12,7 +12,7 @@ import org.openmrs.Form;
  * 
  * @author Burke Mamlin
  * @version 1.0
- * @see org.openmrs.formentry.FormXmlTemplateBuilder
+ * @see org.openmrs.module.formEntry.FormXmlTemplateBuilder
  */
 public class FormXmlTemplateFragment {
 	

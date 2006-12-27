@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping package="org.openmrs">
+<hibernate-mapping package="org.openmrs.module.FormEntry">
 
 	<class name="org.openmrs.module.formEntry.FormEntryQueue" table="formentry_queue">
 
@@ -15,7 +15,7 @@
 		<property name="formData" type="java.lang.String" 
 			column="form_data" not-null="true" length="16777215" />
 			
-		<many-to-one name="creator" class="User" not-null="true">
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
 

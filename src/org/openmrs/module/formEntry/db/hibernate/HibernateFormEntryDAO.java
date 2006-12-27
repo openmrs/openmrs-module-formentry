@@ -111,7 +111,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryQueueSize()
+	 * @see org.openmrs.module.formEntry.db.FormEntryDAO#getFormEntryQueueSize()
 	 */
 	public Integer getFormEntryQueueSize() throws DAOException {
 
@@ -150,7 +150,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryArchiveSize()
+	 * @see org.openmrs.module.formEntry.db.FormEntryDAO#getFormEntryArchiveSize()
 	 */
 	public Integer getFormEntryArchiveSize() throws DAOException {
 		Integer size = (Integer) sessionFactory.getCurrentSession().createQuery(
@@ -197,7 +197,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryErrorSize()
+	 * @see org.openmrs.module.formEntry.db.FormEntryDAO#getFormEntryErrorSize()
 	 */
 	public Integer getFormEntryErrorSize() throws DAOException {
 		Integer size = (Integer) sessionFactory.getCurrentSession().createQuery(

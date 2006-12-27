@@ -1,9 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%--
-Parameters
-	model.showUnpublishedForms == 'true' means allow users to enter forms that haven't been published yet
-	model.goBackOnEntry == 'true' means have the browser go back to the find patient page after starting to enter a form
---%>
 
 <openmrs:hasPrivilege privilege="View Encounters">
 	<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true|title=Encounter.last.encounters" />
@@ -14,6 +9,18 @@ Parameters
 	<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
 	<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 	<openmrs:htmlInclude file="/dwr/interface/DWRFormService.js"/>
+
+	<%--
+		showUnpublishedForms == 'true' means allow users to enter forms that haven't been published yet
+	--%>
+	<c:set var="showUnpublishedForms" value="false" />
+	<openmrs:hasPrivilege privilege="View Unpublished Forms"><c:set var="showUnpublishedForms" value="true" /></openmrs:hasPrivilege>
+	
+	<%--
+		goBackOnEntry == 'true' means have the browser go back to the find patient page after starting to enter a form
+	--%>
+	<c:set var="goBackOnEntry" value="true" />
+	<openmrs:globalProperty key="formEntry.patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
 	
 	<script type="text/javascript">
 	
@@ -34,7 +41,7 @@ Parameters
 				var s = '<span onMouseOver="window.status=\'formId=' + form.formId + '\'">';
 				s += form.name + " (v." + form.version + ")";
 				if (form.published == false)
-					s += ' <i>(<spring:message code="formentry.unpublished"/>)</i>';
+					s += ' <i>(<spring:message code="formEntry.unpublished"/>)</i>';
 					
 				s += "</span>";
 				return s;
@@ -47,7 +54,7 @@ Parameters
 				}
 			);
 			
-			DWRFormService.getForms(function(obj) {searchWidget.doObjectsFound(obj); searchWidget.showHighlight();} , '${model.showUnpublishedForms}');
+			DWRFormService.getForms(function(obj) {searchWidget.doObjectsFound(obj); searchWidget.showHighlight();} , '${showUnpublishedForms}');
 		});
 		
 		
@@ -55,7 +62,7 @@ Parameters
 		var timeOut = null;
 	
 		function startDownloading() {
-			<c:if test="${model.goBackOnEntry == 'true'}">
+			<c:if test="${goBackOnEntry == 'true'}">
 				timeOut = setTimeout("goBack()", 30000);
 			</c:if>
 		}

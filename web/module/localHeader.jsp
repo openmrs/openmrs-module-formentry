@@ -16,7 +16,7 @@
 		</a>
 	</li>
 
-	<openmrs:extensionPoint pointId="org.openmrs.admin.formentry.localHeader" type="html">
+	<openmrs:extensionPoint pointId="org.openmrs.admin.formEntry.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
 					<a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>

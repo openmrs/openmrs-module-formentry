@@ -21,7 +21,7 @@
 				<c:forEach items="${forms}" var="form">
 					<option value="${form.formId}">
 						${form.name} (v.${form.version})
-						<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
+						<c:if test="${form.published == false}"><i>(<spring:message code="formEntry.unpublished"/>)</i></c:if>
 					</option>
 				</c:forEach>
 			</select>

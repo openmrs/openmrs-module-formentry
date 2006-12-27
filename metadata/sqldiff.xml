@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqldiff PUBLIC "-//OpenMRS//DTD OpenMRS SQL Diff Config 1.0//EN" "http://resources.openmrs.org/doctype/sqldiff-1.0.dtd">
 
 <sqldiff version="1.0">
 	<help>
@@ -12,17 +13,16 @@
 			   calling this script
 	</help>
 	
-	<!-- 
 	<diff>
 		<version>1.0.0</version>
 		<author>Ben Wolfe</author>
 		<date>Nov 8th 2006</date>
-		<desciption>
+		<description>
 			
-		</desciption>
+		</description>
 		<sql>
 		</sql>
 	</diff>
-	-->
+	
 	
 </sqldiff>
