@@ -16,13 +16,72 @@
 	<diff>
 		<version>1.0.0</version>
 		<author>Ben Wolfe</author>
-		<date>Nov 8th 2006</date>
+		<date>Dec 27th 2006</date>
 		<description>
-			
+			Adding formEntry queue/archive tables
 		</description>
 		<sql>
+			CREATE TABLE IF NOT EXISTS `formentry_archive` (
+			  `formentry_archive_id` int(11) NOT NULL auto_increment,
+			  `form_data` mediumtext NOT NULL,
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  `creator` int(11) NOT NULL default '0',
+			  PRIMARY KEY  (`formentry_archive_id`),
+			  KEY `User who created formentry_archive` (`creator`),
+			  CONSTRAINT `User who created formentry_archive` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE IF NOT EXISTS `formentry_error` (
+			  `formentry_error_id` int(11) NOT NULL auto_increment,
+			  `form_data` mediumtext NOT NULL,
+			  `error` varchar(255) NOT NULL default '',
+			  `error_details` text,
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  PRIMARY KEY  (`formentry_error_id`),
+			  KEY `User who created formentry_error` (`creator`),
+			  CONSTRAINT `User who created formentry_error` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+			CREATE TABLE IF NOT EXISTS `formentry_queue` (
+			  `formentry_queue_id` int(11) NOT NULL auto_increment,
+			  `form_data` mediumtext NOT NULL,
+			  `status` int(11) NOT NULL default '0' COMMENT '0=pending, 1=processing, 2=processed, 3=error',
+			  `date_processed` datetime default NULL,
+			  `error_msg` varchar(255) default NULL,
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  PRIMARY KEY  (`formentry_queue_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
 		</sql>
 	</diff>
 	
+	
+	<diff>
+		<version>1.0.1</version>
+		<author>Ben Wolfe</author>
+		<date>Dec 27th 2006</date>
+		<description>
+			Modifying global properties and formentry processor task class for scheduler 
+		</description>
+		<sql>
+			UPDATE 
+				global_property
+			SET
+				property = 'formEntry.patientForms.goBackOnEntry'
+			WHERE
+				property = 'patientForms.goBackOnEntry';
+				
+			
+			UPDATE
+				scheduler_task_config
+			SET
+				schedulable_class = 'org.openmrs.module.formEntry.ProcessFormEntryQueueTask'
+			WHERE
+				schedulable_class = 'org.openmrs.scheduler.tasks.ProcessFormEntryQueueTask';
+			
+		</sql>
+	</diff>
 	
 </sqldiff>

@@ -4,9 +4,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.openmrs.module.Extension;
+import org.openmrs.module.web.extension.AdministrationSectionExt;
 import org.openmrs.util.InsertedOrderComparator;
 
-public class FormEntryAdminExt extends Extension {
+public class FormEntryAdminExt extends AdministrationSectionExt {
 
 	public Extension.MEDIA_TYPE getMediaType() {
 		return Extension.MEDIA_TYPE.html;
@@ -14,6 +15,10 @@ public class FormEntryAdminExt extends Extension {
 	
 	public String getTitle() {
 		return "formEntry.title";
+	}
+	
+	public String getRequiredPrivilege() {
+		return "Upload XSN,Manage Form Entry";
 	}
 	
 	public Map<String, String> getLinks() {

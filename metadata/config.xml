@@ -13,7 +13,7 @@
 			OpenMRS Form Entry Module
 	</description>
 	<activator>org.openmrs.module.formEntry.FormEntryActivator</activator>
-	<!-- <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
+	<!--  <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
 	<!-- /Base Module Properties -->
 	
 	
@@ -102,7 +102,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>formEntry.patientForms.goBackOnEntry</property> <!-- Must start with `moduleId.` -->
-		<defaultValue>true</defaultValue>
+		<defaultValue>false</defaultValue>
 		<description>
 			'true' means have the browser go back to the find patient page after picking a form
 			from the patientForms tab on the patient dashboard page
@@ -117,24 +117,14 @@
 				<param name="class" value="org.openmrs.module.formEntry.web.DWRFormEntryService"/>
 				<include method="enterForm"/>
 			</create>
-			
-			<create creator="new" javascript="DWRPatientService2">
-				<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
-				<include method="getSimilarPatients"/>
-			</create>
-			
 		</allow>
 
-		<signature>
+		<signatures>
 			<![CDATA[
 			import org.openmrs.module.formEntry.web.DWRFormEntryService;
 			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
-			
-			import org.openmrs.web.dwr.DWRPatientService;
-			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
-			
 			]]>
-		</signature>	
+		</signatures>	
 	</dwr>
 	
 	
