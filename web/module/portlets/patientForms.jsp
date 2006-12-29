@@ -81,8 +81,8 @@
 		}
 	</script>
 	
-	<div id="selectFormHeader" class="boxHeader">Forms</div>
-	<div id="selectForm" class="box">
+	<div id="selectFormHeader" class="boxHeader${model.patientVariation}"><spring:message code="formEntry.patientDashboard.forms"/></div>
+	<div id="selectForm" class="box${model.patientVariation}">
 		<div dojoType="OpenmrsSearch" widgetId="fSearch" ></div>
 	</div>
 	

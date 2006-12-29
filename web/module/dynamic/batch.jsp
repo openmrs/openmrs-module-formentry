@@ -53,7 +53,7 @@
 	</spring:bind>
 	</tr>
 </table>
-<input type="button" value="<spring:message code="formEntry.BatchEntry.prepare"/>" onClick="buildBatchEntry()"/>
+<input type="button" value="<spring:message code="formEntry.BatchEntry.prepare"/>" onClick="buildformEntry.BatchEntry()"/>
 
 </div>
 
@@ -104,7 +104,7 @@
 	var encounterDatetimeField = -1;
 	var locationIdField = -1;
 
-	function buildBatchEntry() {
+	function buildformEntry.BatchEntry() {
 		locationId = DWRUtil.getValue('batch_location');
 		if (locationId == null || locationId == '') {
 			window.alert('<spring:message code="formEntry.BatchEntry.error.missingLocation" javaScriptEscape="true"/>');
@@ -275,13 +275,18 @@
 						/>
 					</td>
 				</c:forEach>
+				<c:forEach var="param" items="${formData.obsFieldParameters}">
+					<!-- TESTING: ${param} -->
+				</c:forEach>
 				<c:forEach var="formField" items="${formData.obsFields}" varStatus="iter">
 					<td>
 						<openmrs:fieldGen
 							type="${formData.obsFieldClasses[iter.index]}"
 							formFieldName="${patient.patientId}_obs_${iter.index}"
 							val=""
+							parameters="${formData.obsFieldParameters[iter.index]}"
 						/>
+						<!-- TESTING: parameters: ${formData.obsFieldParameters[iter.index]}, index: ${iter.index} -->
 						<%-- TODO: put units here for numeric concepts --%>
 						<br/>
 						<spring:message code="general.onDate"/>
