@@ -239,14 +239,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 * @see org.openmrs.api.PatientService.getLocations()
 	 */
 	public List<Location> getLocations() throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		List<Location> t;
-		try {
-			t = getPatientService().getLocations();
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return t;
+		return getEncounterService().getLocations();
 	}
 	
 	/**
@@ -267,14 +260,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 * @see org.openmrs.api.PatientService.getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Location t;
-		try {
-			t = getPatientService().getLocation(locationId);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return t;
+		return getEncounterService().getLocation(locationId);
 	}
 
 	/**

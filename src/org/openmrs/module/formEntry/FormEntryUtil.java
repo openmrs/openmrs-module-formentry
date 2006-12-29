@@ -31,7 +31,7 @@ public class FormEntryUtil {
 	 * @return Directory in temp dir containing xsn contents
 	 * @throws IOException
 	 */
-	public static File expandXsn(String xsnFilePath) throws IOException {		
+	public static File expandXsn(String xsnFilePath) throws IOException {
 		File xsnFile = new File(xsnFilePath);
 		if (!xsnFile.exists())
 			return null;
@@ -42,27 +42,33 @@ public class FormEntryUtil {
 
 		StringBuffer cmdBuffer = new StringBuffer();
 
-		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) { 
-			cmdBuffer.append("/usr/bin/cabextract -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
+		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX
+				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+			cmdBuffer.append("/usr/bin/cabextract -d ").append(
+					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
-		} 
-		else { 
-			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append("\" \"").append(tempDir.getAbsolutePath()).append("\"");
+		} else {
+			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append(
+					"\" \"").append(tempDir.getAbsolutePath()).append("\"");
 			execCmd(cmdBuffer.toString(), null);
-		}	
-		
+		}
+
 		return tempDir;
 	}
-	
+
 	/**
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
 	 * to play with in Infopath.  Should be used similar to 
 	 * <code>org.openmrs.module.formEntry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * Generates an expanded 'starter XSN'. This starter is essentially a blank
+	 * XSN template to play with in Infopath. Should be used similar to
+	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * 
 	 * @return File directory holding blank xsn contents
 	 * @throws IOException
 	 */
 	public static File getExpandedStarterXSN() throws IOException {
-		
+
 		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
 		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
@@ -149,10 +155,10 @@ public class FormEntryUtil {
 		return tempDir;
 	}
 
-	
 	/**
-	 * Gets the current xsn file for a form.  If the xsn is not found, the starter
-	 * xsn is returned instead
+	 * Gets the current xsn file for a form. If the xsn is not found, the
+	 * starter xsn is returned instead
+	 * 
 	 * @param form
 	 * @return form's xsn file or starter xsn if none
 	 * @throws IOException
@@ -175,12 +181,13 @@ public class FormEntryUtil {
 			log.debug("Using starter xsn");
 			tmpXSN = FormEntryUtil.getExpandedStarterXSN();
 		}
-		
+
 		return compileXSN(form, tmpXSN);
 	}
-	
+
 	/**
 	 * Returns a .xsn file compiled from the starter data set
+	 * 
 	 * @param form
 	 * @return .xsn file
 	 * @throws IOException
@@ -189,15 +196,19 @@ public class FormEntryUtil {
 		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
 		return compileXSN(form, tmpXSN);
 	}
-	
+
 	/**
-	 * Modifies schema, template.xml, and sample data, defaults, urls in <code>tmpXSN</code> 
-	 * @param form 
-	 * @param tmpXSN directory containing xsn files.
+	 * Modifies schema, template.xml, and sample data, defaults, urls in
+	 * <code>tmpXSN</code>
+	 * 
+	 * @param form
+	 * @param tmpXSN
+	 *            directory containing xsn files.
 	 * @return
 	 * @throws IOException
 	 */
-	private static FileInputStream compileXSN(Form form, File tmpXSN) throws IOException {
+	private static FileInputStream compileXSN(Form form, File tmpXSN)
+			throws IOException {
 		// Get Constants
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
 		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
@@ -214,7 +225,8 @@ public class FormEntryUtil {
 		// Generate and overwrite the schema
 		File schemaFile = findFile(tmpXSN, schemaFilename);
 		if (schemaFile == null)
-			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
+			throw new IOException("Schema: '" + schemaFilename
+					+ "' cannot be null");
 		FileWriter schemaOutput = new FileWriter(schemaFile, false);
 		schemaOutput.write(schema);
 		schemaOutput.close();
@@ -222,7 +234,8 @@ public class FormEntryUtil {
 		// replace template.xml with the generated xml
 		File templateFile = findFile(tmpXSN, templateFilename);
 		if (templateFile == null)
-			throw new IOException("Template: '" + templateFilename + "' cannot be null");
+			throw new IOException("Template: '" + templateFilename
+					+ "' cannot be null");
 		FileWriter templateOutput = new FileWriter(templateFile, false);
 		templateOutput.write(template);
 		templateOutput.close();
@@ -230,7 +243,8 @@ public class FormEntryUtil {
 		// replace defautls.xml with the xml template, including default scripts
 		File defaultsFile = findFile(tmpXSN, defaultsFilename);
 		if (defaultsFile == null)
-			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
+			throw new IOException("Defaults: '" + defaultsFilename
+					+ "' cannot be null");
 		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
 		defaultsOutput.write(templateWithDefaultScripts);
 		defaultsOutput.close();
@@ -238,7 +252,8 @@ public class FormEntryUtil {
 		// replace sampleData.xml with the generated xml
 		File sampleDataFile = findFile(tmpXSN, sampleDataFilename);
 		if (sampleDataFile == null)
-			throw new IOException("Template: '" + sampleDataFilename + "' cannot be null");
+			throw new IOException("Template: '" + sampleDataFilename
+					+ "' cannot be null");
 		FileWriter sampleDataOutput = new FileWriter(sampleDataFile, false);
 		sampleDataOutput.write(template);
 		sampleDataOutput.close();
@@ -247,63 +262,69 @@ public class FormEntryUtil {
 
 		File xsn = findFile(tmpXSN, "new.xsn");
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
-		
+
 		return xsnInputStream;
 	}
-	
+
 	/**
 	 * Make an xsn (aka CAB file) with the contents of <code>tempDir</code>
 	 * 
 	 * @param tempDir
 	 */
-	public static void makeCab(File tempDir, String outputDirName, String outputFilename) {
+	public static void makeCab(File tempDir, String outputDirName,
+			String outputFilename) {
 		// """calls MakeCAB to make a CAB file from DDF in tempdir directory"""
 
 		StringBuffer cmdBuffer = new StringBuffer();
-		
+
 		// Special case : Linux operating sytem uses lcab utility
-		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
-			
-			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir).append(" ").append(outputDirName).append("/").append(outputFilename);	
+		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX
+				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+
+			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir)
+					.append(" ").append(outputDirName).append("/").append(
+							outputFilename);
 
 			// Execute command with working directory
 			execCmd(cmdBuffer.toString(), tempDir);
 		}
-		// Otherwise, assume windows 
-		else 
-		{ 
+		// Otherwise, assume windows
+		else {
 			// create ddf
 			FormEntryUtil.createDdf(tempDir, outputDirName, outputFilename);
-			
+
 			// Create makecab command
-			cmdBuffer.append("makecab /F \"").append(tempDir.getAbsolutePath()).append("\\publish.ddf\"");
+			cmdBuffer.append("makecab /F \"").append(tempDir.getAbsolutePath())
+					.append("\\publish.ddf\"");
 
 			// Execute command without working directory
 			execCmd(cmdBuffer.toString(), null);
 
 		}
-		
+
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param cmd	command to execute
-	 * @param wd	working directory
+	 * @param cmd
+	 *            command to execute
+	 * @param wd
+	 *            working directory
 	 * @return
 	 */
-	private static String execCmd(String cmd, File wd) { 
+	private static String execCmd(String cmd, File wd) {
 		log.debug("executing command: " + cmd);
 		String out = "";
 		try {
 			String line;
-			
-			// Needed to add support for working directory because of a linux file system permission issue.
-			// Could not create lcab.tmp file in default working directory (jmiranda).
-			Process p = (wd != null) 
-					? Runtime.getRuntime().exec(cmd, null, wd) 
+
+			// Needed to add support for working directory because of a linux
+			// file system permission issue.
+			// Could not create lcab.tmp file in default working directory
+			// (jmiranda).
+			Process p = (wd != null) ? Runtime.getRuntime().exec(cmd, null, wd)
 					: Runtime.getRuntime().exec(cmd);
-			
+
 			Reader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader input = new BufferedReader(reader);
 			while ((line = input.readLine()) != null) {
@@ -315,9 +336,8 @@ public class FormEntryUtil {
 			log.error("Error while executing command: '" + cmd + "'", e);
 		}
 		log.debug("execCmd output: " + out);
-		return out;		
+		return out;
 	}
-	
 
 	/**
 	 * Create a temporary directory with the given prefix and a random suffix
@@ -349,8 +369,9 @@ public class FormEntryUtil {
 			throw new IOException("Could not create temporary directory '"
 					+ tempDir.getAbsolutePath() + "'");
 		if (log.isDebugEnabled())
-			log.debug("Successfully created temporary directory: " + tempDir.getAbsolutePath());
-		
+			log.debug("Successfully created temporary directory: "
+					+ tempDir.getAbsolutePath());
+
 		tempDir.deleteOnExit();
 		return tempDir;
 	}
@@ -380,7 +401,8 @@ public class FormEntryUtil {
 	 * @param outputDir
 	 * @param outputFileName
 	 */
-	public static void createDdf(File xsnDir, String outputDir, String outputFileName) {
+	public static void createDdf(File xsnDir, String outputDir,
+			String outputFileName) {
 		String ddf = ";*** MakeCAB Directive file for "
 				+ outputFileName
 				+ "\n"
@@ -411,10 +433,6 @@ public class FormEntryUtil {
 			log.error("Could not create DDF file to generate XSN archive", e);
 		}
 	}
-	
-	
-	
-
 
 	public static String getFormUriWithoutExtension(Form form) {
 		return String.valueOf(form.getFormId());
@@ -436,7 +454,7 @@ public class FormEntryUtil {
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + getFormUri(form);
 	}
-	
+
 	public static String getFormSchemaNamespace(Form form) {
 		String serverURL = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_server_url", "formEntry.infopath_server_url cannot be empty");
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
@@ -453,7 +471,8 @@ public class FormEntryUtil {
 		if (numDots < 2)
 			for (i = numDots; i < 2; i++)
 				version += ".0";
-		if (form.getBuild() == null || form.getBuild() < 1 || form.getBuild() > 9999)
+		if (form.getBuild() == null || form.getBuild() < 1
+				|| form.getBuild() > 9999)
 			form.setBuild(1);
 		version += "." + form.getBuild();
 		return version;
@@ -467,5 +486,22 @@ public class FormEntryUtil {
 	public static String drugToString(Drug drug) {
 		return drug.getDrugId() + "^" + drug.getName() + "^"
 				+ FormEntryConstants.HL7_LOCAL_DRUG;
+	}
+	
+	// max length of HL7 message control ID is 20
+	private static final int FORM_UID_LENGTH = 20;
+
+	public static String generateFormUid() {
+		StringBuffer sb = new StringBuffer(FORM_UID_LENGTH);
+		for (int i = 0; i < FORM_UID_LENGTH; i++) {
+			int ch = (int) (Math.random() * 62);
+			if (ch < 10) // 0-9
+				sb.append(ch);
+			else if (ch < 36) // a-z
+				sb.append((char) (ch - 10 + 'a'));
+			else
+				sb.append((char) (ch - 36 + 'A'));
+		}
+		return sb.toString();
 	}
 }

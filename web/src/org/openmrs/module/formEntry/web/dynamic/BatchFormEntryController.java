@@ -53,7 +53,7 @@ public class BatchFormEntryController extends SimpleFormController {
     	
     	if (request.getParameter("locationId") != null) {
     		Integer locationId = Integer.valueOf(request.getParameter("locationId"));
-    		Location l = Context.getPatientService().getLocation(locationId);
+    		Location l = Context.getEncounterService().getLocation(locationId);
     		batchForm.setLocation(l);
     	} else {
     		// TODO: check all patients for their assigned location / last encounter location, and default to the most common one, or else none
@@ -85,8 +85,8 @@ public class BatchFormEntryController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map extraData = new HashMap();
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		Map<String, Object> extraData = new HashMap<String, Object>();
 		
 		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
 

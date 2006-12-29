@@ -27,7 +27,7 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	private TaskConfig taskConfig;
 	
 	// Instance of form processor
-	private FormEntryQueueProcessor processor;
+	private FormEntryQueueProcessor processor = null;
 	
 	/**
 	 * Default Constructor (Uses SchedulerConstants.username and
@@ -35,7 +35,8 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	 * 
 	 */
 	public ProcessFormEntryQueueTask() {
-		processor = new FormEntryQueueProcessor();
+		if (processor == null)
+			processor = new FormEntryQueueProcessor();
 	}
 
 	/**
