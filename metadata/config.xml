@@ -14,6 +14,7 @@
 	</description>
 	<activator>org.openmrs.module.formEntry.FormEntryActivator</activator>
 	<!--  <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
+	<updateURL>http://resources.openmrs.org/modules/formEntry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
 	
