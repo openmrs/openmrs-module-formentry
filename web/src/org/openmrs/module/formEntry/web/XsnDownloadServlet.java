@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.formEntry.FormEntryUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -42,18 +42,12 @@ public class XsnDownloadServlet extends HttpServlet {
 		// get only the file name out of path
 		filename = filename.substring(filename.lastIndexOf("/") + 1);
 		
-		// append xsn storage location for file look up
-		String url = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_output_dir");
-		if (!url.endsWith(File.separator))
-			url += File.separator;
-		url = url + filename;
-		log.debug("url = " + url);
-
+		File file = FormEntryUtil.getXSNFile(filename);
+		
 		try {
-			File file = new File(url);
 			Long modified = file.lastModified();
 			if (modified == 0)
-				log.error("Last Modified date was zero for: " + url);
+				log.error("Last Modified date was zero for: " + file.getAbsolutePath());
 			
 			log.debug("testing modified date: " + new Date(modified));
 			log.debug("testing etag: " + modified);
@@ -70,11 +64,13 @@ public class XsnDownloadServlet extends HttpServlet {
 			log
 			    .error(
 			        "The request for '"
-			        	+ url
-			            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in form administration).",
+			        	+ file.getAbsolutePath()
+			            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in Form Entry administration).",
 			        e);
 			response.sendError(404);
 		}
 	}
+
+	
 
 }

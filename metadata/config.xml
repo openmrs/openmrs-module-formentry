@@ -28,6 +28,10 @@
 		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormHeaderExt</class>
 	</extension>
 	<extension>
+		<point>org.openmrs.admin.forms.formRow</point>
+		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormRowsExt</class>
+	</extension>
+	<extension>
 		<point>org.openmrs.admin.forms.formListHeader</point>
 		<class>org.openmrs.module.formEntry.extension.html.FormEntryFormListHeaderExt</class>
 	</extension>
@@ -36,8 +40,17 @@
 		<class>org.openmrs.module.formEntry.extension.html.FormEntryPatientDashboardTabExt</class>
 	</extension>
 	<!-- /Extensions -->
-
-
+	
+	
+	<!-- AOP -->
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>org.openmrs.module.formEntry.advice.DuplicateFormAdvisor</class>
+	</advice>
+	
+	<!-- /AOP -->
+	
+	
 	<!-- Required Privileges -->
 	<privilege>
 		<name>Form Entry</name>

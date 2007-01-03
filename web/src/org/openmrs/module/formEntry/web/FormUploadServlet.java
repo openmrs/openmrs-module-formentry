@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formEntry.FormEntryQueue;
 import org.openmrs.module.formEntry.FormEntryService;
+import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -38,6 +39,16 @@ public class FormUploadServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// check for authenticated users
+		if (!Context.isAuthenticated()) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,
+				request.getContextPath() + "/moduleServlet/formEntry/formUpload");
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			response.sendRedirect(request.getContextPath() + "/logout");
+			return;
+		}
+		
 		String formName = "";
 		String xml = "no xml!";
 		try {
