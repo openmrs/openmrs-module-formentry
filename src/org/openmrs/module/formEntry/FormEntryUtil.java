@@ -504,4 +504,19 @@ public class FormEntryUtil {
 		}
 		return sb.toString();
 	}
+	
+	/**
+	 * Get the given filename out of the XSN storage location
+	 * @param filename
+	 * @return File pointing to the <code>filename</code> file inside of 
+	 * 		this server's XSN repository
+	 */
+	public static File getXSNFile(String filename) {
+		String url = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_output_dir");
+		if (!url.endsWith(File.separator))
+			url += File.separator;
+		url = url + filename;
+		log.debug("url = " + url);
+		return new File(url);
+	}
 }

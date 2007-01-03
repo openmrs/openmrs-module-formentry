@@ -65,13 +65,28 @@ public class PublishInfoPath {
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
 	public static Form publishXSN(File file) throws IOException {
-
-		Form form = null;
+		return publishXSN(file, null);
+	}
+	
+	/**
+	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
+	 * given file is expanded into its constituents and the various URL and
+	 * schema references within those files are updated before the files are
+	 * re-constituted into an XSN archive.
+	 * 
+	 * If form is null, form is determined from xsn file
+	 * 
+	 * @param file
+	 *            the XSN file to be published
+	 * @param form
+	 *            the OpenMRS form with which the given XSN is to be associated
+	 */
+	public static Form publishXSN(File file, Form form) throws IOException {
 
 		if (file.exists())
-			form = publishXSN(file.getAbsolutePath());
+			form = publishXSN(file.getAbsolutePath(), form);
 		else
-			form = publishXSN(new FileInputStream(file));
+			form = publishXSN(new FileInputStream(file), form);
 
 		return form;
 	}
@@ -84,10 +99,26 @@ public class PublishInfoPath {
 	 * 
 	 * @param inputStream
 	 *            inputStream from which XSN may be read
+	 */
+	public static Form publishXSN(InputStream inputStream) throws IOException {
+		return publishXSN(inputStream, null);
+	}
+		
+	/**
+	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
+	 * given file is expanded into its constituents and the various URL and
+	 * schema references within those files are updated before the files are
+	 * re-constituted into an XSN archive.
+	 * 
+	 * If form is null, form is assumed from the xsn
+	 * 
+	 * @param inputStream
+	 *            inputStream from which XSN may be read
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(InputStream inputStream) throws IOException {
+	public static Form publishXSN(InputStream inputStream, Form form) throws IOException {
+		
 		File tempDir = FormEntryUtil.createTempDirectory("UPLOADEDXSN");
 
 		log.debug("Temp publish dir: " + tempDir.getAbsolutePath());
@@ -98,13 +129,14 @@ public class PublishInfoPath {
 		// copy the uploaded file over to the temp file system file
 		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(filesystemXSN));
 
-		Form form = publishXSN(filesystemXSN.getAbsolutePath());
+		form = publishXSN(filesystemXSN.getAbsolutePath(), form);
 
 		OpenmrsUtil.deleteDirectory(tempDir);
 
 		return form;
 	}
-
+	
+	
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -114,17 +146,23 @@ public class PublishInfoPath {
 	 * @param xsnFilePath
 	 *            full path to the XSN file
 	 * @param form
+	 *            the form add this xsn to. If null, form is determined from xsn
+	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(String xsnFilePath) throws IOException {
-
+	public static Form publishXSN(String xsnFilePath, Form form) throws IOException {
 		log.debug("publishing xsn at: " + xsnFilePath);
 
 		File tempDir = FormEntryUtil.expandXsn(xsnFilePath);
 		if (tempDir == null)
 			throw new IOException("Filename not found: '" + xsnFilePath + "'");
-
-		Form form = determineForm(tempDir);
+		
+		if (form == null)
+			form = determineForm(tempDir);
+		else if (!form.equals(determineForm(tempDir))) {
+			modifyFormId(tempDir, form);
+		}
+			
 		String originalFormUri = FormEntryUtil.getFormUri(form);
 		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
 
@@ -350,6 +388,38 @@ public class PublishInfoPath {
 		}
 
 		return form;
+	}
+	
+	private static void modifyFormId(File tempDir, Form form) {
+		File xsd = FormEntryUtil.findFile(tempDir, "FormEntry.xsd");
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(xsd);
+			Element parent = getSingleElement(doc.getElementsByTagName("xs:element"), "form");
+			if (parent == null) {
+				log.warn("Could not locate xs:element element in xsd!");
+			}
+			Element elem = getSingleElement(parent.getElementsByTagName("xs:attribute"), "id");
+			if (elem == null) {
+				log.warn("Could not locate xs:attribute element in xsd!");
+			}
+			
+			elem.setAttribute("fixed", form.getFormId().toString());
+			
+			// save the document 
+			OpenmrsUtil.saveDocument(doc, xsd);
+		}
+		catch (ParserConfigurationException e) {
+			log.error("Error building xml document", e);
+		}
+		catch (SAXException e) {
+			log.error("Error parsing form data", e);
+		}
+		catch (IOException e) {
+			log.error("Error parsing form data", e);
+		}
+		
 	}
 
 	private static void prepareManifest(File tempDir, String url, String namespace,

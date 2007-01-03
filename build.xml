@@ -12,7 +12,7 @@
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
 		<property name="module.name" value="FormEntryModule" />
-		<property name="module.version" value="1.0" />
+		<property name="module.version" value="1.1" />
 
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_NAME" value="${module.name}" />
@@ -41,13 +41,14 @@
 		</copy>
 		
 		<!--  Compile module java files -->
-		<javac destdir="build" classpathref="classpath">
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source">
 			<src path="src/" />
 			<include name="**/*.java" />
 		</javac>
 		
 		<!--  Compile module web java files -->
-		<javac destdir="build" classpathref="classpath">
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source">
+			<compilerarg line="-g" />
 			<src path="web/src/" />
 			<include name="**/*.java" />
 		</javac>
