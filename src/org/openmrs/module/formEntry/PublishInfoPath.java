@@ -253,7 +253,9 @@ public class PublishInfoPath {
 
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME, serverUrl);
+		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME, "\"" + serverUrl + "\"");
+		vars.put(FormEntryConstants.FORMENTRY_TASKPANE_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/module/formEntry/taskpane\"");
+		vars.put(FormEntryConstants.FORMENTRY_SUBMIT_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/moduleServlet/formEntry/formUpload\"");
 		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// make cab
@@ -541,7 +543,7 @@ public class PublishInfoPath {
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
 			String regexp = "var\\s" + variableName + "\\s=[^\n]*;";
-			String rplcmnt = "var " + variableName + " = \"" + vars.get(variableName) + "\";";
+			String rplcmnt = "var " + variableName + " = " + vars.get(variableName) + ";";
 			log.debug("replacing regexp: " + regexp + " with " + rplcmnt);
 			fileContent = fileContent.replaceAll(regexp, rplcmnt);
 		}

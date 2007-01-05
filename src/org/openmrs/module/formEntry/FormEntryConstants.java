@@ -77,7 +77,8 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_DEFAULT_DEFAULTS_NAME = "defaults.xml";
 	public static final String FORMENTRY_DEFAULT_JSCRIPT_NAME = "openmrs-infopath.js";
 	public static final String FORMENTRY_SERVER_URL_VARIABLE_NAME = "SERVER_URL";
-	
+	public static final String FORMENTRY_TASKPANE_URL_VARIABLE_NAME = "TASKPANE_URL";
+	public static final String FORMENTRY_SUBMIT_URL_VARIABLE_NAME = "SUBMIT_URL";
 	
 	/* It's about time to remove these constants.  Values should be taken from global properties instead
 
