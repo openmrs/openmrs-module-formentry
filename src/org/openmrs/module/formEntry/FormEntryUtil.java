@@ -17,8 +17,8 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class FormEntryUtil {
 
@@ -129,30 +129,8 @@ public class FormEntryUtil {
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
 		
-		// get the jar location and the file location
-		if (!"jar".equals(url.getProtocol()))
-			throw new IOException("Expected the url protocol to be 'jar', not: " + url.getProtocol());
+		return OpenmrsUtil.url2file(url);
 		
-		String extForm = url.toExternalForm();
-		// trim out "jar:file:/"
-		extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
-		
-		log.debug("url external form: " + extForm);
-		
-		int i = extForm.indexOf("!");
-		String jarPath = extForm.substring(0, i);
-		String filePath = extForm.substring(i+2); // skip over both the '!' and the '/'
-		
-		log.debug("jarPath: " + jarPath);
-		log.debug("filePath: " + filePath);
-		
-		File jarFile = new File(jarPath);
-		if (!jarFile.exists())
-			throw new IOException("Cannot find jar at: " + jarFile);
-		
-		ModuleUtil.expandJar(jarFile, tempDir, filePath, false);
-		
-		return tempDir;
 	}
 
 	/**
