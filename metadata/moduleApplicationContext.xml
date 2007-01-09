@@ -51,7 +51,6 @@
 		</property>
 	</bean>
 	
-	
 	<!-- Controllers -->
 	
 	<bean id="formTaskpaneRedirect" class="org.openmrs.web.controller.RedirectController">

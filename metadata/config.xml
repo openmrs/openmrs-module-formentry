@@ -186,4 +186,10 @@
 	</messages>
 	<!-- /Internationalization -->
 	
+	<mappingFiles>
+		FormEntryArchive.hbm.xml
+		FormEntryQueue.hbm.xml
+		FormEntryError.hbm.xml
+	</mappingFiles>
+	
 </module>

@@ -233,12 +233,16 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 			}
 			isRunning = true;
 		}
-		log.debug("Start procesing FormEntry queue");
-		while (transformNextFormEntryQueue()) {
-			// loop until queue is empty
+		try {
+			log.debug("Start procesing FormEntry queue");
+			while (transformNextFormEntryQueue()) {
+				// loop until queue is empty
+			}
+			log.debug("Done processing FormEntry queue");
 		}
-		log.debug("Done processing FormEntry queue");
-		isRunning = false;
+		finally {
+			isRunning = false;
+		}
 	}
 
 	/*
