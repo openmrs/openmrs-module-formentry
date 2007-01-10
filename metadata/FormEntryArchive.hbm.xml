@@ -3,9 +3,9 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping package="org.openmrs.module.formEntry">
+<hibernate-mapping package="org.openmrs.module.formentry">
 
-	<class name="org.openmrs.module.formEntry.FormEntryArchive" table="formentry_archive">
+	<class name="org.openmrs.module.formentry.FormEntryArchive" table="formentry_archive">
 
 		<id name="formEntryArchiveId" type="int" column="formentry_archive_id" 
 			unsaved-value="0">

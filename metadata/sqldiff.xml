@@ -103,4 +103,23 @@
 		</sql>
 	</diff>
 	
+	
+	<diff>
+		<version>1.3.0</version>
+		<author>Ben Wolfe</author>
+		<date>Jan 10th 2006</date>
+		<description>
+			Modifying formentry processor for the new package name
+		</description>
+		<sql>
+			UPDATE
+				scheduler_task_config
+			SET
+				schedulable_class = 'org.openmrs.module.formentry.ProcessFormEntryQueueTask'
+			WHERE
+				schedulable_class = 'org.openmrs.module.formEntry.ProcessFormEntryQueueTask';
+			
+		</sql>
+	</diff>
+	
 </sqldiff>
