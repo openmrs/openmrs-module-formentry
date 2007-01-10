@@ -11,7 +11,7 @@
 
 <%@ page import="org.openmrs.api.context.Context" %>
 <%
-	Class formEntryService = org.openmrs.util.OpenmrsClassLoader.getInstance().loadClass("org.openmrs.module.formEntry.FormEntryService");
+	Class formEntryService = org.openmrs.util.OpenmrsClassLoader.getInstance().loadClass("org.openmrs.module.formentry.FormEntryService");
 	pageContext.setAttribute("formEntryService", Context.getService(formEntryService));
 %>
 	

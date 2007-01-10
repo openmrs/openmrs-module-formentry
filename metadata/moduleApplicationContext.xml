@@ -26,13 +26,13 @@
 	<bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>org.openmrs.module.formEntry.FormEntryService</value> <!-- service interface name -->
+				<value>org.openmrs.module.formentry.FormEntryService</value> <!-- service interface name -->
 				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager"><ref bean="transactionManager"/></property>
 					<property name="target">
-						<bean class="org.openmrs.module.formEntry.impl.FormEntryServiceImpl">
+						<bean class="org.openmrs.module.formentry.impl.FormEntryServiceImpl">
 							<property name="formEntryDAO">
-								<bean class="org.openmrs.module.formEntry.db.hibernate.HibernateFormEntryDAO">
+								<bean class="org.openmrs.module.formentry.db.hibernate.HibernateFormEntryDAO">
 									<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 								</bean>
 							</property>	
@@ -57,43 +57,43 @@
 		<property name="redirectView"><value>/module/formEntry/formTaskpane</value></property>
 	</bean>
 	
-	<bean id="formEntryQueueList" class="org.openmrs.module.formEntry.web.controller.FormEntryQueueListController">
+	<bean id="formEntryQueueList" class="org.openmrs.module.formentry.web.controller.FormEntryQueueListController">
 		<property name="commandName"><value>formEntryQueueList</value></property>
 		<property name="formView"><value>/module/formEntry/formEntryQueueList</value></property>
 		<property name="successView"><value>formEntryQueue.list</value></property>
 	</bean>
 	
-	<bean id="formEntryQueueForm" class="org.openmrs.module.formEntry.web.controller.FormEntryQueueFormController">
+	<bean id="formEntryQueueForm" class="org.openmrs.module.formentry.web.controller.FormEntryQueueFormController">
 		<property name="commandName"><value>entry</value></property>
 		<property name="formView"><value>/module/formEntry/formEntryQueueForm</value></property>
 		<property name="successView"><value>formEntryQueue.list</value></property>
 	</bean>
 	
-	<bean id="xsnUploadForm" class="org.openmrs.module.formEntry.web.controller.XsnUploadFormController">
+	<bean id="xsnUploadForm" class="org.openmrs.module.formentry.web.controller.XsnUploadFormController">
 		<property name="commandName"><value>formList</value></property>
 		<property name="formView"><value>/module/formEntry/xsnUploadForm</value></property>
 		<property name="successView"><value>xsnUpload.form</value></property>
 	</bean>
 	
-	<bean id="dynamicFormEntryController" class="org.openmrs.module.formEntry.web.dynamic.DynamicFormEntryController">
+	<bean id="dynamicFormEntryController" class="org.openmrs.module.formentry.web.dynamic.DynamicFormEntryController">
 		<property name="commandName"><value>formInProgress</value></property>
 		<property name="formView"><value>/module/formEntry/dynamic/enter</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 
-	<bean id="batchFormEntryController" class="org.openmrs.module.formEntry.web.dynamic.BatchFormEntryController">
+	<bean id="batchFormEntryController" class="org.openmrs.module.formentry.web.dynamic.BatchFormEntryController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>formData</value></property>
-		<property name="commandClass"><value>org.openmrs.module.formEntry.web.dynamic.BatchFormEntryModel</value></property>
+		<property name="commandClass"><value>org.openmrs.module.formentry.web.dynamic.BatchFormEntryModel</value></property>
 		<property name="formView"><value>/module/formEntry/dynamic/batch</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 
-	<bean id="patientFormEntryModelValidator" class="org.openmrs.module.formEntry.web.dynamic.PatientFormEntryModelValidator"/>
-	<bean id="patientFormEntryController" class="org.openmrs.module.formEntry.web.dynamic.PatientFormEntryController">
+	<bean id="patientFormEntryModelValidator" class="org.openmrs.module.formentry.web.dynamic.PatientFormEntryModelValidator"/>
+	<bean id="patientFormEntryController" class="org.openmrs.module.formentry.web.dynamic.PatientFormEntryController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>formData</value></property>
-		<property name="commandClass"><value>org.openmrs.module.formEntry.web.dynamic.PatientFormEntryModel</value></property>
+		<property name="commandClass"><value>org.openmrs.module.formentry.web.dynamic.PatientFormEntryModel</value></property>
 		<property name="validator"><ref bean="patientFormEntryModelValidator"/></property>
 		<property name="formView"><value>/module/formEntry/dynamic/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
