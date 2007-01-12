@@ -162,7 +162,14 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 	 */
 	public boolean transformNextFormEntryQueue() {
 		boolean transformOccurred = false;
-		FormEntryService fes = (FormEntryService)Context.getService(FormEntryService.class);
+		FormEntryService fes = null; 
+		try {
+			fes = (FormEntryService)Context.getService(FormEntryService.class);
+		}
+		catch (APIException e) {
+			log.debug("FormEntryService not found");
+			return false;
+		}
 		FormEntryQueue feq;
 		if ((feq = fes.getNextFormEntryQueue()) != null) {
 			transformFormEntryQueue(feq);
@@ -234,7 +241,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 			isRunning = true;
 		}
 		try {
-			log.debug("Start procesing FormEntry queue");
+			log.debug("Start processing FormEntry queue");
 			while (transformNextFormEntryQueue()) {
 				// loop until queue is empty
 			}
