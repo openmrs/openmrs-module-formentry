@@ -56,6 +56,14 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	}
 	
 	/**
+	 * Clean up any resources here
+	 *
+	 */
+	public void shutdown() {
+		
+	}
+	
+	/**
 	 * Initialize task.
 	 * 
 	 * @param config

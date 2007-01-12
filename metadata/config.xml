@@ -17,6 +17,7 @@
 	<updateURL>http://resources.openmrs.org/modules/formEntry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
+	<require_version>1.0.50.1336</require_version>
 	
 	<!-- Extensions -->
 	<extension>
