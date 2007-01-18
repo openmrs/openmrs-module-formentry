@@ -64,15 +64,24 @@
 		<date>Dec 27th 2006</date>
 		<description>
 			Modifying global properties and formentry processor task class for scheduler 
+			
+			The "DELETE FROM" line is unfortunate.  I can't come up with a way to do the 
+			second update line 'only if' formEntry.patientForms.goBackOnEntry doesn't exist
 		</description>
 		<sql>
+			DELETE FROM
+				global_property
+			WHERE
+				property = 'formEntry.patientForms.goBackOnEntry';
+			
+			
 			UPDATE 
 				global_property
 			SET
 				property = 'formEntry.patientForms.goBackOnEntry'
 			WHERE
 				property = 'patientForms.goBackOnEntry';
-				
+								
 			
 			UPDATE
 				scheduler_task_config
