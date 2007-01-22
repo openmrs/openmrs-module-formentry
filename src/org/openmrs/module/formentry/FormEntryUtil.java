@@ -138,10 +138,11 @@ public class FormEntryUtil {
 	 * starter xsn is returned instead
 	 * 
 	 * @param form
+	 * @param defaultToStarter true/false whether or not the starter xsn is returned when no current xsn is found
 	 * @return form's xsn file or starter xsn if none
 	 * @throws IOException
 	 */
-	public static FileInputStream getCurrentXSN(Form form) throws IOException {
+	public static FileInputStream getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
 		// Find the form file data
 		String formDir = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_output_dir");
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
@@ -154,11 +155,13 @@ public class FormEntryUtil {
 
 		if (new File(formFilePath).exists())
 			tmpXSN = FormEntryUtil.expandXsn(formFilePath);
-		else {
+		else if (defaultToStarter == true) {
 			// use starter xsn as the
 			log.debug("Using starter xsn");
 			tmpXSN = FormEntryUtil.getExpandedStarterXSN();
 		}
+		else
+			return null;
 
 		return compileXSN(form, tmpXSN);
 	}

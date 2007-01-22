@@ -48,19 +48,27 @@ public class FormDownloadServlet extends HttpServlet {
 	public static final long serialVersionUID = 123423L;
 
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
+	/**
+	 * Serve up the xml file for filling out a form 
+	 * 
+	 * @param request
+	 * @param response
+	 * @param httpSession
+	 * @param form
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, 
-			HttpSession httpSession) throws ServletException, IOException {
+			HttpSession httpSession, Form form) throws ServletException, IOException {
 		
-		Integer formId = null;
 		Integer patientId = null;
 
 		try {
-			formId = Integer.parseInt(request.getParameter("formId"));
 			patientId = Integer.parseInt(request.getParameter("patientId"));
 		}
 		catch (NumberFormatException e) {
-			log.warn("Invalid formId or patientId parameter: formId: \""
+			log.warn("Invalid patientId parameter: formId: \""
 			    + request.getParameter("formId") + "\" patientId: "
 			    + request.getParameter("patientId") + "\"", e);
 			return;
@@ -68,7 +76,6 @@ public class FormDownloadServlet extends HttpServlet {
 
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
 		Patient patient = formEntryService.getPatient(patientId);
-		Form form = formEntryService.getForm(formId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
@@ -136,14 +143,21 @@ public class FormDownloadServlet extends HttpServlet {
 		response.setHeader("Content-Disposition", "attachment; filename=" + title + ".infopathxml");
 		response.getOutputStream().print(xmldoc);
 	}
-
+	
+	
+	/**
+	 * Sort out the multiple options for formDownload.  This servlet does things like
+	 * the formEntry xsn template download, the xsn/schema/template download, and xsn rebuliding
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 
+		Form form = null;
 		Integer formId = null;
 		String target = request.getParameter("target");
 		HttpSession httpSession = request.getSession();
-
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		
 		if (Context.isAuthenticated() == false) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
@@ -152,40 +166,60 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			formId = Integer.parseInt(request.getParameter("formId"));
+			form = formEntryService.getForm(formId);
 		}
 		catch (NumberFormatException e) {
-			log.warn("Invalid formId parameter: \"" + request.getParameter("formId") + "\"", e);
-			return;
+			// pass.  Error throwing is done in the if statements
 		}
 
 		if ("formEntry".equals(target)) {
-
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
-			doFormEntryGet(request, response, httpSession);
-
+			
+			if (form != null)
+				doFormEntryGet(request, response, httpSession, form);
+			else
+				log.warn("formId cannot be null");
+			
 		}
 		else if ("rebuild".equals(target)) {
-
+			if (form == null) {
+				log.warn("formId must point to a valid form");
+				return;
+			}
+			
 			// Download the XSN and Upload it again
-			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-			Form form = formEntryService.getForm(formId);
-			InputStream formStream = FormEntryUtil.getCurrentXSN(form);
+			InputStream formStream = FormEntryUtil.getCurrentXSN(form, true);
 			if (formStream == null)
 				response.sendError(500);
 			
 			PublishInfoPath.publishXSN(formStream);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.rebuildXSN.success");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formEntry.xsn.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 
 		}
+		else if ("rebuildAll".equals(target)) {
+			// Download all XSNs and upload them again
+			Integer count = 0;
+			for (Form formObj : formEntryService.getForms(false)) {
+				InputStream formStream = FormEntryUtil.getCurrentXSN(formObj, false);
+				if (formStream != null) {
+					PublishInfoPath.publishXSN(formStream);
+					count = count + 1;
+				}
+			}
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formEntry.xsns.rebuild.success");
+			response.sendRedirect(request.getHeader("referer"));
+		}
 		else {
+			if (form == null) {
+				log.warn("formId must point to a valid form");
+				return;
+			}
 			// Downloading from openmrs/admin/forms/form(Edit|SchemaDesign).form
 			response.setHeader("Content-Type", "application/octect-stream; charset=utf-8");
 
 			// Load form object and default form url
-			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-			Form form = formEntryService.getForm(formId);
 			String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 			// Payload to return if desired form is string conversion capable
@@ -213,7 +247,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 				setFilename(response, filename);
 
-				FileInputStream formStream = FormEntryUtil.getCurrentXSN(form);
+				FileInputStream formStream = FormEntryUtil.getCurrentXSN(form, true);
 
 				if (formStream != null)
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());

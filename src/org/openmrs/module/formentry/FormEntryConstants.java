@@ -97,6 +97,6 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/moduleServlet/formEntry/forms/";
 	public static final String FORMENTRY_INFOPATH_SUBMIT_PATH = "/moduleServlet/formEntry/formUpload";
 	public static final String FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH = "/formTaskpane.htm";
-	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/module/formEntry/forms/starter/";
+	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/module/formentry/forms/starter/";
 	
 }

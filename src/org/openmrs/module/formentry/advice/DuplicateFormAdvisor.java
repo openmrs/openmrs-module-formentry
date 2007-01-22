@@ -39,13 +39,13 @@ public class DuplicateFormAdvisor extends StaticMethodMatcherPointcutAdvisor imp
 			
 			Form oldForm = (Form)invocation.getArguments()[0];
 			File oldXSN = FormEntryUtil.getXSNFile(oldForm.getFormId() + ".xsn");
-			InputStream oldFormStream = FormEntryUtil.getCurrentXSN(oldForm);
+			InputStream oldFormStream = FormEntryUtil.getCurrentXSN(oldForm, false);
 			log.debug("oldXSN: " + oldXSN.getAbsolutePath());
 			
 			Form newForm = (Form)invocation.proceed();
 			
 			// only try to copy the file if there is an old xsn
-			if (oldXSN.exists()) {
+			if (oldXSN.exists() && oldFormStream != null) {
 				// rebuild the XSN -- this is really just used to change the form "id"
 				// attribute in the xsd file
 				PublishInfoPath.publishXSN(oldFormStream, newForm);
