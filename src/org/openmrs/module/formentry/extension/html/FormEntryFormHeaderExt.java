@@ -24,10 +24,10 @@ public class FormEntryFormHeaderExt extends Extension {
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
 		if (formId != null) {
-			map.put("moduleServlet/formEntry/formDownload?target=schema&formId=" + formId, "Form.downloadSchema");
-			map.put("moduleServlet/formEntry/formDownload?target=template&formId=" + formId, "Form.downloadTemplate");
-			map.put("moduleServlet/formEntry/formDownload?target=xsn&formId=" + formId, "Form.downloadXSN");
-			map.put("moduleServlet/formEntry/formDownload?target=rebuild&formId=" + formId, "Form.rebuildXSN");
+			map.put("moduleServlet/formEntry/formDownload?target=schema&formId=" + formId, "formEntry.xsn.downloadSchema");
+			map.put("moduleServlet/formEntry/formDownload?target=template&formId=" + formId, "formEntry.xsn.downloadTemplate");
+			map.put("moduleServlet/formEntry/formDownload?target=xsn&formId=" + formId, "formEntry.xsn.download");
+			map.put("moduleServlet/formEntry/formDownload?target=rebuild&formId=" + formId, "formEntry.xsn.rebuild");
 		}
 		
 		map.put("module/formEntry/xsnUpload.form", "formEntry.xsn.title");
