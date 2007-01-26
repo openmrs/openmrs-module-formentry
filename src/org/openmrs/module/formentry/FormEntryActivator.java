@@ -1,6 +1,8 @@
 package org.openmrs.module.formentry;
 
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,6 +10,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Activator;
 import org.openmrs.module.ModuleException;
+import org.openmrs.util.OpenmrsUtil;
 
 public class FormEntryActivator implements Activator {
 
@@ -37,20 +40,25 @@ public class FormEntryActivator implements Activator {
 		
 		AdministrationService as = Context.getAdministrationService();
 		
+		List<String> errorMessages = new Vector<String>();
+		
 		// set up property requirements
 		String gp = as.getGlobalProperty("formEntry.infopath_output_dir", ""); 
-		if ("".equals(gp))
-			throw new ModuleException("Global property 'formEntry.infopath_output_dir' must be defined");
+		if ("".equals(gp)) 
+			errorMessages.add("Global property 'formEntry.infopath_output_dir' must be defined.");
 		
 		gp = as.getGlobalProperty("formEntry.infopath_server_url", ""); 
 		if ("".equals(gp))
-			throw new ModuleException("Global property 'formEntry.infopath_server_url' must be defined");
+			errorMessages.add("Global property 'formEntry.infopath_server_url' must be defined.");
 		
 		gp = as.getGlobalProperty("formEntry.infopath_archive_dir", ""); 
 		String gp2 = as.getGlobalProperty("formEntry.infopath_archive_date_format", "");
 		if (!"".equals(gp) && "".equals(gp2))
-			throw new ModuleException("Global property 'formEntry.infopath_archive_date_format' must be defined if 'formEntry.infopath_archive_dir' is defined");
+			errorMessages.add("Global property 'formEntry.infopath_archive_date_format' must be defined if 'formEntry.infopath_archive_dir' is defined.");
 		
+		if (errorMessages.size() > 0) {
+			throw new ModuleException(OpenmrsUtil.join(errorMessages, " \n"));
+		}
 		
 		// Could do other code updates here.
 		
