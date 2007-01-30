@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="web/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/openmrs-api-1.0.50.1336.jar"/>
+	<classpathentry kind="lib" path="lib/openmrs-api-1.0.50.1378.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
-	<classpathentry sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/spring-framework-2.0/spring-framework-2.0/dist/spring-src.zip" kind="lib" path="lib/spring-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/spring-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.4.jar"/>

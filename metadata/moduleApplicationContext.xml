@@ -8,16 +8,16 @@
     <bean id="formEntryUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     	<property name="mappings">
             <props>
-	            <prop key="**/module/formEntry/taskpane/tribe.htm">tribeListTaskpane</prop>
-				<prop key="**/formTaskpane.htm">formTaskpaneRedirect</prop>
-				<prop key="**/module/formEntry/formEntryQueue.form">formEntryQueueForm</prop>
-				<prop key="**/module/formEntry/formEntryQueue.list">formEntryQueueList</prop>
-				<prop key="**/module/formEntry/xsnUpload.form">xsnUploadForm</prop>
+	            <prop key="module/formEntry/taskpane/tribe.htm">tribeListTaskpane</prop>
+				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
+				<prop key="module/formEntry/formEntryQueue.form">formEntryQueueForm</prop>
+				<prop key="module/formEntry/formEntryQueue.list">formEntryQueueList</prop>
+				<prop key="module/formEntry/xsnUpload.form">xsnUploadForm</prop>
 				
 				<!-- Dynamic FormEntry -->
-				<prop key="**/module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
-				<prop key="**/module/formEntry/batchForm.form">batchFormEntryController</prop>
-				<prop key="**/module/formEntry/patientForm.form">patientFormEntryController</prop>
+				<prop key="module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
+				<prop key="module/formEntry/batchForm.form">batchFormEntryController</prop>
+				<prop key="module/formEntry/patientForm.form">patientFormEntryController</prop>
 					
 			</props>
 		</property>
