@@ -55,12 +55,12 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 
 	private PatientService getPatientService() {
-		checkPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY);
+		checkPrivilege(FormEntryConstants.PRIV_FORM_ENTRY);
 		return Context.getPatientService();
 	}
 	
 	private EncounterService getEncounterService() {
-		checkPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY);
+		checkPrivilege(FormEntryConstants.PRIV_FORM_ENTRY);
 		return Context.getEncounterService();
 	}
 
@@ -312,9 +312,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 	
 	public Collection<Form> getForms(boolean onlyPublished) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+					+ FormEntryConstants.PRIV_FORM_ENTRY);
 		
 		List<Form> forms = new Vector<Form>();
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
@@ -329,9 +329,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 	
 	public User getUserByUsername(String username) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+					+ FormEntryConstants.PRIV_FORM_ENTRY);
 		
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		User ret = null;
@@ -350,9 +350,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 */
 	public Collection<User> findUsers(String searchValue, List<String> roles,
 			boolean includeVoided) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+					+ FormEntryConstants.PRIV_FORM_ENTRY);
 		
 		List<User> users = new Vector<User>();
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
@@ -440,7 +440,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	
 	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
 		checkPrivileges(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE,
-				OpenmrsConstants.PRIV_FORM_ENTRY);
+				FormEntryConstants.PRIV_FORM_ENTRY);
 		formEntryQueue.setCreator(Context.getAuthenticatedUser());
 		formEntryQueue.setDateCreated(new Date());
 		getFormEntryDAO().createFormEntryQueue(formEntryQueue);

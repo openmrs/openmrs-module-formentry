@@ -80,6 +80,8 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_TASKPANE_URL_VARIABLE_NAME = "TASKPANE_URL";
 	public static final String FORMENTRY_SUBMIT_URL_VARIABLE_NAME = "SUBMIT_URL";
 	
+	public static final String PRIV_FORM_ENTRY = "Form Entry";
+	
 	/* It's about time to remove these constants.  Values should be taken from global properties instead
 
 	// Default formentry properties

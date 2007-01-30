@@ -47,7 +47,12 @@ public class FormEntryUtil {
 			cmdBuffer.append("/usr/bin/cabextract -d ").append(
 					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
-		} else {
+		} 
+		else if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+			cmdBuffer.append("/usr/local/bin/cabextract -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
+			execCmd(cmdBuffer.toString(), tempDir);
+		}
+		else {
 			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append(
 					"\" \"").append(tempDir.getAbsolutePath()).append("\"");
 			execCmd(cmdBuffer.toString(), null);
@@ -259,8 +264,8 @@ public class FormEntryUtil {
 		StringBuffer cmdBuffer = new StringBuffer();
 
 		// Special case : Linux operating sytem uses lcab utility
-		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX
-				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+				(OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))) {
 
 			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir)
 					.append(" ").append(outputDirName).append("/").append(
