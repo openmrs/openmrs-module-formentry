@@ -13,8 +13,8 @@
 			OpenMRS Form Entry Module
 	</description>
 	<activator>org.openmrs.module.formentry.FormEntryActivator</activator>
-	<!--  <library id="starterXSN" path="org/openmrs/module/formEntry/forms/starter/" type="resources" /> -->
-	<updateURL>http://resources.openmrs.org/modules/formEntry/update.rdf</updateURL>
+
+	<updateURL>https://dev.openmrs.org/modules/download/formEntry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
 	<require_version>1.0.50.1428</require_version>
