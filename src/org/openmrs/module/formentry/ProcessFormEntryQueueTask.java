@@ -44,6 +44,7 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	 * entry from the database.
 	 */
 	public void run() {
+		Context.openSession();
 		log.debug("Processing form entry queue ... ");
 		try {
 			if (Context.isAuthenticated() == false)
@@ -52,6 +53,8 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 		} catch (APIException e) {
 			log.error("Error running form entry queue task", e);
 			throw e;
+		} finally {
+			Context.closeSession();
 		}
 	}
 	
