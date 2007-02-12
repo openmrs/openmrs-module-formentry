@@ -12,7 +12,7 @@
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
 		<property name="module.name" value="FormEntryModule" />
-		<property name="module.version" value="1.7" />
+		<property name="module.version" value="1.8" />
 
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_NAME" value="${module.name}" />
