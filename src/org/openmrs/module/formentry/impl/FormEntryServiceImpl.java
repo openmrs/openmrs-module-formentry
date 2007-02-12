@@ -319,7 +319,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		List<Form> forms = new Vector<Form>();
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		try {
-			forms = Context.getFormService().getForms(onlyPublished);
+			forms = Context.getFormService().getForms(onlyPublished, false);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {
