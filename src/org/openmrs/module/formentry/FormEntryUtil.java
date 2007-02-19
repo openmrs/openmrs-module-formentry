@@ -149,7 +149,7 @@ public class FormEntryUtil {
 	 */
 	public static FileInputStream getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
 		// Find the form file data
-		String formDir = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_output_dir");
+		String formDir = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
 		    + FormEntryUtil.getFormUri(form);
 
@@ -436,13 +436,13 @@ public class FormEntryUtil {
 		// int endOfDomain = requestURL.indexOf('/', 8);
 		// String baseUrl = requestURL.substring(0, (endOfDomain > 8 ?
 		// endOfDomain : requestURL.length()));
-		String serverURL = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_server_url", "formEntry.infopath_server_url cannot be empty");
+		String serverURL = Context.getAdministrationService().getGlobalProperty("formentry.infopath_server_url", "formentry.infopath_server_url cannot be empty");
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + getFormUri(form);
 	}
 
 	public static String getFormSchemaNamespace(Form form) {
-		String serverURL = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_server_url", "formEntry.infopath_server_url cannot be empty");
+		String serverURL = Context.getAdministrationService().getGlobalProperty("formentry.infopath_server_url", "formentry.infopath_server_url cannot be empty");
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + "schema/" + form.getFormId() + "-" + form.getBuild();
 	}
@@ -498,7 +498,7 @@ public class FormEntryUtil {
 	 * 		this server's XSN repository
 	 */
 	public static File getXSNFile(String filename) {
-		String url = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_output_dir");
+		String url = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		if (!url.endsWith(File.separator))
 			url += File.separator;
 		url = url + filename;

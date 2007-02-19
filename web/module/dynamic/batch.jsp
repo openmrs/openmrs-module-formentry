@@ -8,15 +8,15 @@
 <openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
 
-<h1><spring:message code="formEntry.BatchEntry.title"/>: ${formData.form.name}</h1>
+<h1><spring:message code="formentry.BatchEntry.title"/>: ${formData.form.name}</h1>
 
 <div id="batchEntryStepOne">
 
-<b><i><spring:message code="formEntry.BatchEntry.enterCommonInstructions"/></i></b>
+<b><i><spring:message code="formentry.BatchEntry.enterCommonInstructions"/></i></b>
 <table>
 	<tr>
 	<spring:bind path="formData.encounterDatetime">
-		<td><spring:message code="formEntry.BatchEntry.common.encounterDatetime"/>:</td>
+		<td><spring:message code="formentry.BatchEntry.common.encounterDatetime"/>:</td>
 		<td>
 			<openmrs:fieldGen
 				type="java.util.Date"
@@ -29,7 +29,7 @@
 	<td width="10"></td>
 	
 	<spring:bind path="formData.location">
-		<td><spring:message code="formEntry.BatchEntry.common.location"/>:</td>
+		<td><spring:message code="formentry.BatchEntry.common.location"/>:</td>
 		<td>
 			<openmrs:fieldGen
 				type="org.openmrs.Location"
@@ -42,7 +42,7 @@
 	<td width="10"></td>
 
 	<spring:bind path="formData.provider">
-		<td><spring:message code="formEntry.BatchEntry.common.provider"/>:</td>
+		<td><spring:message code="formentry.BatchEntry.common.provider"/>:</td>
 		<td>
 			<openmrs:fieldGen
 				type="org.openmrs.User"
@@ -53,7 +53,7 @@
 	</spring:bind>
 	</tr>
 </table>
-<input type="button" value="<spring:message code="formEntry.BatchEntry.prepare"/>" onClick="buildformEntry.BatchEntry()"/>
+<input type="button" value="<spring:message code="formentry.BatchEntry.prepare"/>" onClick="buildFormEntry.BatchEntry()"/>
 
 </div>
 
@@ -104,20 +104,20 @@
 	var encounterDatetimeField = -1;
 	var locationIdField = -1;
 
-	function buildformEntry.BatchEntry() {
+	function buildFormEntry.BatchEntry() {
 		locationId = DWRUtil.getValue('batch_location');
 		if (locationId == null || locationId == '') {
-			window.alert('<spring:message code="formEntry.BatchEntry.error.missingLocation" javaScriptEscape="true"/>');
+			window.alert('<spring:message code="formentry.BatchEntry.error.missingLocation" javaScriptEscape="true"/>');
 			return;
 		}
 		datetime = DWRUtil.getValue('batch_encounter_datetime');
 		if (datetime == null || datetime == '') {
-			window.alert('<spring:message code="formEntry.BatchEntry.error.missingEncounterDatetime" javaScriptEscape="true"/>');
+			window.alert('<spring:message code="formentry.BatchEntry.error.missingEncounterDatetime" javaScriptEscape="true"/>');
 			return;
 		}
 		providerId = DWRUtil.getValue('batch_provider');
 		if (providerId == null || providerId == '') {
-			window.alert('<spring:message code="formEntry.BatchEntry.error.missingProvider" javaScriptEscape="true"/>');
+			window.alert('<spring:message code="formentry.BatchEntry.error.missingProvider" javaScriptEscape="true"/>');
 			return;
 		}
 		
@@ -144,7 +144,7 @@
 			<c:if test="${formField.required}">
 				tmp = DWRUtil.getValue('enc_' + ptId + '_${iter.index}');
 				if (tmp == null || tmp == '') {
-					window.alert('<spring:message code="formEntry.BatchEntry.error.missing" javaScriptEscape="true" arguments="${formField.field.name}"/>');
+					window.alert('<spring:message code="formentry.BatchEntry.error.missing" javaScriptEscape="true" arguments="${formField.field.name}"/>');
 					return false;
 				}
 			</c:if>
@@ -156,13 +156,13 @@
 				anyObs = true;
 			<c:if test="${formField.required}">
 				if (tmp == null || tmp == '') {
-					window.alert('<spring:message code="formEntry.BatchEntry.error.missing" javaScriptEscape="true" arguments="${formField.field.name}"/>');
+					window.alert('<spring:message code="formentry.BatchEntry.error.missing" javaScriptEscape="true" arguments="${formField.field.name}"/>');
 					return false;
 				}
 			</c:if>
 		</c:forEach>
 		if (!anyObs) {
-			window.alert("<spring:message code="formEntry.BatchEntry.error.nothing"/>");
+			window.alert("<spring:message code="formentry.BatchEntry.error.nothing"/>");
 			return false;
 		}
 		return true;
@@ -218,7 +218,7 @@
 					}
 				);
 		} else {
-			window.alert("<spring:message code="formEntry.BatchEntry.error.nothing"/>");
+			window.alert("<spring:message code="formentry.BatchEntry.error.nothing"/>");
 		}
 	}
 	
@@ -237,13 +237,13 @@
 </script>
 
 <div id="batchEntryStepTwo" style="display: none">
-	<a href="javascript:toggleEncounterFields()"><spring:message code="formEntry.BatchEntry.togglePerPatient"/></a>
+	<a href="javascript:toggleEncounterFields()"><spring:message code="formentry.BatchEntry.togglePerPatient"/></a>
 	<p/>
 	<table class="thinBorder">
 		<tr>
 			<th colspan="2"><spring:message code="Encounter.patient"/></th>
 			<c:forEach var="formField" items="${formData.encounterFields}" varStatus="iter">
-				<th class="encCell"><spring:message code="formEntry.BatchEntry.encounterField.${formField.field.name}"/></th>
+				<th class="encCell"><spring:message code="formentry.BatchEntry.encounterField.${formField.field.name}"/></th>
 			</c:forEach>
 			<c:forEach var="formField" items="${formData.obsFields}" varStatus="iter">
 				<th>${formField.field.name}</th>
@@ -310,7 +310,7 @@
 	</table>
 	
 	<p/>
-	<a href="index.htm"><spring:message code="formEntry.BatchEntry.finished"/></a>
+	<a href="index.htm"><spring:message code="formentry.BatchEntry.finished"/></a>
 </div>
 
 <script type="text/javascript">

@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View FormEntry Queue" otherwise="/login.htm" redirect="/module/formEntry/formEntryQueue.list" />
+<openmrs:require privilege="View FormEntry Queue" otherwise="/login.htm" redirect="/module/formentry/formEntryQueue.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
 <h2>
-	<spring:message code="formEntry.FormEntryQueue.title" />
+	<spring:message code="formentry.FormEntryQueue.title" />
 </h2>
 
 <script type="text/javascript">
@@ -34,18 +34,18 @@
 	}
 </script>
 
-<form method="post" action="${pageContext.request.contextPath}/moduleServlet/formEntry/formEntryQueueDownload">
-	<b class="boxHeader"><spring:message code="formEntry.FormEntryQueue.multiple" />:</b>
+<form method="post" action="${pageContext.request.contextPath}/moduleServlet/formentry/formEntryQueueDownload">
+	<b class="boxHeader"><spring:message code="formentry.FormEntryQueue.multiple" />:</b>
 	<div class="box">
 		<table>
 			<tr>
-				<td><spring:message code="formEntry.FormEntryQueue.select"/></td>
+				<td><spring:message code="formentry.FormEntryQueue.select"/></td>
 				<td>
 					<select name="queueType" onChange="changeSize(this)">
 						<option value=""></option>
-						<option value="pending"><spring:message code="formEntry.FormEntryQueue.pending"/></option>
-						<option value="archive"><spring:message code="formEntry.FormEntryQueue.archive"/></option>
-						<option value="error"><spring:message code="formEntry.FormEntryQueue.error"/></option>
+						<option value="pending"><spring:message code="formentry.FormEntryQueue.pending"/></option>
+						<option value="archive"><spring:message code="formentry.FormEntryQueue.archive"/></option>
+						<option value="error"><spring:message code="formentry.FormEntryQueue.error"/></option>
 					</select>
 				</td>
 			</tr>

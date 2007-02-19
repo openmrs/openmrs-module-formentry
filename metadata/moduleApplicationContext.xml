@@ -8,16 +8,16 @@
     <bean id="formEntryUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     	<property name="mappings">
             <props>
-	            <prop key="module/formEntry/taskpane/tribe.htm">tribeListTaskpane</prop>
+	            <prop key="module/formentry/taskpane/tribe.htm">tribeListTaskpane</prop>
 				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
-				<prop key="module/formEntry/formEntryQueue.form">formEntryQueueForm</prop>
-				<prop key="module/formEntry/formEntryQueue.list">formEntryQueueList</prop>
-				<prop key="module/formEntry/xsnUpload.form">xsnUploadForm</prop>
+				<prop key="module/formentry/formEntryQueue.form">formEntryQueueForm</prop>
+				<prop key="module/formentry/formEntryQueue.list">formEntryQueueList</prop>
+				<prop key="module/formentry/xsnUpload.form">xsnUploadForm</prop>
 				
 				<!-- Dynamic FormEntry -->
-				<prop key="module/formEntry/dynamicForm.form">dynamicFormEntryController</prop>
-				<prop key="module/formEntry/batchForm.form">batchFormEntryController</prop>
-				<prop key="module/formEntry/patientForm.form">patientFormEntryController</prop>
+				<prop key="module/formentry/dynamicForm.form">dynamicFormEntryController</prop>
+				<prop key="module/formentry/batchForm.form">batchFormEntryController</prop>
+				<prop key="module/formentry/patientForm.form">patientFormEntryController</prop>
 					
 			</props>
 		</property>
@@ -54,30 +54,30 @@
 	<!-- Controllers -->
 	
 	<bean id="formTaskpaneRedirect" class="org.openmrs.web.controller.RedirectController">
-		<property name="redirectView"><value>/module/formEntry/formTaskpane</value></property>
+		<property name="redirectView"><value>/module/formentry/formTaskpane</value></property>
 	</bean>
 	
 	<bean id="formEntryQueueList" class="org.openmrs.module.formentry.web.controller.FormEntryQueueListController">
 		<property name="commandName"><value>formEntryQueueList</value></property>
-		<property name="formView"><value>/module/formEntry/formEntryQueueList</value></property>
+		<property name="formView"><value>/module/formentry/formEntryQueueList</value></property>
 		<property name="successView"><value>formEntryQueue.list</value></property>
 	</bean>
 	
 	<bean id="formEntryQueueForm" class="org.openmrs.module.formentry.web.controller.FormEntryQueueFormController">
 		<property name="commandName"><value>entry</value></property>
-		<property name="formView"><value>/module/formEntry/formEntryQueueForm</value></property>
+		<property name="formView"><value>/module/formentry/formEntryQueueForm</value></property>
 		<property name="successView"><value>formEntryQueue.list</value></property>
 	</bean>
 	
 	<bean id="xsnUploadForm" class="org.openmrs.module.formentry.web.controller.XsnUploadFormController">
 		<property name="commandName"><value>formList</value></property>
-		<property name="formView"><value>/module/formEntry/xsnUploadForm</value></property>
+		<property name="formView"><value>/module/formentry/xsnUploadForm</value></property>
 		<property name="successView"><value>xsnUpload.form</value></property>
 	</bean>
 	
 	<bean id="dynamicFormEntryController" class="org.openmrs.module.formentry.web.dynamic.DynamicFormEntryController">
 		<property name="commandName"><value>formInProgress</value></property>
-		<property name="formView"><value>/module/formEntry/dynamic/enter</value></property>
+		<property name="formView"><value>/module/formentry/dynamic/enter</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 
@@ -85,7 +85,7 @@
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>formData</value></property>
 		<property name="commandClass"><value>org.openmrs.module.formentry.web.dynamic.BatchFormEntryModel</value></property>
-		<property name="formView"><value>/module/formEntry/dynamic/batch</value></property>
+		<property name="formView"><value>/module/formentry/dynamic/batch</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 
@@ -95,15 +95,15 @@
 		<property name="commandName"><value>formData</value></property>
 		<property name="commandClass"><value>org.openmrs.module.formentry.web.dynamic.PatientFormEntryModel</value></property>
 		<property name="validator"><ref bean="patientFormEntryModelValidator"/></property>
-		<property name="formView"><value>/module/formEntry/dynamic/patientForm</value></property>
+		<property name="formView"><value>/module/formentry/dynamic/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 	
 	<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
 		<property name="commandName"><value>tribes</value></property>
 		<property name="commandClass"><value>java.util.List</value></property>
-		<property name="formView"><value>/module/formEntry/taskpane/tribe</value></property>
-		<property name="successView"><value>/module/formEntry/taskpane/tribe</value></property>
+		<property name="formView"><value>/module/formentry/taskpane/tribe</value></property>
+		<property name="successView"><value>/module/formentry/taskpane/tribe</value></property>
 	</bean>	
 	
 	<!-- /Controllers -->

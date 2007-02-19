@@ -172,7 +172,7 @@ public class FormDownloadServlet extends HttpServlet {
 			// pass.  Error throwing is done in the if statements
 		}
 
-		if ("formEntry".equals(target)) {
+		if ("formentry".equals(target)) {
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
 			
@@ -194,7 +194,7 @@ public class FormDownloadServlet extends HttpServlet {
 				response.sendError(500);
 			
 			PublishInfoPath.publishXSN(formStream);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formEntry.xsn.rebuild.success");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsn.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 
 		}
@@ -208,7 +208,7 @@ public class FormDownloadServlet extends HttpServlet {
 					count = count + 1;
 				}
 			}
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formEntry.xsns.rebuild.success");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsns.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 		}
 		else {

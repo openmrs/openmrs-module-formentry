@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Audit" otherwise="/login.htm" redirect="/module/formEntry/formEntryInfo.htm"/>
+<openmrs:require privilege="Audit" otherwise="/login.htm" redirect="/module/formentry/formEntryInfo.htm"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -16,7 +16,7 @@
 %>
 	
 <br />
-<h2><spring:message code="formEntry.info"/></h2>
+<h2><spring:message code="formentry.info"/></h2>
 <br />
 
 <table cellpadding="4" cellspacing="0">

@@ -1,6 +1,6 @@
 <%@ include file="taskpaneHeader.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formEntry/taskpane/tribe.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formentry/taskpane/tribe.htm" />
 
 <c:choose>
 	<c:when test="${not empty param.nodePath}">

@@ -1,6 +1,6 @@
 <%@ include file="taskpaneHeader.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formEntry/taskpane/concept.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formentry/taskpane/concept.htm" />
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 

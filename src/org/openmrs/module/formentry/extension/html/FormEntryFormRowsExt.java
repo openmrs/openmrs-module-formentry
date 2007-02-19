@@ -42,9 +42,9 @@ public class FormEntryFormRowsExt extends TableRowExt {
 				DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
 				
 				if (lastModified == 0L)
-					map.put("formEntry.xsn.lastModified", " (No XSN) ");
+					map.put("formentry.xsn.lastModified", " (No XSN) ");
 				else
-					map.put("formEntry.xsn.lastModified", dateFormat.format(date).toString());
+					map.put("formentry.xsn.lastModified", dateFormat.format(date).toString());
 					
 			}
 		}

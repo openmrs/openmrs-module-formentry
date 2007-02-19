@@ -130,5 +130,23 @@
 			
 		</sql>
 	</diff>
-	
+
+	<diff>
+		<version>1.8</version>
+		<author>Burke Mamlin</author>
+		<date>Feb 19th 2007</date>
+		<description>
+			Changing all formEntry.* global properties back to formentry.*
+		</description>
+		<sql>
+			UPDATE 
+				global_property
+			SET
+				property = REPLACE(property, 'formEntry.', 'formentry.')
+			WHERE
+				INSTR(property, 'formEntry') = 1;
+			
+		</sql>
+	</diff>
+
 </sqldiff>
