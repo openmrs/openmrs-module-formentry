@@ -20,7 +20,7 @@
 		goBackOnEntry == 'true' means have the browser go back to the find patient page after starting to enter a form
 	--%>
 	<c:set var="goBackOnEntry" value="true" />
-	<openmrs:globalProperty key="formEntry.patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
+	<openmrs:globalProperty key="formentry.patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
 	
 	<script type="text/javascript">
 	
@@ -41,7 +41,7 @@
 				var s = '<span onMouseOver="window.status=\'formId=' + form.formId + '\'">';
 				s += form.name + " (v." + form.version + ")";
 				if (form.published == false)
-					s += ' <i>(<spring:message code="formEntry.unpublished"/>)</i>';
+					s += ' <i>(<spring:message code="formentry.unpublished"/>)</i>';
 					
 				s += "</span>";
 				return s;
@@ -49,7 +49,7 @@
 			
 			dojo.event.topic.subscribe("fSearch/select", 
 				function(msg) {
-					document.location = "${pageContext.request.contextPath}/moduleServlet/formEntry/formDownload?target=formEntry&patientId=${patient.patientId}&formId=" + msg.objs[0].formId;
+					document.location = "${pageContext.request.contextPath}/moduleServlet/formentry/formDownload?target=formentry&patientId=${patient.patientId}&formId=" + msg.objs[0].formId;
 					startDownloading();
 				}
 			);
@@ -81,7 +81,7 @@
 		}
 	</script>
 	
-	<div id="selectFormHeader" class="boxHeader${model.patientVariation}"><spring:message code="formEntry.patientDashboard.forms"/></div>
+	<div id="selectFormHeader" class="boxHeader${model.patientVariation}"><spring:message code="formentry.patientDashboard.forms"/></div>
 	<div id="selectForm" class="box${model.patientVariation}">
 		<div dojoType="OpenmrsSearch" widgetId="fSearch" ></div>
 	</div>

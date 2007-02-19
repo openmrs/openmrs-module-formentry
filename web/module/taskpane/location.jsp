@@ -1,6 +1,6 @@
 <%@ include file="taskpaneHeader.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formEntry/taskpane/location.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formentry/taskpane/location.htm" />
 
 <h3><spring:message code="Location.title"/></h3>
 

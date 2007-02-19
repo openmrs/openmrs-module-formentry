@@ -26,7 +26,7 @@ public class FormEntryPatientDashboardTabExt extends PatientDashboardTabExt {
 
 	@Override
 	public String getTabName() {
-		return "formEntry.patientDashboard.forms";
+		return "formentry.patientDashboard.forms";
 	}
 	
 }

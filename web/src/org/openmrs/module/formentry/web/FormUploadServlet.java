@@ -43,7 +43,7 @@ public class FormUploadServlet extends HttpServlet {
 		// check for authenticated users
 		if (!Context.isAuthenticated()) {
 			request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,
-				request.getContextPath() + "/moduleServlet/formEntry/formUpload");
+				request.getContextPath() + "/moduleServlet/formentry/formUpload");
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;

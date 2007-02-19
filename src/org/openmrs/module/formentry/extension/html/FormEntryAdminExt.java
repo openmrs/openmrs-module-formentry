@@ -14,7 +14,7 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 	}
 	
 	public String getTitle() {
-		return "formEntry.title";
+		return "formentry.title";
 	}
 	
 	public String getRequiredPrivilege() {
@@ -25,9 +25,9 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 		
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
-		map.put("module/formEntry/xsnUpload.form", "formEntry.xsn.title");
-		map.put("module/formEntry/formEntryQueue.list", "formEntry.FormEntryQueue.manage");
-		map.put("module/formEntry/formEntryInfo.htm", "formEntry.info");
+		map.put("module/formentry/xsnUpload.form", "formentry.xsn.title");
+		map.put("module/formentry/formEntryQueue.list", "formentry.FormEntryQueue.manage");
+		map.put("module/formentry/formEntryInfo.htm", "formentry.info");
 		
 		return map;
 	}

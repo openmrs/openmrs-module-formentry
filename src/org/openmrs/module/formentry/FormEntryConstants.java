@@ -96,8 +96,8 @@ public class FormEntryConstants {
 	
 	// These variables used to be non-final and editable by runtime properties.
 	// Users should not need to modify these settings.
-	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/moduleServlet/formEntry/forms/";
-	public static final String FORMENTRY_INFOPATH_SUBMIT_PATH = "/moduleServlet/formEntry/formUpload";
+	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/moduleServlet/formentry/forms/";
+	public static final String FORMENTRY_INFOPATH_SUBMIT_PATH = "/moduleServlet/formentry/formUpload";
 	public static final String FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH = "/formTaskpane.htm";
 	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/module/formentry/forms/starter/";
 	

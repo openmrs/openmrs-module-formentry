@@ -10,7 +10,7 @@
 	}
 
 	if (firstVisit != null) {
-		String keepaliveMinutes = Context.getAdministrationService().getGlobalProperty("formEntry.infopath_taskpane_keepalive_min");
+		String keepaliveMinutes = Context.getAdministrationService().getGlobalProperty("formentry.infopath_taskpane_keepalive_min");
 		int keepalive = 60;  //default
 		
 		try {
@@ -27,12 +27,12 @@
 	
 		if ( rightNow.before(finalVisit) ) {
 %>
-			<openmrs:globalProperty key="formEntry.infopath_taskpane_refresh_sec" defaultValue="" var="refreshSec" />
+			<openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" defaultValue="" var="refreshSec" />
 			<c:if test="${refreshSec != ''}">
-				<meta http-equiv="refresh" content="<openmrs:globalProperty key="formEntry.infopath_taskpane_refresh_sec" />;">
+				<meta http-equiv="refresh" content="<openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" />;">
 			</c:if>
 			 <!-- This page loaded at this time: <%= rightNow %> --> 
-	 <!-- Page will reload every <openmrs:globalProperty key="formEntry.infopath_taskpane_refresh_sec" /> second(s) until: <%= finalVisit %> --> 
+	 <!-- Page will reload every <openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" /> second(s) until: <%= finalVisit %> --> 
 <%
 		}
 	}

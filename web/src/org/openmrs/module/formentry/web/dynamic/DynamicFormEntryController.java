@@ -31,7 +31,8 @@ public class DynamicFormEntryController extends SimpleFormController {
 
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
-        
+
+    @SuppressWarnings("unchecked")
     protected Map<String, Object> formBackingObject(HttpServletRequest request) throws Exception {
     	HttpSession httpSession = request.getSession();
 		Map<String, Object> formInProgress = (Map<String, Object>) httpSession.getAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_IN_PROGRESS_ATTR);
@@ -112,6 +113,7 @@ public class DynamicFormEntryController extends SimpleFormController {
     }
     */
     
+    @SuppressWarnings("unchecked")
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
     		Object comm, BindException errors) throws Exception {
 

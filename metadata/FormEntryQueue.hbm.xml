@@ -3,9 +3,9 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping package="org.openmrs.module.FormEntry">
+<hibernate-mapping package="@MODULE_PACKAGE@">
 
-	<class name="org.openmrs.module.formentry.FormEntryQueue" table="formentry_queue">
+	<class name="FormEntryQueue" table="formentry_queue">
 
 		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
 			unsaved-value="0">

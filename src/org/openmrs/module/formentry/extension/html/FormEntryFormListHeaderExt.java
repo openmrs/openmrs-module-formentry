@@ -16,8 +16,8 @@ public class FormEntryFormListHeaderExt extends Extension {
 		
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
-		map.put("moduleServlet/formEntry/formDownload?target=rebuildAll", "formEntry.xsn.rebuildAll");
-		map.put("module/formEntry/xsnUpload.form", "formEntry.xsn.title");
+		map.put("moduleServlet/formentry/formDownload?target=rebuildAll", "formentry.xsn.rebuildAll");
+		map.put("module/formentry/xsnUpload.form", "formentry.xsn.title");
 		
 		return map;
 	}

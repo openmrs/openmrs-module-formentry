@@ -4,17 +4,17 @@
 <module configVersion="1.0">
 	
 	<!-- Base Module Properties -->
-	<id>formEntry</id>
-	<name>@MODULE_NAME@</name>
-	<version>@MODULE_VERSION@</version>
-	<package>org.openmrs.module.formentry</package>
+	<id>formentry</id>
+	<name>FormEntry</name>
+	<version>1.8</version>
+	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
-			OpenMRS Form Entry Module
+			OpenMRS FormEntry Module
 	</description>
-	<activator>org.openmrs.module.formentry.FormEntryActivator</activator>
+	<activator>@MODULE_PACKAGE@.FormEntryActivator</activator>
 
-	<updateURL>https://dev.openmrs.org/modules/download/formEntry/update.rdf</updateURL>
+	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
 	<require_version>1.0.52.1472</require_version>
@@ -22,23 +22,23 @@
 	<!-- Extensions -->
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>org.openmrs.module.formentry.extension.html.FormEntryAdminExt</class>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryAdminExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.admin.forms.formHeader</point>
-		<class>org.openmrs.module.formentry.extension.html.FormEntryFormHeaderExt</class>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormHeaderExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.admin.forms.formRow</point>
-		<class>org.openmrs.module.formentry.extension.html.FormEntryFormRowsExt</class>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormRowsExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.admin.forms.formListHeader</point>
-		<class>org.openmrs.module.formentry.extension.html.FormEntryFormListHeaderExt</class>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormListHeaderExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.patientDashboardTab</point>
-		<class>org.openmrs.module.formentry.extension.html.FormEntryPatientDashboardTabExt</class>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryPatientDashboardTabExt</class>
 	</extension>
 	<!-- /Extensions -->
 	
@@ -46,7 +46,7 @@
 	<!-- AOP -->
 	<advice>
 		<point>org.openmrs.api.FormService</point>
-		<class>org.openmrs.module.formentry.advice.DuplicateFormAdvisor</class>
+		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
 	</advice>
 	
 	<!-- /AOP -->
@@ -70,28 +70,28 @@
 
 	<!-- Required Global Properties -->
 	<globalProperty>
-		<property>formEntry.infopath_output_dir</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_output_dir</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description>This property should point to a filesystem directory.  When an XSN is uploaded for a form it will be saved here.</description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.infopath_server_url</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_server_url</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
 	</globalProperty>
 	<globalProperty>
 		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
-		<property>formEntry.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>Welcome!</defaultValue>
 		<description>The text seen in the infopath taskpane upon first logging in</description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.infopath_archive_date_format</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_archive_date_format</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>dd-MMM-yyyy-HHmmss</defaultValue>
 		<description></description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.infopath_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_archive_dir</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description>
 			This property should point to a filesystem directory. If undefined (empty), XSNs will not be archived.
@@ -100,7 +100,7 @@
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.infopath_taskpane_refresh_sec</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_taskpane_refresh_sec</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description>
 			The number of seconds between taskpane refreshes.  This keeps the taskpane from
@@ -108,7 +108,7 @@
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.infopath_taskpane_keepalive_min</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.infopath_taskpane_keepalive_min</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description>
 			The number of minutes to keep refreshing the taskpane before allowing 
@@ -116,7 +116,7 @@
 		</description>
 	</globalProperty>
 	<globalProperty>
-		<property>formEntry.patientForms.goBackOnEntry</property> <!-- Must start with `moduleId.` -->
+		<property>@MODULE_ID@.patientForms.goBackOnEntry</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>false</defaultValue>
 		<description>
 			'true' means have the browser go back to the find patient page after picking a form
@@ -129,14 +129,14 @@
 	<dwr>
 		<allow>
 			<create creator="new" javascript="DWRFormEntryService">
-				<param name="class" value="org.openmrs.module.formentry.web.DWRFormEntryService"/>
+				<param name="class" value="@MODULE_PACKAGE@.web.DWRFormEntryService"/>
 				<include method="enterForm"/>
 			</create>
 		</allow>
 
 		<signatures>
 			<![CDATA[
-			import org.openmrs.module.formentry.web.DWRFormEntryService;
+			import @MODULE_PACKAGE@.web.DWRFormEntryService;
 			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
 			]]>
 		</signatures>	
@@ -147,25 +147,25 @@
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
 	<servlet>
 		<servlet-name>formDownload</servlet-name>
-		<servlet-class>org.openmrs.module.formentry.web.FormDownloadServlet</servlet-class>
+		<servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>forms</servlet-name>
-		<servlet-class>org.openmrs.module.formentry.web.XsnDownloadServlet</servlet-class>
+		<servlet-class>@MODULE_PACKAGE@.web.XsnDownloadServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>formUpload</servlet-name>
-		<servlet-class>org.openmrs.module.formentry.web.FormUploadServlet</servlet-class>
+		<servlet-class>@MODULE_PACKAGE@.web.FormUploadServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<servlet-name>formEntryQueueDownload</servlet-name>
-		<servlet-class>org.openmrs.module.formentry.web.FormEntryQueueDownloadServlet</servlet-class>
+		<servlet-class>@MODULE_PACKAGE@.web.FormEntryQueueDownloadServlet</servlet-class>
 	</servlet>
 	
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
 	<servlet>
 		<servlet-name>formEntryQueueProcessor</servlet-name>
-		<servlet-class>org.openmrs.module.formentry.web.FormEntryQueueProcessorServlet</servlet-class>
+		<servlet-class>@MODULE_PACKAGE@.web.FormEntryQueueProcessorServlet</servlet-class>
 	</servlet>
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
 	<!-- /Servlets -->

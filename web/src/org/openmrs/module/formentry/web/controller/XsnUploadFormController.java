@@ -50,7 +50,7 @@ public class XsnUploadFormController extends SimpleFormController {
 					MultipartFile xsnFile = multipartRequest.getFile("xsnFile");
 					if (xsnFile != null && !xsnFile.isEmpty()) {
 						form = PublishInfoPath.publishXSN(xsnFile.getInputStream());
-						String msg = getMessageSourceAccessor().getMessage("formEntry.xsn.saved", new String[] {form.getName()});
+						String msg = getMessageSourceAccessor().getMessage("formentry.xsn.saved", new String[] {form.getName()});
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msg);
 					}
 				}
@@ -58,7 +58,7 @@ public class XsnUploadFormController extends SimpleFormController {
 			catch (IOException e) {
 				log.error(e);
 				errors.reject(e.getMessage());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formEntry.xsn.not.saved");
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formentry.xsn.not.saved");
 				return showForm(request, response, errors);
 			}
 			
@@ -71,7 +71,7 @@ public class XsnUploadFormController extends SimpleFormController {
 			return new ModelAndView(new RedirectView(view));
 		}
 		
-		httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formEntry.xsn.not.saved");
+		httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formentry.xsn.not.saved");
 		return showForm(request, response, errors);
 	}
 
