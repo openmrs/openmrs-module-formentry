@@ -201,13 +201,14 @@ public class FormDownloadServlet extends HttpServlet {
 		else if ("rebuildAll".equals(target)) {
 			// Download all XSNs and upload them again
 			Integer count = 0;
-			for (Form formObj : formEntryService.getForms(false)) {
+			for (Form formObj : formEntryService.getForms(false, false)) {
 				InputStream formStream = FormEntryUtil.getCurrentXSN(formObj, false);
 				if (formStream != null) {
 					PublishInfoPath.publishXSN(formStream);
 					count = count + 1;
 				}
 			}
+			log.debug(count + " xsn(s) updated");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsns.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 		}
