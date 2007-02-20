@@ -43,18 +43,18 @@ public class FormEntryActivator implements Activator {
 		List<String> errorMessages = new Vector<String>();
 		
 		// set up property requirements
-		String gp = as.getGlobalProperty("formEntry.infopath_output_dir", ""); 
+		String gp = as.getGlobalProperty("formentry.infopath_output_dir", ""); 
 		if ("".equals(gp)) 
-			errorMessages.add("Global property 'formEntry.infopath_output_dir' must be defined.");
+			errorMessages.add("Global property 'formentry.infopath_output_dir' must be defined.");
 		
-		gp = as.getGlobalProperty("formEntry.infopath_server_url", ""); 
+		gp = as.getGlobalProperty("formentry.infopath_server_url", ""); 
 		if ("".equals(gp))
-			errorMessages.add("Global property 'formEntry.infopath_server_url' must be defined.");
+			errorMessages.add("Global property 'formentry.infopath_server_url' must be defined.");
 		
-		gp = as.getGlobalProperty("formEntry.infopath_archive_dir", ""); 
-		String gp2 = as.getGlobalProperty("formEntry.infopath_archive_date_format", "");
+		gp = as.getGlobalProperty("formentry.infopath_archive_dir", ""); 
+		String gp2 = as.getGlobalProperty("formentry.infopath_archive_date_format", "");
 		if (!"".equals(gp) && "".equals(gp2))
-			errorMessages.add("Global property 'formEntry.infopath_archive_date_format' must be defined if 'formEntry.infopath_archive_dir' is defined.");
+			errorMessages.add("Global property 'formentry.infopath_archive_date_format' must be defined if 'formentry.infopath_archive_dir' is defined.");
 		
 		if (errorMessages.size() > 0) {
 			throw new ModuleException(OpenmrsUtil.join(errorMessages, " \n"));

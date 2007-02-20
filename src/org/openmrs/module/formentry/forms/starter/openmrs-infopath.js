@@ -13,8 +13,8 @@
  */
 
 var SERVER_URL = "http://localhost:8080/openmrs";
-var TASKPANE_URL = SERVER_URL + "/module/formEntry/taskpane";
-var SUBMIT_URL = SERVER_URL + "/moduleServlet/formEntry/formUpload";
+var TASKPANE_URL = SERVER_URL + "/module/formentry/taskpane";
+var SUBMIT_URL = SERVER_URL + "/moduleServlet/formentry/formUpload";
 var PROBLEM_ADDED_ELEM = "problem_added";
 var PROBLEM_RESOLVED_ELEM = "problem_resolved";
 
