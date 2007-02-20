@@ -127,10 +127,7 @@ public interface FormEntryService {
 	public Form getForm(Integer formId);
 
 	@Transactional(readOnly=true)
-	public Collection<Form> getForms();
-
-	@Transactional(readOnly=true)
-	public Collection<Form> getForms(boolean onlyPublished);
+	public Collection<Form> getForms(boolean onlyPublished, boolean includeRetired);
 
 	/**
 	 * @see org.openmrs.api.UserService.getUserByUsername(String)

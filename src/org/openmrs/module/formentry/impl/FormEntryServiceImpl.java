@@ -307,11 +307,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		return form;
 	}
 	
-	public Collection<Form> getForms() {
-		return getForms(true);
-	}
-	
-	public Collection<Form> getForms(boolean onlyPublished) {
+	public Collection<Form> getForms(boolean onlyPublished, boolean includeRetired) {
 		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
 					+ FormEntryConstants.PRIV_FORM_ENTRY);
@@ -319,7 +315,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		List<Form> forms = new Vector<Form>();
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		try {
-			forms = Context.getFormService().getForms(onlyPublished, false);
+			forms = Context.getFormService().getForms(onlyPublished, includeRetired);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {
