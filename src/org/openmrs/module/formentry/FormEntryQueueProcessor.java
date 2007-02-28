@@ -200,8 +200,11 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 	 * @return TransformerFactory used to perform the transform to HL7
 	 */
 	private TransformerFactory getTransformerFactory() {
-		if (transformerFactory == null)
+		if (transformerFactory == null) {
+			System.setProperty("javax.xml.transform.TransformerFactory",
+				"net.sf.saxon.TransformerFactoryImpl");
 			transformerFactory = TransformerFactory.newInstance();
+		}
 		return transformerFactory;
 	}
 
