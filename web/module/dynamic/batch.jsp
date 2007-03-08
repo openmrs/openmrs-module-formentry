@@ -53,7 +53,7 @@
 	</spring:bind>
 	</tr>
 </table>
-<input type="button" value="<spring:message code="formentry.BatchEntry.prepare"/>" onClick="buildFormEntry.BatchEntry()"/>
+<input type="button" value="<spring:message code="formentry.BatchEntry.prepare"/>" onClick="batchEntry()"/>
 
 </div>
 
@@ -85,7 +85,7 @@
 	</c:forEach>
 	<c:forEach var="formField" items="${formData.obsFields}" varStatus="iter">
 		fieldIds.push(${formField.field.fieldId});
-		obsFields.push(${formField.field.concept});
+		obsFields.push(${formField.field.concept.conceptId});
 	</c:forEach>
 	}
 	
@@ -104,7 +104,7 @@
 	var encounterDatetimeField = -1;
 	var locationIdField = -1;
 
-	function buildFormEntry.BatchEntry() {
+	function batchEntry() {
 		locationId = DWRUtil.getValue('batch_location');
 		if (locationId == null || locationId == '') {
 			window.alert('<spring:message code="formentry.BatchEntry.error.missingLocation" javaScriptEscape="true"/>');
