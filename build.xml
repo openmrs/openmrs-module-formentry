@@ -72,7 +72,7 @@
 		</copy>
 		
 		<!-- Create distributable jar file -->
-		<jar destfile="dist/${module.name}-${module.version}.omod">
+		<jar destfile="dist/${module.id}-${module.version}.omod">
 			<fileset dir="build" includes="**/*" />
 		</jar>
 	</target>
