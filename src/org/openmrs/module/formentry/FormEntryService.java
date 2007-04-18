@@ -58,13 +58,6 @@ public interface FormEntryService {
 			throws APIException;
 
 	/**
-	 * @see org.openmrs.api.PatientService.getSimilarPatients(java.lang.String,java.lang.Integer,java.lang.String)
-	 */
-	@Transactional(readOnly=true)
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear,
-			String gender) throws APIException;
-
-	/**
 	 * @see org.openmrs.api.PatientService.getPatientIdentifierTypes()
 	 */
 	@Transactional(readOnly=true)

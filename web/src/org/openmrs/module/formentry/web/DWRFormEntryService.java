@@ -59,7 +59,7 @@ public class DWRFormEntryService {
 				Concept question = field.getConcept();
 				log.debug("question: " + question);
 				Obs o = new Obs();
-				o.setPatient(patient);
+				o.setPerson(patient);
 				o.setConcept(question);
 				try {
 					log.debug("o.getConcept() == " + o.getConcept());

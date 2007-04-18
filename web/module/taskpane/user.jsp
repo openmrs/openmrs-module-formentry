@@ -51,18 +51,27 @@
 			}
 		);
 		
-		searchWidget.getCellContent = function(o) {
+		searchWidget.getName = function(o) {
 			if (typeof o == 'string') return o;
 			str = ''
-			str += o.firstName + " ";
-			str += o.lastName;
+			str += o.givenName + " ";
+			str += o.familyName;
 			str += " (" + o.systemId + ")";
 			return str;
-		}
+		};
+		
+		searchWidget.getCellFunctions = function() {
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getName"));
+			return arr;
+		};
+		
+		searchWidget.showHeaderRow = false;
 		
 		searchWidget.allowAutoJump = function() {
 			return this.text && this.text.length > 1;
-		}
+		};
 
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();

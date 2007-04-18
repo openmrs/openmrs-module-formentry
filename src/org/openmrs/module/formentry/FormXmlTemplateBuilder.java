@@ -66,8 +66,8 @@ public class FormXmlTemplateBuilder {
 			User user = Context.getAuthenticatedUser();
 			String enterer;
 			if (user != null)
-				enterer = user.getUserId() + "^" + user.getFirstName() + " "
-						+ user.getLastName();
+				enterer = user.getUserId() + "^" + user.getGivenName() + " "
+						+ user.getFamilyName();
 			else
 				enterer = "";
 
