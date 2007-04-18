@@ -148,21 +148,6 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService.getSimilarPatients(java.lang.String,java.lang.Integer,java.lang.String)
-	 */
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear,
-			String gender) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
-		try {
-			p = getPatientService().getSimilarPatients(name, birthyear, gender);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
 	 * @see org.openmrs.api.PatientService.getPatientIdentifierTypes()
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes()
@@ -285,7 +270,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
 		RelationshipType t;
 		try {
-			t = getPatientService().getRelationshipType(id);
+			t = Context.getPersonService().getRelationshipType(id);
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
 		}

@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PersonAttribute;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryService;
@@ -58,7 +59,12 @@ public class BatchFormEntryController extends SimpleFormController {
     	} else {
     		// TODO: check all patients for their assigned location / last encounter location, and default to the most common one, or else none
     		Patient p = Context.getPatientService().getPatient(ps.getPatientIds().iterator().next());
-    		batchForm.setLocation(p.getHealthCenter());
+    		PersonAttribute attr = p.getAttribute("Health Center");
+    		if (attr != null) {
+	    		String value = attr.getValue();
+	    		if (value != null && !value.equals(""))
+	    			batchForm.setLocation(new Location(Integer.valueOf(value)));
+    		}
     	}
     	
     	request.getParameter("providerId");

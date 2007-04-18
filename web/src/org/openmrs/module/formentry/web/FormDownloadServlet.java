@@ -95,7 +95,7 @@ public class FormDownloadServlet extends HttpServlet {
 		User user = Context.getAuthenticatedUser();
 		String enterer;
 		if (user != null)
-			enterer = user.getUserId() + "^" + user.getFirstName() + " " + user.getLastName();
+			enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
 		else
 			enterer = "";
 		String dateEntered = FormUtil.dateToString(new Date());

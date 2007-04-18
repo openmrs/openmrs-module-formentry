@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>1.9</version>
+	<version>2.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -17,7 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.0.53.1505</require_version>
+	<require_version>1.0.57.1670</require_version>
 	
 	<!-- Extensions -->
 	<extension>
