@@ -29,7 +29,7 @@
 	
 	function miniObject(o) {
 		this.key = o.userId;
-		this.value = searchWidget.getCellContent(o);
+		this.value = searchWidget.getName(o);
 	}
 	
 	var searchWidget;
