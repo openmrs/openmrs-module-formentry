@@ -12,7 +12,16 @@
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
 		<xmlproperty file="metadata/config.xml" />
-
+		
+		<xmlcatalog id="common-dtds">
+	        <dtd 
+	            publicId="-//OpenMRS//DTD OpenMRS Config 1.0//EN"
+	            location="lib-common/config-1.0.dtd"/>
+	    </xmlcatalog>
+		<xmlproperty file="metadata/config.xml" >
+			<xmlcatalog refid="common-dtds"/>
+		</xmlproperty>
+		
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_ID" value="${module.id}" />
 			<filter token="MODULE_NAME" value="${module.name}" />
@@ -69,6 +78,13 @@
 		<copy todir="build/web/module/">
 			<fileset dir="web/module/" includes="**/*" />
 			<filterset refid="variables.to.replace" />
+		</copy>
+		
+		<!-- Copy lib folder -->
+		<!-- (lib should only contain this module's required -->
+		<!-- libraries that OpenMRS doesn't contain already) -->
+		<copy todir="build/lib" failonerror="false">
+			<fileset dir="lib" includes="**/*" />
 		</copy>
 		
 		<!-- Create distributable jar file -->
