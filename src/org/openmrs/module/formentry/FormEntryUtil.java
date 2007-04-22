@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -98,6 +100,15 @@ public class FormEntryUtil {
 			log.error(err);
 			throw new FileNotFoundException(err);
 		}
+		*/
+
+		// get the location of the starter documents
+		URL url = c.getResource(xsnFolderPath);
+		if (url == null) {
+			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
+			log.error(err);
+			throw new FileNotFoundException(err);
+		}
 		
 		// temp directory to hold the new xsn contents
 		File tempDir = FormEntryUtil.createTempDirectory("XSN");
@@ -105,7 +116,8 @@ public class FormEntryUtil {
 			throw new IOException("Failed to create temporary directory");
 
 		// iterate over and copy each file in the given folder
-		for (File f : xsnFolder.listFiles()) {
+		File starterDir = OpenmrsUtil.url2file(url);
+		for (File f : starterDir.listFiles()) {
 			File newFile = new File(tempDir, f.getName());
 			FileChannel in = null, out = null;
 			try {
@@ -119,25 +131,10 @@ public class FormEntryUtil {
 					out.close();
 			}
 		}
-		*/
 		
-		// get the location of the starter documents
-		URL url = c.getResource(xsnFolderPath);
-		if (url == null) {
-			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			log.error(err);
-			throw new FileNotFoundException(err);
-		}
-		
-		// directory to store the starter xsn in 
-		File tempDir = FormEntryUtil.createTempDirectory("XSN");
-		if (tempDir == null)
-			throw new IOException("Failed to create temporary directory");
-		
-		return OpenmrsUtil.url2file(url);
-		
+		return tempDir;
 	}
-
+	
 	/**
 	 * Gets the current xsn file for a form. If the xsn is not found, the
 	 * starter xsn is returned instead
@@ -147,7 +144,7 @@ public class FormEntryUtil {
 	 * @return form's xsn file or starter xsn if none
 	 * @throws IOException
 	 */
-	public static FileInputStream getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
+	public static Object[] getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
 		// Find the form file data
 		String formDir = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
@@ -156,19 +153,19 @@ public class FormEntryUtil {
 		log.debug("Attempting to open xsn from: " + formFilePath);
 
 		// The expanded the xsn
-		File tmpXSN = null;
+		File tempDir = null;
 
 		if (new File(formFilePath).exists())
-			tmpXSN = FormEntryUtil.expandXsn(formFilePath);
+			tempDir = FormEntryUtil.expandXsn(formFilePath);
 		else if (defaultToStarter == true) {
 			// use starter xsn as the
 			log.debug("Using starter xsn");
-			tmpXSN = FormEntryUtil.getExpandedStarterXSN();
+			tempDir = FormEntryUtil.getExpandedStarterXSN();
 		}
 		else
-			return null;
-
-		return compileXSN(form, tmpXSN);
+			return new Object[] {null, tempDir};
+		
+		return new Object[] {compileXSN(form, tempDir), tempDir};
 	}
 
 	/**
@@ -178,22 +175,22 @@ public class FormEntryUtil {
 	 * @return .xsn file
 	 * @throws IOException
 	 */
-	public static FileInputStream getStarterXSN(Form form) throws IOException {
-		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
-		return compileXSN(form, tmpXSN);
-	}
+//	public static FileInputStream getStarterXSN(Form form) throws IOException {
+//		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
+//		return compileXSN(form, tmpXSN);
+//	}
 
 	/**
 	 * Modifies schema, template.xml, and sample data, defaults, urls in
 	 * <code>tmpXSN</code>
 	 * 
 	 * @param form
-	 * @param tmpXSN
+	 * @param tempDir
 	 *            directory containing xsn files.
 	 * @return
 	 * @throws IOException
 	 */
-	private static FileInputStream compileXSN(Form form, File tmpXSN)
+	private static FileInputStream compileXSN(Form form, File tempDir)
 			throws IOException {
 		// Get Constants
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
@@ -209,7 +206,7 @@ public class FormEntryUtil {
 		String schema = new FormSchemaBuilder(form).getSchema();
 
 		// Generate and overwrite the schema
-		File schemaFile = findFile(tmpXSN, schemaFilename);
+		File schemaFile = findFile(tempDir, schemaFilename);
 		if (schemaFile == null)
 			throw new IOException("Schema: '" + schemaFilename
 					+ "' cannot be null");
@@ -218,7 +215,7 @@ public class FormEntryUtil {
 		schemaOutput.close();
 
 		// replace template.xml with the generated xml
-		File templateFile = findFile(tmpXSN, templateFilename);
+		File templateFile = findFile(tempDir, templateFilename);
 		if (templateFile == null)
 			throw new IOException("Template: '" + templateFilename
 					+ "' cannot be null");
@@ -227,7 +224,7 @@ public class FormEntryUtil {
 		templateOutput.close();
 
 		// replace defautls.xml with the xml template, including default scripts
-		File defaultsFile = findFile(tmpXSN, defaultsFilename);
+		File defaultsFile = findFile(tempDir, defaultsFilename);
 		if (defaultsFile == null)
 			throw new IOException("Defaults: '" + defaultsFilename
 					+ "' cannot be null");
@@ -236,7 +233,7 @@ public class FormEntryUtil {
 		defaultsOutput.close();
 
 		// replace sampleData.xml with the generated xml
-		File sampleDataFile = findFile(tmpXSN, sampleDataFilename);
+		File sampleDataFile = findFile(tempDir, sampleDataFilename);
 		if (sampleDataFile == null)
 			throw new IOException("Template: '" + sampleDataFilename
 					+ "' cannot be null");
@@ -244,11 +241,10 @@ public class FormEntryUtil {
 		sampleDataOutput.write(template);
 		sampleDataOutput.close();
 
-		FormEntryUtil.makeCab(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
+		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), "new.xsn");
 
-		File xsn = findFile(tmpXSN, "new.xsn");
+		File xsn = findFile(tempDir, "new.xsn");
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
-
 		return xsnInputStream;
 	}
 
