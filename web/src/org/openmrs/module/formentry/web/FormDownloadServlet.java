@@ -1,5 +1,6 @@
 package org.openmrs.module.formentry.web;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -189,23 +190,35 @@ public class FormDownloadServlet extends HttpServlet {
 			}
 			
 			// Download the XSN and Upload it again
-			InputStream formStream = FormEntryUtil.getCurrentXSN(form, true);
+			Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
+			InputStream formStream = (InputStream) streamAndDir[0];
+			File tempDir = (File) streamAndDir[1];
 			if (formStream == null)
 				response.sendError(500);
 			
 			PublishInfoPath.publishXSN(formStream);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsn.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
+			
+			try {
+				formStream.close();
+			} catch (IOException ioe) {}
+			try {
+				OpenmrsUtil.deleteDirectory(tempDir);
+			} catch (IOException ioe) {}
 
 		}
 		else if ("rebuildAll".equals(target)) {
 			// Download all XSNs and upload them again
 			Integer count = 0;
 			for (Form formObj : formEntryService.getForms(false, false)) {
-				InputStream formStream = FormEntryUtil.getCurrentXSN(formObj, false);
+				Object[] streamAndDir = FormEntryUtil.getCurrentXSN(formObj, false);
+				InputStream formStream = (InputStream) streamAndDir[0];
+				File tempDir = (File) streamAndDir[1];
 				if (formStream != null) {
 					PublishInfoPath.publishXSN(formStream);
 					count = count + 1;
+					OpenmrsUtil.deleteDirectory(tempDir);
 				}
 			}
 			log.debug(count + " xsn(s) updated");
@@ -248,11 +261,19 @@ public class FormDownloadServlet extends HttpServlet {
 
 				setFilename(response, filename);
 
-				FileInputStream formStream = FormEntryUtil.getCurrentXSN(form, true);
+				Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
+				FileInputStream formStream = (FileInputStream)streamAndDir[0];
+				File tempDir = (File)streamAndDir[1];
 
-				if (formStream != null)
+				if (formStream != null) {
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
-				else {
+					try {
+						formStream.close();
+					} catch (IOException ioe) {}
+					try {
+						OpenmrsUtil.deleteDirectory(tempDir);
+					} catch (IOException ioe) {}
+				} else {
 					log.error("Could not return an xsn");
 					response.sendError(500);
 				}

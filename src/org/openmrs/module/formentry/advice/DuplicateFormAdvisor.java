@@ -1,6 +1,7 @@
 package org.openmrs.module.formentry.advice;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
@@ -12,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.PublishInfoPath;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 
@@ -39,7 +41,9 @@ public class DuplicateFormAdvisor extends StaticMethodMatcherPointcutAdvisor imp
 			
 			Form oldForm = (Form)invocation.getArguments()[0];
 			File oldXSN = FormEntryUtil.getXSNFile(oldForm.getFormId() + ".xsn");
-			InputStream oldFormStream = FormEntryUtil.getCurrentXSN(oldForm, false);
+			Object[] streamAndDir = FormEntryUtil.getCurrentXSN(oldForm, false);
+			InputStream oldFormStream = (InputStream) streamAndDir[0];
+			File tempDir = (File) streamAndDir[1];
 			log.debug("oldXSN: " + oldXSN.getAbsolutePath());
 			
 			Form newForm = (Form)invocation.proceed();
@@ -50,6 +54,12 @@ public class DuplicateFormAdvisor extends StaticMethodMatcherPointcutAdvisor imp
 				// attribute in the xsd file
 				PublishInfoPath.publishXSN(oldFormStream, newForm);
 				log.debug("Done duplcating xsn");
+				try {
+					oldFormStream.close();
+				} catch (IOException ioe) {}
+				try {
+					OpenmrsUtil.deleteDirectory(tempDir);
+				} catch (IOException ioe) {}
 			}
 			
 			return newForm;
