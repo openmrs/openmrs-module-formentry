@@ -54,6 +54,8 @@
 				}
 			);
 			
+			searchWidget.resetSearch();
+			
 			DWRFormService.getForms(function(obj) {searchWidget.doObjectsFound(obj); searchWidget.showHighlight();} , '${showUnpublishedForms}');
 			
 			searchWidget.allowAutoJump = function() { return false; };
