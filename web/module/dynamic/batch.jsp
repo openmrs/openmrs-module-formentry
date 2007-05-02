@@ -264,7 +264,7 @@
 					<span style="font-weight: normal; font-size: .7em; text-decoration: underline">${patient.patientIdentifier.identifierType}</span><br/>${patient.patientIdentifier.identifier}
 				</th>
 				<th>
-					${patient.patientName}
+					${patient.personName}
 				</th>
 				<c:forEach var="formField" items="${formData.encounterFields}" varStatus="iter">
 					<td class="encCell">
@@ -310,7 +310,7 @@
 	</table>
 	
 	<p/>
-	<a href="index.htm"><spring:message code="formentry.BatchEntry.finished"/></a>
+	<a href="${pageContext.request.contextPath}/index.htm"><spring:message code="formentry.BatchEntry.finished"/></a>
 </div>
 
 <script type="text/javascript">
