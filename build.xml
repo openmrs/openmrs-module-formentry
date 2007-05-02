@@ -12,6 +12,7 @@
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
 		<xmlproperty file="metadata/config.xml" />
+		<property name="compile.arguments" value="-target 1.5" />
 		
 		<xmlcatalog id="common-dtds">
 	        <dtd 
@@ -33,6 +34,9 @@
 			<fileset dir="lib">
 				<include name="**/*.jar"/>
 			</fileset>
+			<fileset dir="lib-common">
+				<include name="**/*.jar"/>
+			</fileset>
 		</path>
 
 	</target>
@@ -52,12 +56,14 @@
 		
 		<!--  Compile module java files -->
 		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
+			<compilerarg line="${compile.arguments}" />
 			<src path="src/" />
 			<include name="**/*.java" />
 		</javac>
 		
 		<!--  Compile module web java files -->
 		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
+			<compilerarg line="${compile.arguments}" />
 			<compilerarg line="-g" />
 			<src path="web/src/" />
 			<include name="**/*.java" />
