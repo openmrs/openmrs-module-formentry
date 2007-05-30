@@ -244,6 +244,10 @@ public class FormEntryUtil {
 		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), "new.xsn");
 
 		File xsn = findFile(tempDir, "new.xsn");
+		if (xsn == null)
+			throw new IOException("MakeCab has failed because the generated xsn file: '" + xsn.getAbsolutePath()
+					+ "' cannot be null.");
+		
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
 		return xsnInputStream;
 	}
