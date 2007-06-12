@@ -11,17 +11,17 @@
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
-		<xmlproperty file="metadata/config.xml" />
-		<property name="compile.arguments" value="-target 1.5" />
-		
 		<xmlcatalog id="common-dtds">
 	        <dtd 
 	            publicId="-//OpenMRS//DTD OpenMRS Config 1.0//EN"
 	            location="lib-common/config-1.0.dtd"/>
 	    </xmlcatalog>
+		
 		<xmlproperty file="metadata/config.xml" >
 			<xmlcatalog refid="common-dtds"/>
 		</xmlproperty>
+				
+		<property name="compile.arguments" value="-target 1.5" />
 		
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_ID" value="${module.id}" />
