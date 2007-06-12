@@ -60,7 +60,7 @@ function pickProblem(mode, nodeName, obj) {
 		clearNil(valueNode);
 		valueNode.text = getConceptNodeValue(obj);
 	} else {
-		// create new elem as clone with proper value
+		// create new elem as clone
 		var newElem = refNode.cloneNode(true);
 		var newElemValue = newElem.selectSingleNode("value");
 		clearNil(newElemValue);
@@ -81,7 +81,7 @@ function pickProblem(mode, nodeName, obj) {
 }
 
 // add this concept as an answer to the given node
-function pickConcept(nodeName, concept, createConceptList) {
+function pickConcept(nodeName, concept, createConceptList, extraMap) {
 	var node = oDOM.selectSingleNode(nodeName);
 	if (node == null) {
 		alert("ERROR 2345: Node '" + nodeName + "' was not found");
@@ -89,7 +89,6 @@ function pickConcept(nodeName, concept, createConceptList) {
 	}
 	clearNil(node);
 	var valueNode = node.selectSingleNode("value");
-	clearNil(valueNode);
 	if (valueNode == null) {
 		alert("ERROR 2444: 'value' node inside of node '" + nodeName + "' was not found");
 		return;
@@ -97,28 +96,72 @@ function pickConcept(nodeName, concept, createConceptList) {
 	clearNil(valueNode);
 	if (valueNode.text == "" || createConceptList == "") {
 		valueNode.text = getConceptNodeValue(concept);
+		if (extraMap) {
+			for (var i=0; i < extraMap.length; i++) {
+				var entry = extraMap[i];
+				var entryNode = node.selectSingleNode(entry.key);
+				if (entryNode == null)
+					alert("entryNode not found: " + entry.key);
+				else {
+					var valueNode = entryNode.selectSingleNode("value");
+					clearNil(valueNode);
+					valueNode.text = entry.value;
+				}
+			}
+		}
 	}
 	else {
-		// create new elem as clone with proper value
-		var newElem = node.cloneNode(true);
-		var newElemValue = newElem.selectSingleNode("value");
-		clearNil(newElemValue);
-		
-		// if node isn't the last node in parent's list, find who to insert before
-		var nextSibling = node.nextSibling;
-		while (nextSibling != null && (nextSibling.nodeName == node.nodeName || nextSibling.nodeType != node.nodeType)) {
-			nextSibling = nextSibling.nextSibling;
-		}
-		if (nextSibling == null)
-			node.parentNode.appendChild(newElem);
-		else
-			node.parentNode.insertBefore(newElem, nextSibling);
+		if (extraMap) {
+			var newParentNode = cloneAndInsertNode(node.parentNode);
 			
-		// value must be set *after* inserting node; otherwise it gets munged
-		newElemValue.text = getConceptNodeValue(concept);
+			var newConceptNode = newParentNode.selectSingleNode(node.nodeName);
+			var newConceptNodeValueNode = newConceptNode.selectSingleNode("value");
+			clearNil(newConceptNodeValueNode);
+			newConceptNodeValueNode.text = getConceptNodeValue(concept);
+
+			for (var i=0; i < extraMap.length; i++) {
+				var entry = extraMap[i];
+				// get the first node defined for this type of extra value (just for nodeName of it)
+				var refNode = node.parentNode.selectSingleNode(entry.key);
+				// this extraValue's node
+				var newExtraValueNode = newParentNode.selectSingleNode(refNode.nodeName);
+				// set the extraValue as text
+				valueNode = newExtraValueNode.selectSingleNode("value");
+				clearNil(valueNode);
+				valueNode.text = entry.value;
+			}
+		}
+		else {
+			// create new elem as clone
+			var newElem = cloneAndInsertNode(node);
+			
+			// get and clear the value of the new cloned node
+			var newElemValue = newElem.selectSingleNode("value");
+			clearNil(newElemValue);
+		
+			// value must be set *after* inserting node; otherwise it gets munged
+			newElemValue.text = getConceptNodeValue(concept);
+		}
 	}
+	
+	
 
 	closeTaskPane();
+}
+
+function cloneAndInsertNode(node) {
+	var newNode = node.cloneNode(true);
+	// if node isn't the last node in parent's list, find who to insert before
+	var nextSibling = node.nextSibling;
+	while (nextSibling != null && (nextSibling.nodeName == node.nodeName || nextSibling.nodeType != node.nodeType))
+		nextSibling = nextSibling.nextSibling;
+	
+	if (nextSibling == null)
+		node.parentNode.appendChild(newNode);
+	else
+		node.parentNode.insertBefore(newNode, nextSibling);
+	
+	return newNode;
 }
 
 //	hide taskpane

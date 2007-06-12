@@ -12,6 +12,11 @@
 		this.value = c.name;
 	}
 	
+	function miniMapEntry(key) {
+		this.key = key;
+		this.value = document.getElementById(key).value;
+	}
+	
 	function miniConcept(n) {
 		this.conceptId = "<%= org.openmrs.util.OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER %>";
 		if (n == null)
@@ -85,6 +90,42 @@
 		}
 	}
 	
+	/* 
+		This method will display the extra inputs defined by 
+		params.extraLabel and params.extraNodePath
+	*/
+	var extraMiniObject;
+	var extraForm;
+	function showExtraInput(msg) {
+		extraMiniObject = new miniObject(msg.objs[0]);
+
+		var extraInputConcept = document.getElementById('extraInputConcept');
+		var extraForm = document.getElementById('extraInputForm');
+		var searchForm = document.getElementById('searchForm');
+		
+		extraInputConcept.innerHTML = extraMiniObject.value;
+		searchWidget.clearSearch();
+		searchForm.style.display = "none";
+		extraInputForm.style.display = "block";
+		
+		extraForm.elements[0].focus();
+	}
+	
+	/* 
+		Submits the concept and extra information.
+		Only used if extra information is present, otherwise, submission is done at onSelect
+	*/
+	function submitExtraInformation() {
+		// create the extra info map
+		var extraMap = new Array();
+		<c:forEach var="node" items="${paramValues.extraNodePath}" varStatus="nodeStatus">
+			extraMap.push(new miniMapEntry("${node}"));
+		</c:forEach>
+		pickConcept('${param.nodePath}', extraMiniObject, '${param.createConceptList}', extraMap);
+		
+		return false;
+	}
+	
 	var searchWidget;
 	
 	dojo.addOnLoad( function() {
@@ -93,23 +134,33 @@
 		
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
-				for (i=0; i<msg.objs.length; i++) {
-					<c:choose>
-						<c:when test="${not empty param.nodePath}">
-							pickConcept('${param.nodePath}', new miniObject(msg.objs[i]), '${param.createConceptList}');
-						</c:when>
-						<c:otherwise>
-							pickProblem('<%= request.getParameter("mode") %>', '//problem_list', new miniObject(msg.objs[i]));
-						</c:otherwise>
-					</c:choose>
-				}
+				<c:choose>
+					<c:when test="${not empty param.extraNodePath}">
+						showExtraInput(msg);
+					</c:when>
+					<c:otherwise>
+						for (i=0; i<msg.objs.length; i++) {
+							<c:choose>
+								<c:when test="${not empty param.nodePath}">
+									pickConcept('${param.nodePath}', new miniObject(msg.objs[i]), '${param.createConceptList}');
+								</c:when>
+								<c:otherwise>
+									pickProblem('<%= request.getParameter("mode") %>', '//problem_list', new miniObject(msg.objs[i]));
+								</c:otherwise>
+							</c:choose>
+						}
+					</c:otherwise>
+				</c:choose>
 			}
 		);
 		
 		dojo.event.topic.subscribe("cSearch/objectsFound", 
 			function(msg) {
-				if ($("preProposedAlert").style.display != "block")
-					msg.objs.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
+				<%-- Do not allow proposed concepts if there is 'extra' information --%>
+				<c:if test="${empty param.extraNodePath}">
+					if ($("preProposedAlert").style.display != "block")
+						msg.objs.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
+				</c:if>
 			}
 		);
 		
@@ -126,6 +177,7 @@
 <style>
 	#proposeConceptForm { display: none; }
 	#preProposedAlert { display: none; }
+	#extraInputForm { display: none; }
 	.alert { color: red; }
 </style>
 
@@ -168,6 +220,34 @@
 		<spring:message code="ConceptProposal.proposeWarning" />
 	</span>
 </div>
+
+<form id="extraInputForm" onsubmit="return submitExtraInformation()">
+	<br />
+	
+	<div style="font-weight: bold" id="extraInputConcept"> </div>
+	
+	<br />
+	
+	<spring:message code="formentry.taskpane.extraInformationFillIn"/>
+	
+	<%-- Check to make sure extraLabel and extraNodePath are the same size --%>
+	<script type="text/javascript">
+		if (${fn:length(paramValues.extraLabel)} != ${fn:length(paramValues.extraNodePath)}) {
+			alert("Error 17384A! Query parameters 'extraLabel' and 'extraNodePath' must contain the same number of elements!");
+		}
+	</script>
+
+	<table>
+		<c:forEach var="label" items="${paramValues.extraLabel}" varStatus="labelStatus">
+			<tr>
+				<td>${label}</td>
+				<td><input type="text" id="${paramValues.extraNodePath[labelStatus.index]}" /></td>
+			</tr>
+		</c:forEach>
+	</table>
+	<br/>
+	<input type="button" value='<spring:message code="formentry.taskpane.extraInformationSubmit"/>' onclick="submitExtraInformation()" />
+</form>
 
 <br />
 
