@@ -43,18 +43,18 @@ public class FormEntryActivator implements Activator {
 		List<String> errorMessages = new Vector<String>();
 		
 		// set up property requirements
-		String gp = as.getGlobalProperty("formentry.infopath_output_dir", ""); 
+		String gp = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR, ""); 
 		if ("".equals(gp)) 
-			errorMessages.add("Global property 'formentry.infopath_output_dir' must be defined.");
+			errorMessages.add("_Global_ property '" + FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR + "' must be defined. (NOT a _runtime_ property)");
 		
-		gp = as.getGlobalProperty("formentry.infopath_server_url", ""); 
+		gp = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL, ""); 
 		if ("".equals(gp))
-			errorMessages.add("Global property 'formentry.infopath_server_url' must be defined.");
+			errorMessages.add("_Global_ property '" +FormEntryConstants.FORMENTRY_GP_SERVER_URL + "' must be defined. (NOT a _runtime_ property)");
 		
-		gp = as.getGlobalProperty("formentry.infopath_archive_dir", ""); 
-		String gp2 = as.getGlobalProperty("formentry.infopath_archive_date_format", "");
+		gp = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DIR, ""); 
+		String gp2 = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT, "");
 		if (!"".equals(gp) && "".equals(gp2))
-			errorMessages.add("Global property 'formentry.infopath_archive_date_format' must be defined if 'formentry.infopath_archive_dir' is defined.");
+			errorMessages.add("Global property '" + FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT + "' must be defined if '" + FormEntryConstants.FORMENTRY_GP_ARCHIVE_DIR + "' is defined.");
 		
 		if (errorMessages.size() > 0) {
 			throw new ModuleException(OpenmrsUtil.join(errorMessages, " \n"));

@@ -101,4 +101,12 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH = "/formTaskpane.htm";
 	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/module/formentry/forms/starter/";
 	
+	// Global properties used in the formentry module
+	public static final String FORMENTRY_GP_SERVER_URL = "formentry.infopath_server_url";
+	public static final String FORMENTRY_GP_OUTPUT_DIR = "formentry.infopath_output_dir";
+	public static final String FORMENTRY_GP_ARCHIVE_DIR = "formentry.infopath_archive_dir";
+	public static final String FORMENTRY_GP_ARCHIVE_DATE_FORMAT = "formentry.infopath_archive_date_format";
+	public static final String FORMENTRY_GP_TASKPANE_KEEPALIVE = "formentry.infopath_taskpane_keepalive_min";
+	public static final String FORMENTRY_GP_CABEXTRACT_LOCATION = "formentry.cabextract_location";
+	public static final String FORMENTRY_GP_LCAB_LOCATION = "formentry.lcab_location";
 }

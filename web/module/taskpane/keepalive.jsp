@@ -2,6 +2,7 @@
 <%@ page import="java.util.Calendar" %>
 <%@ page import="org.openmrs.api.context.Context" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
+<%@ page import="org.openmrs.module.formentry.FormEntryConstants" %>
 <%
 	String attName = WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE;
 	Date firstVisit = (Date)session.getAttribute(attName);
@@ -10,7 +11,7 @@
 	}
 
 	if (firstVisit != null) {
-		String keepaliveMinutes = Context.getAdministrationService().getGlobalProperty("formentry.infopath_taskpane_keepalive_min");
+		String keepaliveMinutes = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_TASKPANE_KEEPALIVE);
 		int keepalive = 60;  //default
 		
 		try {

@@ -173,13 +173,13 @@ public class PublishInfoPath {
 
 		AdministrationService adminService = Context.getAdministrationService();
 		
-		String serverUrl = adminService.getGlobalProperty("formentry.infopath_server_url");
+		String serverUrl = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL);
 		String publishUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
 		String taskPaneCaption = adminService.getGlobalProperty("formentry.infopath_taskpane_caption"); // "Welcome!";
 		String taskPaneInitialUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH; // "http://localhost:8080/amrs/taskPane.htm";
 		String submitUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
-		String outputDirName = adminService.getGlobalProperty("formentry.infopath_output_dir");
+		String outputDirName = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
 
 		// ensure that output directory exists
 		File outputDir = new File(outputDirName);
@@ -190,7 +190,7 @@ public class PublishInfoPath {
 			    + outputDirName + ")");
 
 		// Copy existing XSN file to archive
-		String archiveDir = adminService.getGlobalProperty("formentry.infopath_archive_dir");
+		String archiveDir = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DIR);
 		File originalFile = new File(outputDirName, originalFormUri);
 		if (archiveDir != null && originalFile.exists()) {
 			String xsnArchiveFilePath = originalFormUri
@@ -199,7 +199,7 @@ public class PublishInfoPath {
 			    + "-"
 			    + form.getBuild()
 			    + "-"
-			    + new SimpleDateFormat(adminService.getGlobalProperty("formentry.infopath_archive_date_format"),
+			    + new SimpleDateFormat(adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT),
 			        Context.getLocale()).format(new Date()) + ".xsn";
 			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
 			boolean success = copyFile(originalFile, xsnArchiveFile);
