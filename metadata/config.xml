@@ -17,7 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.0.57.1670</require_version>
+	<require_version>1.1.10.2121</require_version>
 	
 	<!-- Extensions -->
 	<extension>

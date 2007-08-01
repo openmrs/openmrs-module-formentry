@@ -47,6 +47,10 @@
 				return s;
 			};
 			
+			searchWidget.doFindObjects = function(searchPhrase) {
+				DWRFormService.findForms(this.simpleClosure(this, "doObjectsFound"), searchPhrase, '${showUnpublishedForms}');
+			}
+			
 			dojo.event.topic.subscribe("fSearch/select", 
 				function(msg) {
 					document.location = "${pageContext.request.contextPath}/moduleServlet/formentry/formDownload?target=formentry&patientId=${patient.patientId}&formId=" + msg.objs[0].formId;
@@ -56,9 +60,19 @@
 			
 			searchWidget.resetSearch();
 			
-			DWRFormService.getForms(function(obj) {searchWidget.doObjectsFound(obj); searchWidget.showHighlight();} , '${showUnpublishedForms}');
 			
 			searchWidget.allowAutoJump = function() { return false; };
+			
+			searchWidget.showAll = function() {
+				DWRFormService.getForms(this.simpleClosure(this, "doObjectsFound"), '${showUnpublishedForms}');
+			};
+			
+			searchWidget.showAll();
+			
+			searchWidget.searchCleared = function() {
+				searchWidget.showAll();
+			};
+			
 		});
 		
 		

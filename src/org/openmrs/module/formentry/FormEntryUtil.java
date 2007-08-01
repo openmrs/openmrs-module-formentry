@@ -46,12 +46,24 @@ public class FormEntryUtil {
 
 		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX
 				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
-			cmdBuffer.append("/usr/bin/cabextract -d ").append(
+			
+			// retrieve the cabextract path from the global properties
+			String cabextLocation = Context.getAdministrationService().getGlobalProperty(
+					FormEntryConstants.FORMENTRY_GP_CABEXTRACT_LOCATION, 
+					"/usr/bin/cabextract");
+			
+			cmdBuffer.append(cabextLocation + " -d ").append(
 					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
 		} 
 		else if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
-			cmdBuffer.append("/usr/local/bin/cabextract -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
+			
+			// retrieve the cabextract path from the global properties
+			String cabextLocation = Context.getAdministrationService().getGlobalProperty(
+					FormEntryConstants.FORMENTRY_GP_CABEXTRACT_LOCATION, 
+					"/usr/local/bin/cabextract");
+			
+			cmdBuffer.append(cabextLocation + " -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
 		}
 		else {
@@ -146,7 +158,7 @@ public class FormEntryUtil {
 	 */
 	public static Object[] getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
 		// Find the form file data
-		String formDir = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
+		String formDir = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
 		    + FormEntryUtil.getFormUri(form);
 
@@ -245,7 +257,7 @@ public class FormEntryUtil {
 
 		File xsn = findFile(tempDir, "new.xsn");
 		if (xsn == null)
-			throw new IOException("MakeCab has failed because the generated xsn file: '" + xsn.getAbsolutePath()
+			throw new IOException("MakeCab has failed because the generated 'new.xsn' file in the temp directory '" + tempDir
 					+ "' cannot be null.");
 		
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
@@ -266,8 +278,12 @@ public class FormEntryUtil {
 		// Special case : Linux operating sytem uses lcab utility
 		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
 				(OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))) {
-
-			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir)
+			
+			String lcabLocation = Context.getAdministrationService().getGlobalProperty(
+								FormEntryConstants.FORMENTRY_GP_LCAB_LOCATION, 
+								"/usr/local/bin/lcab");
+			
+			cmdBuffer.append(lcabLocation + " -rn ").append(tempDir)
 					.append(" ").append(outputDirName).append("/").append(
 							outputFilename);
 
@@ -436,13 +452,13 @@ public class FormEntryUtil {
 		// int endOfDomain = requestURL.indexOf('/', 8);
 		// String baseUrl = requestURL.substring(0, (endOfDomain > 8 ?
 		// endOfDomain : requestURL.length()));
-		String serverURL = Context.getAdministrationService().getGlobalProperty("formentry.infopath_server_url", "formentry.infopath_server_url cannot be empty");
+		String serverURL = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL, FormEntryConstants.FORMENTRY_GP_SERVER_URL + " cannot be empty");
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + getFormUri(form);
 	}
 
 	public static String getFormSchemaNamespace(Form form) {
-		String serverURL = Context.getAdministrationService().getGlobalProperty("formentry.infopath_server_url", "formentry.infopath_server_url cannot be empty");
+		String serverURL = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL, FormEntryConstants.FORMENTRY_GP_SERVER_URL + " cannot be empty");
 		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + "schema/" + form.getFormId() + "-" + form.getBuild();
 	}
@@ -498,7 +514,7 @@ public class FormEntryUtil {
 	 * 		this server's XSN repository
 	 */
 	public static File getXSNFile(String filename) {
-		String url = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
+		String url = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
 		if (!url.endsWith(File.separator))
 			url += File.separator;
 		url = url + filename;
