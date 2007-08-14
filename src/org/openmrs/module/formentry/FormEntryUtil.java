@@ -316,29 +316,42 @@ public class FormEntryUtil {
 	 */
 	private static String execCmd(String cmd, File wd) {
 		log.debug("executing command: " + cmd);
-		String out = "";
+		StringBuffer out = new StringBuffer();
 		try {
-			String line;
-
 			// Needed to add support for working directory because of a linux
 			// file system permission issue.
 			// Could not create lcab.tmp file in default working directory
 			// (jmiranda).
 			Process p = (wd != null) ? Runtime.getRuntime().exec(cmd, null, wd)
 					: Runtime.getRuntime().exec(cmd);
-
+			
+			out.append("Normal cmd output:\n");
 			Reader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader input = new BufferedReader(reader);
-			while ((line = input.readLine()) != null) {
-				out += line + "\n";
-			}
+			int readChar = 0;
+			while ((readChar = input.read()) != -1) {
+				out.append((char)readChar);
+				}
 			input.close();
 			reader.close();
+			
+			out.append("ErrorStream cmd output:\n");
+			reader = new InputStreamReader(p.getErrorStream());
+			input = new BufferedReader(reader);
+			readChar = 0;
+			while ((readChar = input.read()) != -1) {
+				out.append((char)readChar);
+				}
+			input.close();
+			reader.close();
+			
+			log.debug("Process exit value: " + p.exitValue());
+			
 		} catch (Exception e) {
 			log.error("Error while executing command: '" + cmd + "'", e);
-		}
-		log.debug("execCmd output: " + out);
-		return out;
+		}	
+		log.debug("execCmd output: \n" + out.toString());
+		return out.toString();
 	}
 
 	/**
