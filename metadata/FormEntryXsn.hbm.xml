@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@">
+
+	<class name="FormEntryXsn" table="formentry_xsn">
+
+		<id name="formEntryXsnId" type="int" column="formentry_xsn_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<property name="xsnData" type="binary" not-null="true" column="xsn_data" />
+		
+		<many-to-one name="form" class="org.openmrs.Form" not-null="true" column="form_id" />
+
+		<property name="archived" type="boolean" not-null="true" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"
+			length="19" />
+
+		<many-to-one name="archivedBy" class="org.openmrs.User" column="archived_by" />
+
+		<property name="dateArchived" type="java.util.Date" column="date_archived" length="19" />
+
+	</class>
+</hibernate-mapping>

@@ -11,14 +11,14 @@
 		</li>
 	</openmrs:hasPrivilege>
 	
-	<openmrs:hasPrivilege privilege="View FormEntry Queue">
-		<li <c:if test="<%= request.getRequestURI().contains("formentry/formEntryQueue") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/module/formentry/formEntryQueue.list">
-				<spring:message code="formentry.FormEntryQueue.manage"/>
+	<openmrs:hasPrivilege privilege="View FormEntry Error">
+		<li <c:if test="<%= request.getRequestURI().contains("formentry/formEntryError") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/formentry/formEntryError.list">
+				<spring:message code="formentry.FormEntryError.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-
+	
 	<li <c:if test="<%= request.getRequestURI().contains("formentry/formEntryInfo") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/module/formentry/formEntryInfo.htm">
 			<spring:message code="formentry.info"/>

@@ -1,24 +1,22 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View FormEntry Queue" otherwise="/login.htm" redirect="/module/formentry/formEntryQueue.list" />
+<openmrs:require privilege="View FormEntry Error" otherwise="/login.htm" redirect="/module/formentry/formEntryError.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
 <h2>
-	<spring:message code="formentry.FormEntryQueue.title" />
+	<spring:message code="formentry.FormEntryError.title" />
 </h2>
 
 <script type="text/javascript">
 
 	var lists = new Array();
 	lists[""] = 0;
-	lists["pending"] = ${queueSize};
-	lists["archive"] = ${archiveSize};
 	lists["error"] = ${errorSize};
 
 	function changeSize(list) {
-		var queueType = list.value;
+		var queueType = "error";
 		var start = document.getElementById("start");
 		var end   = document.getElementById("end");
 		var startOpts = start.options;
@@ -34,20 +32,12 @@
 	}
 </script>
 
-<form method="post" action="${pageContext.request.contextPath}/moduleServlet/formentry/formEntryQueueDownload">
-	<b class="boxHeader"><spring:message code="formentry.FormEntryQueue.multiple" />:</b>
+<form method="post" action="${pageContext.request.contextPath}/moduleServlet/formentry/formEntryErrorDownload">
+	<b class="boxHeader"><spring:message code="formentry.FormEntryError.multiple" />:</b>
 	<div class="box">
 		<table>
 			<tr>
-				<td><spring:message code="formentry.FormEntryQueue.select"/></td>
-				<td>
-					<select name="queueType" onChange="changeSize(this)">
-						<option value=""></option>
-						<option value="pending"><spring:message code="formentry.FormEntryQueue.pending"/></option>
-						<option value="archive"><spring:message code="formentry.FormEntryQueue.archive"/></option>
-						<option value="error"><spring:message code="formentry.FormEntryQueue.error"/></option>
-					</select>
-				</td>
+				<td colspan="2"><spring:message code="formentry.FormEntryError.select"/></td>
 			</tr>
 			<tr>
 				<td><spring:message code="general.start" /></td>
@@ -65,6 +55,10 @@
 		<input type="submit" value='<spring:message code="general.download" />' />
 	</div>
 </form>
+
+<script type="text/javascript">
+	changeSize("error");
+</script>
 
 <br/>
 
