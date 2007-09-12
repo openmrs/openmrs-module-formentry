@@ -8,9 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,7 +148,9 @@ public class PublishInfoPath {
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
 	public static Form publishXSN(String xsnFilePath, Form form) throws IOException {
-		log.debug("publishing xsn at: " + xsnFilePath);
+		
+		if (log.isDebugEnabled())
+			log.debug("publishing xsn at: " + xsnFilePath);
 
 		File tempDir = FormEntryUtil.expandXsn(xsnFilePath);
 		if (tempDir == null)
@@ -179,35 +178,7 @@ public class PublishInfoPath {
 		String taskPaneInitialUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH; // "http://localhost:8080/amrs/taskPane.htm";
 		String submitUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
-		String outputDirName = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
-
-		// ensure that output directory exists
-		File outputDir = new File(outputDirName);
-		if (!outputDir.exists())
-			outputDir.mkdirs();
-		if (!outputDir.exists() || !outputDir.isDirectory())
-			throw new IOException("Could not create or find output directory for forms ("
-			    + outputDirName + ")");
-
-		// Copy existing XSN file to archive
-		String archiveDir = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DIR);
-		File originalFile = new File(outputDirName, originalFormUri);
-		if (archiveDir != null && originalFile.exists()) {
-			String xsnArchiveFilePath = originalFormUri
-			    + "-"
-			    + form.getVersion()
-			    + "-"
-			    + form.getBuild()
-			    + "-"
-			    + new SimpleDateFormat(adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT),
-			        Context.getLocale()).format(new Date()) + ".xsn";
-			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
-			boolean success = copyFile(originalFile, xsnArchiveFile);
-			if (!success) {
-				log.warn("Unable to archive XSN " + xsnFilePath + " to " + xsnArchiveFilePath);
-			}
-		}
-
+		
 		// prepare manifest
 		prepareManifest(tempDir, publishUrl, namespace, solutionVersion, taskPaneCaption,
 		    taskPaneInitialUrl, submitUrl);
@@ -259,21 +230,28 @@ public class PublishInfoPath {
 		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// make cab
-		// jmiranda - Added outputDirName (for linux)
-		FormEntryUtil.makeCab(tempDir, outputDirName, outputFilename);
-
+		// creates the file in the same temp directory
+		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), outputFilename);
+		
+		// create and save the formentry xsn file
+		File newXsnFile = FormEntryUtil.findFile(tempDir, outputFilename);
+		byte[] xsnContents = OpenmrsUtil.getFileAsBytes(newXsnFile);
+		FormEntryXsn xsn = new FormEntryXsn();
+		xsn.setForm(form);
+		xsn.setXsnData(xsnContents);
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		formEntryService.createFormEntryXsn(xsn);
+		
 		// clean up
 		OpenmrsUtil.deleteDirectory(tempDir);
 		if (originalFormUri != null && !originalFormUri.equals(outputFilename)) {
 			System.gc();
-			// if we didn't overwrite the original, remove it
-			originalFile.delete(); 
 		}
 
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
 		Context.getFormService().updateForm(form);
-
+		
 		return form;
 	}
 
@@ -327,32 +305,6 @@ public class PublishInfoPath {
 			log.error("Trouble with file: " + fileName + " " + solutionVersion + " " + publishUrl, e);
 		}
 		writeXml(doc, file.getAbsolutePath());
-	}
-
-	// Convenience method for copying a file from one location to another
-	// @returns true if copy was successful
-	private static boolean copyFile(File from, File to) {
-		boolean success = false;
-		try {
-			// Create channel on the source
-			FileChannel srcChannel = new FileInputStream(from).getChannel();
-
-			// Create channel on the destination
-			FileChannel dstChannel = new FileOutputStream(to).getChannel();
-
-			// Copy file contents from source to destination
-			dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-
-			// Close the channels
-			srcChannel.close();
-			dstChannel.close();
-
-			// report successful copy
-			success = true;
-		}
-		catch (IOException e) {
-		}
-		return success;
 	}
 
 	private static Form determineForm(File tempDir) {

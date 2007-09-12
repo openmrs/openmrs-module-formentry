@@ -26,7 +26,7 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
 		map.put("module/formentry/xsnUpload.form", "formentry.xsn.title");
-		map.put("module/formentry/formEntryQueue.list", "formentry.FormEntryQueue.manage");
+		map.put("module/formentry/formEntryError.list", "formentry.FormEntryError.manage");
 		map.put("module/formentry/formEntryInfo.htm", "formentry.info");
 		
 		return map;

@@ -56,7 +56,7 @@ public class XsnUploadFormController extends SimpleFormController {
 				}
 			}
 			catch (IOException e) {
-				log.error(e);
+				log.error("Error while getting xsnFile from request", e);
 				errors.reject(e.getMessage());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formentry.xsn.not.saved");
 				return showForm(request, response, errors);

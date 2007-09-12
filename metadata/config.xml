@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>2.5</version>
+	<version>2.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -17,7 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.1.10.2121</require_version>
+	<require_version>1.1.10.2290</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -123,6 +123,23 @@
 			from the patientForms tab on the patient dashboard page
 		</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.queue_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/queue</defaultValue>
+		<description>
+			Directory containing the formentry queue items. This will contain xml files submitted by
+			infopath.  These items are awaiting processing to be turned into hl7 queue items
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.queue_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/archive</defaultValue>
+		<description>
+			Directory containing the formentry archive items.  This will contain xml files that have
+			been submitted by infopath and then processed sucessfully into hl7
+		</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 	
 
@@ -158,10 +175,9 @@
 		<servlet-class>@MODULE_PACKAGE@.web.FormUploadServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>formEntryQueueDownload</servlet-name>
-		<servlet-class>@MODULE_PACKAGE@.web.FormEntryQueueDownloadServlet</servlet-class>
+		<servlet-name>formEntryErrorDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormEntryErrorDownloadServlet</servlet-class>
 	</servlet>
-	
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
 	<servlet>
 		<servlet-name>formEntryQueueProcessor</servlet-name>
@@ -188,9 +204,8 @@
 	<!-- /Internationalization -->
 	
 	<mappingFiles>
-		FormEntryArchive.hbm.xml
-		FormEntryQueue.hbm.xml
 		FormEntryError.hbm.xml
+		FormEntryXsn.hbm.xml
 	</mappingFiles>
 	
 </module>

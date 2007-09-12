@@ -157,5 +157,35 @@
 			
 		</sql>
 	</diff>
+	
+	<diff>
+		<version>2.6</version>
+		<author>Ben Wolfe</author>
+		<date>Sept 10th 2007</date>
+		<description>
+			Creating the formenty_xsn table to store the infopath xsn files
+		</description>
+		<sql>
+			
+			CREATE TABLE IF NOT EXISTS `formentry_xsn` (
+			  `formentry_xsn_id` int(11) NOT NULL auto_increment,
+			  `form_id` int(11) NOT NULL,
+			  `xsn_data` blob NOT NULL,
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  `archived` int(1) NOT NULL default '0',
+			  `archived_by` int(11) default NULL,
+			  `date_archived` datetime default NULL,
+			  PRIMARY KEY  (`formentry_xsn_id`),
+			  KEY `User who created formentry_xsn` (`creator`),
+			  KEY `Form with which this xsn is related` (`form_id`),
+			  KEY `User who archived formentry_xsn` (`archived_by`),
+			  CONSTRAINT `User who created formentry_xsn` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+			  CONSTRAINT `Form with which this xsn is related` FOREIGN KEY (`form_id`) REFERENCES `form` (`form_id`),
+			  CONSTRAINT `User who archived formentry_xsn` FOREIGN KEY (`archived_by`) REFERENCES `users` (`user_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+			
+		</sql>
+	</diff>
 
 </sqldiff>

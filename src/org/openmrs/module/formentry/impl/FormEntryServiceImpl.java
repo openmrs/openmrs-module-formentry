@@ -1,5 +1,8 @@
 package org.openmrs.module.formentry.impl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,18 +28,19 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryArchive;
 import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.module.formentry.FormEntryError;
+import org.openmrs.module.formentry.FormEntryException;
 import org.openmrs.module.formentry.FormEntryQueue;
 import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.FormSchemaBuilder;
 import org.openmrs.module.formentry.db.FormEntryDAO;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Data entry-related services
+ * Default implementation of the FormEntryService
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
- * @version 1.0
+ * @see org.openmrs.module.formentry.FormEntryService
  */
 public class FormEntryServiceImpl implements FormEntryService {
 
@@ -55,12 +59,10 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 
 	private PatientService getPatientService() {
-		checkPrivilege(FormEntryConstants.PRIV_FORM_ENTRY);
 		return Context.getPatientService();
 	}
 	
 	private EncounterService getEncounterService() {
-		checkPrivilege(FormEntryConstants.PRIV_FORM_ENTRY);
 		return Context.getEncounterService();
 	}
 
@@ -302,7 +304,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		try {
 			forms = Context.getFormService().getForms(onlyPublished, includeRetired);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error getting forms", e);
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		}
@@ -319,7 +321,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		try {
 			ret = Context.getUserService().getUserByUsername(username);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error getting user by username", e);
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
@@ -340,7 +342,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		try {
 			users = Context.getUserService().findUsers(searchValue, roles, includeVoided);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error finding users", e);
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
@@ -348,43 +350,17 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 
 	/**
+	 * @deprecated
 	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, boolean)
 	 */
 	public Collection<User> getAllUsers(List<String> strRoles,
 			boolean includeVoided) {
 		throw new APIException ("FormEntryService.getAllUsers(List<String>, boolean) has been removed");
-		
-		/*
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_FORM_ENTRY);
-		
-		// default return list
-		List<User> users = new Vector<User>();
-		
-		// all formentry users need this priv to read in users
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		
-		UserService us = Context.getUserService();
-		try {
-			List<Role> roles = new Vector<Role>();
-			for (String r : strRoles) {
-				Role role = us.getRole(r);
-				if (role != null)
-					roles.add(role);
-			}
-			
-			users = us.getAllUsers(roles, includeVoided);
-		} catch (Exception e) {
-			log.error("Error while getting users by role", e);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		}
-		
-		return users;
-		*/
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getSystemVariables()
+	 */
 	public SortedMap<String,String> getSystemVariables() {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
@@ -393,143 +369,285 @@ public class FormEntryServiceImpl implements FormEntryService {
 		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
 		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
 		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
+		systemVariables.put("FORMENTRY_GP_QUEUE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_GP_QUEUE_DIR));
+		systemVariables.put("FORMENTRY_GP_QUEUE_ARCHIVE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR));
 		
 		// the other formentry system variables (the editable ones) are located in global properties
 		
 		return systemVariables;
-	}
-	
-	private void checkPrivilege(String privilege) {
-		if (!Context.hasPrivilege(privilege))
-			throw new APIAuthenticationException("Privilege required: " + privilege);		
-	}
-	
-	private void checkPrivileges(String privilegeA, String privilegeB) {
-		boolean hasA = Context.hasPrivilege(privilegeA);
-		boolean hasB = Context.hasPrivilege(privilegeB);
-		if (!hasA && !hasB) {
-			if (!hasA)
-				throw new APIAuthenticationException("Privilege required: " + privilegeA);
-			else
-				throw new APIAuthenticationException("Privilege required: " + privilegeB);
-		}
 	}
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
 	 **************************************************************************/
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryQueue(org.openmrs.module.formentry.FormEntryQueue)
+	 */
 	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
-		checkPrivileges(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE,
-				FormEntryConstants.PRIV_FORM_ENTRY);
 		formEntryQueue.setCreator(Context.getAuthenticatedUser());
 		formEntryQueue.setDateCreated(new Date());
-		getFormEntryDAO().createFormEntryQueue(formEntryQueue);
+		
+		File queueDir = FormEntryUtil.getFormEntryQueueDir();
+		
+		File outFile = FormEntryUtil.getOutFile(queueDir);
+		
+		// write the queue's data to the file
+		try {
+			FileWriter writer = new FileWriter(outFile);
+			
+			writer.write(formEntryQueue.getFormData());
+			
+			writer.close();
+		}
+		catch (IOException io) {
+			throw new FormEntryException("Unable to save formentry queue", io);
+		}
+		
 	}
 
-	public void updateFormEntryQueue(FormEntryQueue formEntryQueue) {
-		checkPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE);
-		getFormEntryDAO().updateFormEntryQueue(formEntryQueue);
-	}
-
-	public FormEntryQueue getFormEntryQueue(int formEntryQueueId) {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return getFormEntryDAO().getFormEntryQueue(formEntryQueueId);
-	}
-
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryQueues()
+	 */
 	public Collection<FormEntryQueue> getFormEntryQueues() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return getFormEntryDAO().getFormEntryQueues();
+		List<FormEntryQueue> queues = new Vector<FormEntryQueue>();
+		
+		File queueDir = FormEntryUtil.getFormEntryQueueDir();
+		
+		if (queueDir.exists() == false) {
+			log.warn("Unable to open queue directory: " + queueDir);
+			return queues;
+		}
+		
+		// loop over all files in queue dir and create lazy queue items
+		for (File file : queueDir.listFiles()) {
+			FormEntryQueue queueItem = new FormEntryQueue();
+			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			queues.add(queueItem);
+		}
+		
+		return queues;
 	}
 	
-	public FormEntryQueue getNextFormEntryQueue() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return getFormEntryDAO().getNextFormEntryQueue();
-	}
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryQueue(org.openmrs.module.formentry.FormEntryQueue)
+     */
+    public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
+	    if (formEntryQueue == null || formEntryQueue.getFileSystemUrl() == null)
+	    	throw new FormEntryException("Unable to load formEntryQueue with empty file system url");
+	    
+	    File file = new File(formEntryQueue.getFileSystemUrl());
+	    
+	    if (file.exists()) {
+	    	file.delete();
+	    }
+    }
 
-	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
-		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE);
-		getFormEntryDAO().deleteFormEntryQueue(formEntryQueue);
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getNextFormEntryQueue()
+	 */
+	public FormEntryQueue getNextFormEntryQueue() {
+		File queueDir = FormEntryUtil.getFormEntryQueueDir();
+		
+		// return the first queue item
+		for (File file : queueDir.listFiles()) {
+			FormEntryQueue queueItem = new FormEntryQueue();
+			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			return queueItem;
+		}
+		
+		return null;
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryQueueSize()
+	 */
 	public Integer getFormEntryQueueSize() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
-		return getFormEntryDAO().getFormEntryQueueSize();
+		File queueDir = FormEntryUtil.getFormEntryQueueDir();
+		
+		return queueDir.list().length;
 	}
 	
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
+	 */
 	public void createFormEntryArchive(FormEntryArchive formEntryArchive) {
-		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ARCHIVE);
 		formEntryArchive.setCreator(Context.getAuthenticatedUser());
 		formEntryArchive.setDateCreated(new Date());
-		getFormEntryDAO().createFormEntryArchive(formEntryArchive);
+		
+		File queueDir = FormEntryUtil.getFormEntryArchiveDir();
+		
+		File outFile = FormEntryUtil.getOutFile(queueDir);
+		
+		// write the queue's data to the file
+		try {
+			FormEntryUtil.stringToFile(formEntryArchive.getFormData(), outFile);
+		}
+		catch (IOException io) {
+			throw new FormEntryException("Unable to save formentry archive", io);
+		}
+
 	}
 	
-	public FormEntryArchive getFormEntryArchive(Integer formEntryArchive) {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ARCHIVE);
-		return getFormEntryDAO().getFormEntryArchive(formEntryArchive);
-	}
-	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryArchives()
+	 */
 	public Collection<FormEntryArchive> getFormEntryArchives() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ARCHIVE);
-		return getFormEntryDAO().getFormEntryArchives();
+		List<FormEntryArchive> archives = new Vector<FormEntryArchive>();
+		
+		File archiveDir = FormEntryUtil.getFormEntryArchiveDir();
+		
+		if (archiveDir.exists() == false) {
+			log.warn("Unable to open archive directory: " + archiveDir);
+			return archives;
+		}
+		
+		// loop over all files in archive dir and create lazy archive items
+		for (File file : archiveDir.listFiles()) {
+			FormEntryArchive queueItem = new FormEntryArchive();
+			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			archives.add(queueItem);
+		}
+		
+		return archives;
 	}
 	
-	public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) {
-		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ARCHIVE);
-		getFormEntryDAO().deleteFormEntryArchive(formEntryArchive);
-	}
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
+     */
+    public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) {
+	    if (formEntryArchive == null || formEntryArchive.getFileSystemUrl() == null)
+	    	throw new FormEntryException("Unable to load formEntryArchive with empty file system url");
+	    
+	    File file = new File(formEntryArchive.getFileSystemUrl());
+	    
+	    if (file.exists()) {
+	    	file.delete();
+	    }
+    }
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryArchiveSize()
+	 */
 	public Integer getFormEntryArchiveSize() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
-		return getFormEntryDAO().getFormEntryArchiveSize();
+		File archiveDir = FormEntryUtil.getFormEntryArchiveDir();
+		
+		return archiveDir.list().length;
 	}
 	
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryError(org.openmrs.module.formentry.FormEntryError)
+	 */
 	public void createFormEntryError(FormEntryError formEntryError) {
-		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ERROR);
 		formEntryError.setCreator(Context.getAuthenticatedUser());
 		formEntryError.setDateCreated(new Date());
 		getFormEntryDAO().createFormEntryError(formEntryError);
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryError(java.lang.Integer)
+	 */
 	public FormEntryError getFormEntryError(Integer formEntryErrorId) {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
 		return getFormEntryDAO().getFormEntryError(formEntryErrorId);
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryErrors()
+	 */
 	public Collection<FormEntryError> getFormEntryErrors() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
 		return getFormEntryDAO().getFormEntryErrors();
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#updateFormEntryError(org.openmrs.module.formentry.FormEntryError)
+	 */
 	public void updateFormEntryError(FormEntryError formEntryError) {
-		checkPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_ERROR);
 		getFormEntryDAO().updateFormEntryError(formEntryError);
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryError(org.openmrs.module.formentry.FormEntryError)
+	 */
 	public void deleteFormEntryError(FormEntryError formEntryError) {
-		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ERROR);
 		getFormEntryDAO().deleteFormEntryError(formEntryError);
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryErrorSize()
+	 */
 	public Integer getFormEntryErrorSize() {
-		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
 		return getFormEntryDAO().getFormEntryErrorSize();
 	}
 	
 	/**
-	 * Returns XML Schema for form based on the defined fields
-	 * 
-	 * @param form
-	 * @return XML Schema for form
+	 * @see org.openmrs.module.formentry.FormEntryService#getSchema(org.openmrs.Form)
 	 */
 	public String getSchema(Form form) {
 		return new FormSchemaBuilder(form).getSchema();
 	}
 	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#garbageCollect()
+	 */
 	public void garbageCollect() {
 		getFormEntryDAO().garbageCollect();
 	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#migrateQueueAndArchiveToFilesystem()
+	 */
+	public void migrateQueueAndArchiveToFilesystem() {
+		getFormEntryDAO().migrateQueueAndArchiveToFilesystem();
+	}
 
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#archiveFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
+     */
+    public void archiveFormEntryXsn(FormEntryXsn formEntryXsn) {
+    	formEntryXsn.setArchived(true);
+    	formEntryXsn.setArchivedBy(Context.getAuthenticatedUser());
+    	formEntryXsn.setDateArchived(new Date());
+    	
+	    getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
+    }
+
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#createFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
+     */
+    public void createFormEntryXsn(FormEntryXsn formEntryXsn) {
+    	formEntryXsn.setCreator(Context.getAuthenticatedUser());
+		formEntryXsn.setDateCreated(new Date());
+		
+		// archive the matching xsn if it exists
+		FormEntryXsn oldXsn = getFormEntryXsn(formEntryXsn.getForm());
+		if (oldXsn != null)
+			archiveFormEntryXsn(oldXsn);
+		
+		getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
+    }
+
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(org.openmrs.Form)
+     */
+    public FormEntryXsn getFormEntryXsn(Form form) {
+	    return getFormEntryXsn(form.getFormId());
+    }
+    
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(java.lang.Integer)
+     */
+    public FormEntryXsn getFormEntryXsn(Integer formId) {
+	    return getFormEntryDAO().getFormEntryXsn(formId);
+    }
+
+	/**
+     * @see org.openmrs.module.formentry.FormEntryService#migrateXsnsToDatabase()
+     */
+    public void migrateXsnsToDatabase() {
+    	getFormEntryDAO().migrateXsnsToDatabase();
+    }
+	
+	
 }

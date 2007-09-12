@@ -11,47 +11,43 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryQueue;
+import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryService;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class FormEntryQueueListController extends SimpleFormController {
+public class FormEntryErrorListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
 
+    /**
+     * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+     */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		//default empty Object
-		List<FormEntryQueue> queueList = new Vector<FormEntryQueue>();
+		List<FormEntryError> errorList = new Vector<FormEntryError>();
 		
-		//only fill the Object is the user has authenticated properly
-		if (Context.isAuthenticated()) {
-			FormEntryService fs = (FormEntryService)Context.getService(FormEntryService.class);
-	    	return fs.getFormEntryQueues();
-		}
-    	
-        return queueList;
+		// not used
+		
+        return errorList;
     }
 
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		//default empty Objects
-		Integer queueSize = 0;
-		Integer archiveSize = 0;
 		Integer errorSize = 0;
 		
-		//only fill the Objects if the user has authenticated properly
+		//only fill the objects if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			FormEntryService fs = (FormEntryService)Context.getService(FormEntryService.class);
-			queueSize = fs.getFormEntryQueueSize();
-	    	archiveSize = fs.getFormEntryArchiveSize();
-	    	errorSize = fs.getFormEntryErrorSize();
+			errorSize = fs.getFormEntryErrorSize();
 		}
     	
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		map.put("queueSize", queueSize);
-		map.put("archiveSize", archiveSize);
 		map.put("errorSize", errorSize);
 		
         return map;

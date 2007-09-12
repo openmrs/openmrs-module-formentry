@@ -1,17 +1,32 @@
 package org.openmrs.module.formentry.db.hibernate;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.openmrs.Form;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.formentry.FormEntryArchive;
+import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryQueue;
+import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.db.FormEntryDAO;
+import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateFormEntryDAO implements FormEntryDAO {
 
@@ -37,133 +52,16 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	}
 
 	/**
-	 * @see org.openmrs.form.db.FormEntryQueueDAO#createFormEntryQueue(org.openmrs.form.FormEntryQueue)
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#createFormEntryError(org.openmrs.module.formentry.FormEntryError)
 	 */
-	public void createFormEntryQueue(FormEntryQueue feq) throws DAOException {
-		sessionFactory.getCurrentSession().save(feq);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.form.db.FormEntryQueueDAO#getFormEntryQueue(int)
-	 */
-	public FormEntryQueue getFormEntryQueue(Integer formEntryQueueId)
-			throws DAOException {
-		
-		FormEntryQueue feq;
-		feq = (FormEntryQueue) sessionFactory.getCurrentSession().get(FormEntryQueue.class,
-				formEntryQueueId);
-
-		return feq;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.form.db.FormEntryDAO#getNextFormEntryQueue()
-	 */
-	public FormEntryQueue getNextFormEntryQueue() throws DAOException {
-		FormEntryQueue feq = null;
-		Query query = sessionFactory.getCurrentSession()
-				.createQuery("from FormEntryQueue f1 where f1.formEntryQueueId = (select min(formEntryQueueId) from FormEntryQueue)");
-		if (query != null)
-			feq = (FormEntryQueue) query.uniqueResult();
-		return feq;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.form.db.FormEntryQueueDAO#getFormEntryQueue(int)
-	 */
-	@SuppressWarnings("unchecked")
-	public Collection<FormEntryQueue> getFormEntryQueues() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery(
-				"from FormEntryQueue order by formEntryQueueId").list();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.form.db.FormEntryQueueDAO#updateFormEntryQueue(org.openmrs.form.FormEntryQueue)
-	 */
-	public void updateFormEntryQueue(FormEntryQueue formEntryQueue)
-			throws DAOException {
-
-		if (formEntryQueue.getFormEntryQueueId() == 0)
-			createFormEntryQueue(formEntryQueue);
-		else {
-			sessionFactory.getCurrentSession().saveOrUpdate(formEntryQueue);
-		}
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.form.db.FormEntryQueueDAO#deleteFormEntryQueue(org.openmrs.form.FormEntryQueue)
-	 */
-	public void deleteFormEntryQueue(FormEntryQueue feq) throws DAOException {
-		sessionFactory.getCurrentSession().delete(feq);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryQueueSize()
-	 */
-	public Integer getFormEntryQueueSize() throws DAOException {
-
-		Long size = (Long) sessionFactory.getCurrentSession().createQuery(
-				"select count(*) from FormEntryQueue").uniqueResult();
-		
-		return size.intValue();
-	}
-
-	public void createFormEntryArchive(FormEntryArchive formEntryArchive)
-			throws DAOException {
-		sessionFactory.getCurrentSession().save(formEntryArchive);
-	}
-
-	public FormEntryArchive getFormEntryArchive(Integer formEntryArchiveId)
-			throws DAOException {
-		FormEntryArchive formEntryArchive;
-		formEntryArchive = (FormEntryArchive) sessionFactory.getCurrentSession().get(
-				FormEntryArchive.class, formEntryArchiveId);
-
-		return formEntryArchive;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Collection<FormEntryArchive> getFormEntryArchives()
-			throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery(
-				"from FormEntryArchive order by formEntryArchiveId").list();
-	}
-
-	public void deleteFormEntryArchive(FormEntryArchive formEntryArchive)
-			throws DAOException {
-		sessionFactory.getCurrentSession().delete(formEntryArchive);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryArchiveSize()
-	 */
-	public Integer getFormEntryArchiveSize() throws DAOException {
-		Long size = (Long) sessionFactory.getCurrentSession().createQuery(
-				"select count(*) from FormEntryArchive").uniqueResult();
-
-		return size.intValue();
-	}
-
 	public void createFormEntryError(FormEntryError formEntryError)
 			throws DAOException {
 		sessionFactory.getCurrentSession().save(formEntryError);
 	}
 
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryError(java.lang.Integer)
+	 */
 	public FormEntryError getFormEntryError(Integer formEntryErrorId)
 			throws DAOException {
 		FormEntryError formEntryError;
@@ -173,12 +71,18 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		return formEntryError;
 	}
 
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryErrors()
+	 */
 	@SuppressWarnings("unchecked")
 	public Collection<FormEntryError> getFormEntryErrors() throws DAOException {
 		return sessionFactory.getCurrentSession().createQuery(
 				"from FormEntryError order by formEntryErrorId").list();
 	}
 
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#updateFormEntryError(org.openmrs.module.formentry.FormEntryError)
+	 */
 	public void updateFormEntryError(FormEntryError formEntryError)
 			throws DAOException {
 		if (formEntryError.getFormEntryErrorId() == 0)
@@ -189,14 +93,15 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 
 	}
 
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#deleteFormEntryError(org.openmrs.module.formentry.FormEntryError)
+	 */
 	public void deleteFormEntryError(FormEntryError formEntryError)
 			throws DAOException {
 		sessionFactory.getCurrentSession().delete(formEntryError);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryErrorSize()
 	 */
 	public Integer getFormEntryErrorSize() throws DAOException {
@@ -206,8 +111,254 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		return size.intValue();
 	}
 
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#garbageCollect()
+	 */
 	public void garbageCollect() {
 		Context.clearSession();
 	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#migrateQueueAndArchiveToFilesystem()
+	 */
+	public void migrateQueueAndArchiveToFilesystem() {
+		// this feels like a lot of business level logic in a dao layer.  refactoring needed?
+		
+		Connection conn = sessionFactory.getCurrentSession().connection();
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		
+		boolean formEntryQueueExists = true; // assume true in case of an error
+		// figure out if the tables exist or not.  If they do not, this has been run before
+		// and we can just skip migrating the queue
+		try {
+			PreparedStatement ps = conn.prepareStatement("select count(*) from formentry_queue");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				// pass
+			}
+			formEntryQueueExists = true;
+		}
+		catch (Exception e) {
+			formEntryQueueExists = false;
+			// swallow error
+		}
+		
+		int count = 0;
+		
+		// migrate the formentry queue
+		if (formEntryQueueExists) {
+			try {
+				String sql = "select form_data from formentry_queue";
+			
+				PreparedStatement ps = conn.prepareStatement(sql);
+				
+				ResultSet rs = ps.executeQuery();
+				while(rs.next()) {
+					String data = rs.getString("form_data");
+					FormEntryQueue queue = new FormEntryQueue();
+					queue.setFormData(data);
+					formEntryService.createFormEntryQueue(queue);
+					
+					// garbage collect (flush to db) every once in a while
+					if (++count % 50 == 0)
+						formEntryService.garbageCollect();
+				}
+				
+				// delete the formentry_queue table
+				ps = conn.prepareStatement("drop table formentry_queue");
+				ps.executeUpdate();
+			}
+			catch (Exception e) {
+				log.error("Error while moving old formentry_queue items to the filesystem", e);
+			}
+			
+		}
+		
+		
+		
+		boolean formEntryArchiveExists = true; // assume true in case of an error
+		
+		// figure out if the tables exist or not.  If they do not, this has been run before
+		// and we can just skip migrating the queue
+		try {
+			PreparedStatement ps = conn.prepareStatement("select count(*) from formentry_archive");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				// pass
+			}
+			formEntryArchiveExists = true;
+		}
+		catch (Exception e) {
+			formEntryArchiveExists = false;
+			// swallow error
+		}
+		
+		// migrate the formentry archive
+		if (formEntryArchiveExists) {
+			try {
+				String sql = "select form_data from formentry_archive";
+			
+				PreparedStatement ps = conn.prepareStatement(sql);
+				
+				ResultSet rs = ps.executeQuery();
+				while(rs.next()) {
+					String data = rs.getString("form_data");
+					FormEntryArchive archive = new FormEntryArchive();
+					archive.setFormData(data);
+					formEntryService.createFormEntryArchive(archive);
+					
+					// garbage collect (flush to db) every once in a while
+					if (++count % 50 == 0)
+						formEntryService.garbageCollect();
+				}
+				
+				// delete the formentry_archive table
+				ps = conn.prepareStatement("drop table formentry_archive");
+				ps.executeUpdate();
+			}
+			catch (Exception e) {
+				log.error("Error while moving old formentry_archive items to the filesystem", e);
+			}
+			
+		} // /if tablesExist
+	}
+
+	/**
+     * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryXsn(java.lang.Integer)
+     */
+    public FormEntryXsn getFormEntryXsn(Integer formId) {
+    	Query query = sessionFactory.getCurrentSession().createQuery("from FormEntryXsn where form.formId = :formId and archived = 0");
+		query.setParameter("formId", formId);
+    	 
+    	return (FormEntryXsn)query.uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.module.formentry.db.FormEntryDAO#updateFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
+     */
+    public void updateFormEntryXsn(FormEntryXsn formEntryXsn) {
+    	sessionFactory.getCurrentSession().saveOrUpdate(formEntryXsn);
+    }
+
+	/**
+     * @see org.openmrs.module.formentry.db.FormEntryDAO#migrateXsnsToDatabase()
+     */
+    @SuppressWarnings("deprecation")
+    public void migrateXsnsToDatabase() {
+    	// this feels like a lot of business level logic in a dao layer.  refactoring needed?
+    	
+    	FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+    	FormService formService = Context.getFormService();
+    	
+    	// keep a count of the objects so we can do a flush every so often
+		int count = 0;
+		
+    	String dir = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_INFOPATH_OUTPUT_DIR, null);
+    	
+    	if (dir != null) {
+			File xsnDir = new File(dir);
+			
+			// list of files to "archive" to a zip file
+			List<File> filesToZip = new Vector<File>();
+			
+			if (xsnDir.exists() && xsnDir.isDirectory()) {
+				for (File xsnFile : xsnDir.listFiles()) {
+					String filename = xsnFile.getName();
+					if (filename.endsWith(".xsn")) {
+						try {
+							FormEntryXsn xsn = new FormEntryXsn();
+							// the first n characters before the first period is the form_id
+							String formId = filename.substring(0, filename.indexOf("."));
+							Form form = formService.getForm(Integer.valueOf(formId));
+							
+							if (form == null) {
+								log.error("Unable to find form with id: " + formId);
+								continue;
+							}
+							
+							xsn.setForm(form);
+							// get the xsn file contents as a string and put it on the object
+							byte[] xsnContents = OpenmrsUtil.getFileAsBytes(xsnFile);
+							xsn.setXsnData(xsnContents);
+							formEntryService.createFormEntryXsn(xsn);
+							
+							// garbage collect (flush to db) every once in a while
+							if (++count % 50 == 0)
+								formEntryService.garbageCollect();
+							
+							filesToZip.add(xsnFile);
+						}
+						catch (Exception e) {
+							log.error("Unable to move " + xsnFile.getAbsolutePath() + " to formentry xsn table", e);
+						}
+					}
+				}
+				
+				try {
+					FormEntryUtil.moveToZipFile(xsnDir, "xsns-moved-to-db", filesToZip);
+				}
+				catch (IOException io) {
+					log.error("Unable to zip xsns", io);
+				}
+			}
+			else
+				log.error("Xsn directory is not valid: " + xsnDir.getAbsolutePath());
+    	}
+		
+		
+		dir = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_INFOPATH_ARCHIVE_DIR, null);
+		if (dir != null) {
+			File xsnArchiveDir = new File(dir);
+
+			// list of files to "archive" to a zip file
+			List<File> filesToZip = new Vector<File>();
+			
+			if (xsnArchiveDir.exists() && xsnArchiveDir.isDirectory()) {
+				for (File xsnArchiveFile : xsnArchiveDir.listFiles()) {
+					String filename = xsnArchiveFile.getName();
+					if (filename.endsWith(".xsn")) {
+						try {
+							FormEntryXsn xsn = new FormEntryXsn();
+							
+							// the first n characters before the first period is the form_id
+							String formId = filename.substring(0, filename.indexOf("."));
+							Form form = formService.getForm(Integer.valueOf(formId));
+							xsn.setForm(form);
+							
+							byte[] xsnContents = OpenmrsUtil.getFileAsBytes(xsnArchiveFile);
+							xsn.setXsnData(xsnContents);
+							
+							xsn.setCreator(Context.getAuthenticatedUser());
+							xsn.setDateCreated(new Date());
+							
+							formEntryService.archiveFormEntryXsn(xsn);
+							
+							// garbage collect (flush to db) every once in a while
+							if (++count % 50 == 0)
+								formEntryService.garbageCollect();
+							
+							filesToZip.add(xsnArchiveFile);
+						}
+						catch (Exception e) {
+							log.error("Unable to move " + xsnArchiveFile.getAbsolutePath() + " to formentry xsn table (as archived)", e);
+						}
+					}
+				}
+				
+				try {
+					FormEntryUtil.moveToZipFile(xsnArchiveDir, "archived-xsns-moved-to-db", filesToZip);
+				}
+				catch (IOException io) {
+					log.error("Unable to zip archived xsns", io);
+				}
+			}
+			else
+				log.error("Xsn archive directory is not valid: " + xsnArchiveDir.getAbsolutePath());
+			
+		}
+		
+		
+		
+    }
 
 }

@@ -10,8 +10,7 @@
             <props>
 	            <prop key="module/formentry/taskpane/tribe.htm">tribeListTaskpane</prop>
 				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
-				<prop key="module/formentry/formEntryQueue.form">formEntryQueueForm</prop>
-				<prop key="module/formentry/formEntryQueue.list">formEntryQueueList</prop>
+				<prop key="module/formentry/formEntryError.list">formEntryErrorList</prop>
 				<prop key="module/formentry/xsnUpload.form">xsnUploadForm</prop>
 				
 				<!-- Dynamic FormEntry -->
@@ -57,16 +56,10 @@
 		<property name="redirectView"><value>/module/formentry/formTaskpane</value></property>
 	</bean>
 	
-	<bean id="formEntryQueueList" class="org.openmrs.module.formentry.web.controller.FormEntryQueueListController">
-		<property name="commandName"><value>formEntryQueueList</value></property>
-		<property name="formView"><value>/module/formentry/formEntryQueueList</value></property>
-		<property name="successView"><value>formEntryQueue.list</value></property>
-	</bean>
-	
-	<bean id="formEntryQueueForm" class="org.openmrs.module.formentry.web.controller.FormEntryQueueFormController">
-		<property name="commandName"><value>entry</value></property>
-		<property name="formView"><value>/module/formentry/formEntryQueueForm</value></property>
-		<property name="successView"><value>formEntryQueue.list</value></property>
+	<bean id="formEntryErrorList" class="org.openmrs.module.formentry.web.controller.FormEntryErrorListController">
+		<property name="commandName"><value>formEntryErrorList</value></property>
+		<property name="formView"><value>/module/formentry/formEntryErrorList</value></property>
+		<property name="successView"><value>formEntryError.list</value></property>
 	</bean>
 	
 	<bean id="xsnUploadForm" class="org.openmrs.module.formentry.web.controller.XsnUploadFormController">

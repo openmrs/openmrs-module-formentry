@@ -8,16 +8,23 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -25,7 +32,61 @@ import org.openmrs.util.OpenmrsUtil;
 public class FormEntryUtil {
 
 	private static Log log = LogFactory.getLog(FormEntryUtil.class);
+	
+	/**
+	 * Cached directory where queue items are stored
+	 * @see #getFormEntryQueueDir()
+	 */
+	private static File formEntryQueueDir;
+	
+	/**
+	 * Cached directory where archive items are stored
+	 * @see #getFormEntryArchiveDir()
+	 */
+	private static File formEntryArchiveDir;
+	
+	
 
+	/**
+	 * Expand the xsn defined by <code>xsnFileContents</code> into a temp dir
+	 * 
+	 * The file returned by this method should be deleted after use.
+	 * 
+	 * @param xsnFileContents byte array of xsn file content data
+	 * @return Directory in temp dir containing xsn contents
+	 * @throws IOException
+	 */
+	public static File expandXsnContents(byte[] xsnFileContents) throws IOException {
+		// copy the xsn contents to a temporary directory
+		File tempXsnFromDatabaseDir = createTempDirectory("XSN-db-file");
+		if (tempXsnFromDatabaseDir == null)
+			throw new IOException("Failed to create temporary content directory");
+		
+		// copy the xsn contents to a new file
+		File tmpXsnFromDatabaseFile = new File(tempXsnFromDatabaseDir, "tempContent.xsn");
+		OutputStream out = new FileOutputStream(tmpXsnFromDatabaseFile);
+		out.write(xsnFileContents);
+		out.flush();
+		out.close();
+		
+		String xsnFilePath = tmpXsnFromDatabaseFile.getAbsolutePath();
+		
+		File expandedContentsDir = null;
+		try {
+			expandedContentsDir = expandXsn(xsnFilePath);
+		}
+		finally {
+			try {
+				OpenmrsUtil.deleteDirectory(tempXsnFromDatabaseDir);
+			}
+			finally {
+				// pass
+			}
+		}
+		
+		return expandedContentsDir;
+	}
+		
 	/**
 	 * Expand the xsn at <code>xsnFilePath</code> into a temp dir
 	 * 
@@ -74,14 +135,15 @@ public class FormEntryUtil {
 
 		return tempDir;
 	}
+		
 
 	/**
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
 	 * to play with in Infopath.  Should be used similar to 
-	 * <code>org.openmrs.module.formentry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * <code>org.openmrs.module.formentry.FormEntryUtil.expandXsnContents(java.lang.String)</code>
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank
 	 * XSN template to play with in Infopath. Should be used similar to
-	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsnContents(java.lang.String)</code>
 	 * 
 	 * @return File directory holding blank xsn contents
 	 * @throws IOException
@@ -123,7 +185,7 @@ public class FormEntryUtil {
 		}
 		
 		// temp directory to hold the new xsn contents
-		File tempDir = FormEntryUtil.createTempDirectory("XSN");
+		File tempDir = FormEntryUtil.createTempDirectory("XSN-starter");
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
 
@@ -151,24 +213,28 @@ public class FormEntryUtil {
 	 * Gets the current xsn file for a form. If the xsn is not found, the
 	 * starter xsn is returned instead
 	 * 
+	 * The second array value in the returned object is a pointer to a temporary
+	 * directory containing the expanded xsn contents.  This folder should be 
+	 * deleted after use
+	 * 
 	 * @param form
 	 * @param defaultToStarter true/false whether or not the starter xsn is returned when no current xsn is found
-	 * @return form's xsn file or starter xsn if none
+	 * @return objects array: [0]: InputStream to form's xsn file or starter xsn if none, [1]: folder containing temporary expanded xsn files
 	 * @throws IOException
 	 */
 	public static Object[] getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
-		// Find the form file data
-		String formDir = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
-		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
-		    + FormEntryUtil.getFormUri(form);
-
-		log.debug("Attempting to open xsn from: " + formFilePath);
-
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		
+		// Find the form's xsn file data
+		FormEntryXsn xsn = formEntryService.getFormEntryXsn(form);
+		
 		// The expanded the xsn
 		File tempDir = null;
 
-		if (new File(formFilePath).exists())
-			tempDir = FormEntryUtil.expandXsn(formFilePath);
+		if (xsn != null) {
+			log.debug("Expanding xsn contents");
+			tempDir = FormEntryUtil.expandXsnContents(xsn.getXsnData());
+		}
 		else if (defaultToStarter == true) {
 			// use starter xsn as the
 			log.debug("Using starter xsn");
@@ -221,7 +287,7 @@ public class FormEntryUtil {
 		File schemaFile = findFile(tempDir, schemaFilename);
 		if (schemaFile == null)
 			throw new IOException("Schema: '" + schemaFilename
-					+ "' cannot be null");
+					+ "' cannot be null. Compiling xsn for form " + form);
 		FileWriter schemaOutput = new FileWriter(schemaFile, false);
 		schemaOutput.write(schema);
 		schemaOutput.close();
@@ -230,7 +296,7 @@ public class FormEntryUtil {
 		File templateFile = findFile(tempDir, templateFilename);
 		if (templateFile == null)
 			throw new IOException("Template: '" + templateFilename
-					+ "' cannot be null");
+					+ "' cannot be null. Compiling xsn for form " + form);
 		FileWriter templateOutput = new FileWriter(templateFile, false);
 		templateOutput.write(template);
 		templateOutput.close();
@@ -239,7 +305,7 @@ public class FormEntryUtil {
 		File defaultsFile = findFile(tempDir, defaultsFilename);
 		if (defaultsFile == null)
 			throw new IOException("Defaults: '" + defaultsFilename
-					+ "' cannot be null");
+					+ "' cannot be null. Compiling xsn for form " + form);
 		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
 		defaultsOutput.write(templateWithDefaultScripts);
 		defaultsOutput.close();
@@ -248,7 +314,7 @@ public class FormEntryUtil {
 		File sampleDataFile = findFile(tempDir, sampleDataFilename);
 		if (sampleDataFile == null)
 			throw new IOException("Template: '" + sampleDataFilename
-					+ "' cannot be null");
+					+ "' cannot be null. Compiling xsn for form " + form);
 		FileWriter sampleDataOutput = new FileWriter(sampleDataFile, false);
 		sampleDataOutput.write(template);
 		sampleDataOutput.close();
@@ -258,7 +324,7 @@ public class FormEntryUtil {
 		File xsn = findFile(tempDir, "new.xsn");
 		if (xsn == null)
 			throw new IOException("MakeCab has failed because the generated 'new.xsn' file in the temp directory '" + tempDir
-					+ "' cannot be null.");
+					+ "' cannot be null. Compiling xsn for form " + form);
 		
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
 		return xsnInputStream;
@@ -519,19 +585,151 @@ public class FormEntryUtil {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Get the given filename out of the XSN storage location
-	 * @param filename
-	 * @return File pointing to the <code>filename</code> file inside of 
-	 * 		this server's XSN repository
-	 */
-	public static File getXSNFile(String filename) {
-		String url = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_OUTPUT_DIR);
-		if (!url.endsWith(File.separator))
-			url += File.separator;
-		url = url + filename;
-		log.debug("url = " + url);
-		return new File(url);
-	}
+     * Gets the directory where the user specified their queues were being stored
+     * 
+     * @return directory in which to store queued items
+     */
+    public static File getFormEntryQueueDir() {
+    	
+    	if (formEntryQueueDir == null) {
+    		AdministrationService as = Context.getAdministrationService();
+    		String folderName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_DIR_DEFAULT);
+    		formEntryQueueDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
+    		if (log.isDebugEnabled())
+    			log.debug("Loaded formentry queue directory from global properties: " + formEntryQueueDir.getAbsolutePath());
+    	}
+		
+		return formEntryQueueDir;
+    }
+    
+    /**
+     * Gets the directory where the user specified their archives were being stored
+     * 
+     * @return directory in which to store archived items
+     */
+    public static File getFormEntryArchiveDir() {
+		if (formEntryArchiveDir == null) {
+    		AdministrationService as = Context.getAdministrationService();
+    		String folderName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT);
+    		formEntryArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
+    		if (log.isDebugEnabled())
+    			log.debug("Loaded formentry archive directory from global properties: " + formEntryArchiveDir.getAbsolutePath());
+    	}
+		
+		return formEntryArchiveDir;
+    }
+
+	/**
+     * 
+     * Creates a psuedorandomly named file in the given dir
+     * 
+     * (Psuedo because currentTimeMillis is used as the filename prefix
+     * 
+     * Assumes dir is already created
+     * 
+     * @param dir directory to make the random filename in
+     * @return file new file that is able to be written to
+     */
+    public static File getOutFile(File dir) {
+    	StringBuilder randomFilename = new StringBuilder();
+    	// the start of the filename is the time it was created
+		randomFilename.append(System.currentTimeMillis());
+		// the end of the filename is a randome number between 0 and 1000
+		randomFilename.append((int)(Math.random() * 1000));
+		randomFilename.append(".xml");
+		
+		File outFile = new File(dir, randomFilename.toString());
+		
+		return outFile;
+    }
+
+	/**
+     * Writes the give fileContentst to the given outFile
+     * 
+     * @param fileContents string to write to the file
+     * @param outFile File to be overwritten with the given file contents
+	 * @throws IOException on write exceptions
+     */
+    public static void stringToFile(String fileContents, File outFile) throws IOException {
+    	FileWriter writer = new FileWriter(outFile);
+    	
+    	writer.write(fileContents);
+    	
+    	writer.close();
+    }
+
+	/**
+     * Creates a zip file in <code>xsnDir</code> containing the <code>filesToZip</code>
+     * The name of the dir is 
+     * 
+     * @param xsnDir location to put the zip file
+     * @param zipName name of the zip file. will be prepended with a timestamp
+     * @param filesToZip list of files to zip into <code>zipName</code>
+	 * @throws IOException if the directory can't be written to
+     */
+    public static void moveToZipFile(File xsnDir, String zipName, List<File> filesToZip) throws IOException {
+	    
+    	if (filesToZip == null || filesToZip.size() < 1)
+    		return;
+    	
+    	// prepend a timestamp to the backup so we don't overwrite anything
+    	zipName = (new Date()).getTime() + zipName;
+    	
+    	if (!zipName.endsWith(".zip"))
+    		zipName = zipName + ".zip";
+    	
+    	File outFile = new File(xsnDir, zipName);
+    	if (!outFile.exists())
+    		outFile.createNewFile();
+    	
+    	FileOutputStream xsnDirOutStream = null;
+    	List<File> filesToDelete = new ArrayList<File>();
+		
+    	try {
+    		xsnDirOutStream = new FileOutputStream(outFile);
+    	
+	    	ZipOutputStream zos			= new ZipOutputStream(xsnDirOutStream);
+			ZipEntry zipEntry			= null;
+			
+			for (File file : filesToZip) {
+		        
+				try {
+					// string xsn data
+					String fileData = OpenmrsUtil.getFileAsString(file);
+					
+					byte [] uncompressedBytes = fileData.getBytes();
+			        
+					// name this entry
+			        zipEntry = new ZipEntry(file.getName());
+		
+			        // Add ZIP entry to output stream.
+		            zos.putNextEntry(zipEntry);
+		    
+		            // Transfer bytes from the formData to the ZIP file
+		            zos.write(uncompressedBytes, 0, uncompressedBytes.length);
+			
+		            zos.closeEntry();
+		            
+		            filesToDelete.add(file);
+				}
+				catch (IOException io) {
+					log.error("Unable to zip file: " + file.getAbsolutePath(), io);
+				}
+			}
+			
+			zos.close();
+    	}
+    	finally {
+    		if (xsnDirOutStream != null)
+    			xsnDirOutStream.close();
+    		
+    		for (File file : filesToDelete) {
+    			if (!file.delete())
+    				file.deleteOnExit();
+    		}
+    	}
+    }
+    
 }

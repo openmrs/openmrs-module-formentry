@@ -10,17 +10,6 @@ public class FormEntryConstants {
 	public static final Integer FIELD_TYPE_MISC_SET = 4;
 	public static final Integer FIELD_TYPE_SECTION = 5;
 
-	// public static final Integer DATATYPE_NUMERIC = 1;
-	// public static final Integer DATATYPE_CODED = 2;
-	// public static final Integer DATATYPE_TEXT = 3;
-	// public static final Integer DATATYPE_NA = 4;
-	// public static final Integer DATATYPE_DOCUMENT = 5;
-	// public static final Integer DATATYPE_DATE = 6;
-	// public static final Integer DATATYPE_TIME = 7;
-	// public static final Integer DATATYPE_DATETIME = 8;
-	// public static final Integer DATATYPE_BOOLEAN = 10;
-	// public static final Integer DATATYPE_STRUCTURED_NUMERIC = 12;
-
 	public static final String HL7_TEXT = "ST";
 	public static final String HL7_CODED = "CE";
 	public static final String HL7_CODED_WITH_EXCEPTIONS = "CWE";
@@ -82,18 +71,6 @@ public class FormEntryConstants {
 	
 	public static final String PRIV_FORM_ENTRY = "Form Entry";
 	
-	/* It's about time to remove these constants.  Values should be taken from global properties instead
-
-	// Default formentry properties
-	// TODO These properties are left for compatibility with people setting these with runtime properties to 
-	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/openmrs";
-	public static String FORMENTRY_INFOPATH_TASKPANE_CAPTION = "Welcome!";
-	public static String FORMENTRY_INFOPATH_OUTPUT_DIR = "C:/openmrs"; // filesystem directory uploaded xsn is saved to
-	public static String FORMENTRY_INFOPATH_ARCHIVE_DIR = null; // default is not to archive	
-	// filename format applies pattern from java.text.SimpleDateFormat to today's date
-	public static String FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT = "dd-MMM-yyyy-HHmmss";
-	*/
-	
 	// These variables used to be non-final and editable by runtime properties.
 	// Users should not need to modify these settings.
 	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/moduleServlet/formentry/forms/";
@@ -103,10 +80,32 @@ public class FormEntryConstants {
 	
 	// Global properties used in the formentry module
 	public static final String FORMENTRY_GP_SERVER_URL = "formentry.infopath_server_url";
-	public static final String FORMENTRY_GP_OUTPUT_DIR = "formentry.infopath_output_dir";
-	public static final String FORMENTRY_GP_ARCHIVE_DIR = "formentry.infopath_archive_dir";
-	public static final String FORMENTRY_GP_ARCHIVE_DATE_FORMAT = "formentry.infopath_archive_date_format";
 	public static final String FORMENTRY_GP_TASKPANE_KEEPALIVE = "formentry.infopath_taskpane_keepalive_min";
+	
 	public static final String FORMENTRY_GP_CABEXTRACT_LOCATION = "formentry.cabextract_location";
 	public static final String FORMENTRY_GP_LCAB_LOCATION = "formentry.lcab_location";
+	
+	public static final String FORMENTRY_GP_QUEUE_DIR = "formentry.queue_dir";
+	public static final String FORMENTRY_GP_QUEUE_DIR_DEFAULT = "formentry/queue";
+	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR = "formentry.queue_archive_dir";
+	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT = "formentry/archive";
+	
+	/**
+	 * @deprecated As of 2.6, xsns are stored in the formentry_xsn table
+	 */
+	public static final String FORMENTRY_GP_INFOPATH_OUTPUT_DIR = "formentry.infopath_output_dir";
+	
+	/**
+	 * @deprecated As of 2.6, xsns are stored in the formentry_xsn table
+	 */
+	public static final String FORMENTRY_GP_INFOPATH_ARCHIVE_DIR = "formentry.infopath_archive_dir";
+	
+	/**
+	 * @deprecated As of 2.6, xsns are stored in the formentry_xsn table
+	 */
+	public static final String FORMENTRY_GP_ARCHIVE_DATE_FORMAT = "formentry.infopath_archive_date_format";
+	
+	public static final String STARTUP_USERNAME = "formentry.startup_username";
+	public static final String STARTUP_PASSWORD = "formentry.startup_password";
+	
 }
