@@ -71,10 +71,10 @@ public class FormEntryErrorDownloadServlet extends HttpServlet {
 	        
 			// name this entry
 	        zipEntry = new ZipEntry("formEntryError-" + startId + ".xml");
-
+	        
 	        // Add ZIP entry to output stream.
             zos.putNextEntry(zipEntry);
-    
+            
             // Transfer bytes from the formData to the ZIP file
             zos.write(uncompressedBytes, 0, uncompressedBytes.length);
 	

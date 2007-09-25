@@ -69,4 +69,8 @@ public interface FormEntryDAO {
      */
     public void migrateXsnsToDatabase();
 	
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryArchiveNeeded()
+     */
+    public Boolean migrateFormEntryArchiveNeeded();
 }

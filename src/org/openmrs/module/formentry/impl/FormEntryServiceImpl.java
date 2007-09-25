@@ -369,8 +369,8 @@ public class FormEntryServiceImpl implements FormEntryService {
 		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
 		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
 		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
-		systemVariables.put("FORMENTRY_GP_QUEUE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_GP_QUEUE_DIR));
-		systemVariables.put("FORMENTRY_GP_QUEUE_ARCHIVE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR));
+		systemVariables.put("FORMENTRY_GP_QUEUE_DIR", FormEntryUtil.getFormEntryQueueDir().getAbsolutePath());
+		systemVariables.put("FORMENTRY_GP_QUEUE_ARCHIVE_DIR", FormEntryUtil.getFormEntryArchiveDir(null).getAbsolutePath());
 		
 		// the other formentry system variables (the editable ones) are located in global properties
 		
@@ -384,24 +384,32 @@ public class FormEntryServiceImpl implements FormEntryService {
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryQueue(org.openmrs.module.formentry.FormEntryQueue)
 	 */
-	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
-		formEntryQueue.setCreator(Context.getAuthenticatedUser());
-		formEntryQueue.setDateCreated(new Date());
+	public void createFormEntryQueue(FormEntryQueue formEntryQueue) throws FormEntryException {
+		User creator = Context.getAuthenticatedUser();
+		if (formEntryQueue.getDateCreated() == null)
+			formEntryQueue.setDateCreated(new Date());
 		
 		File queueDir = FormEntryUtil.getFormEntryQueueDir();
 		
-		File outFile = FormEntryUtil.getOutFile(queueDir);
+		File outFile = FormEntryUtil.getOutFile(queueDir, formEntryQueue.getDateCreated(), creator);
 		
 		// write the queue's data to the file
+		FileWriter writer = null;
 		try {
-			FileWriter writer = new FileWriter(outFile);
+			writer = new FileWriter(outFile);
 			
 			writer.write(formEntryQueue.getFormData());
-			
-			writer.close();
 		}
 		catch (IOException io) {
 			throw new FormEntryException("Unable to save formentry queue", io);
+		}
+		finally {
+			try {
+				writer.close();
+			}
+			catch (Exception e) {
+				log.debug("Error creating queu item", e);
+			}
 		}
 		
 	}
@@ -423,6 +431,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		for (File file : queueDir.listFiles()) {
 			FormEntryQueue queueItem = new FormEntryQueue();
 			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			queueItem.setDateCreated(new Date(file.lastModified()));
 			queues.add(queueItem);
 		}
 		
@@ -453,6 +462,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		for (File file : queueDir.listFiles()) {
 			FormEntryQueue queueItem = new FormEntryQueue();
 			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			queueItem.setDateCreated(new Date(file.lastModified()));
 			return queueItem;
 		}
 		
@@ -473,12 +483,11 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
 	 */
 	public void createFormEntryArchive(FormEntryArchive formEntryArchive) {
-		formEntryArchive.setCreator(Context.getAuthenticatedUser());
-		formEntryArchive.setDateCreated(new Date());
+		User creator = Context.getAuthenticatedUser();
 		
-		File queueDir = FormEntryUtil.getFormEntryArchiveDir();
+		File queueDir = FormEntryUtil.getFormEntryArchiveDir(formEntryArchive.getDateCreated());
 		
-		File outFile = FormEntryUtil.getOutFile(queueDir);
+		File outFile = FormEntryUtil.getOutFile(queueDir, formEntryArchive.getDateCreated(), creator);
 		
 		// write the queue's data to the file
 		try {
@@ -496,7 +505,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	public Collection<FormEntryArchive> getFormEntryArchives() {
 		List<FormEntryArchive> archives = new Vector<FormEntryArchive>();
 		
-		File archiveDir = FormEntryUtil.getFormEntryArchiveDir();
+		File archiveDir = FormEntryUtil.getFormEntryArchiveDir(null);
 		
 		if (archiveDir.exists() == false) {
 			log.warn("Unable to open archive directory: " + archiveDir);
@@ -507,6 +516,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		for (File file : archiveDir.listFiles()) {
 			FormEntryArchive queueItem = new FormEntryArchive();
 			queueItem.setFileSystemUrl(file.getAbsolutePath());
+			queueItem.setDateCreated(new Date(file.lastModified()));
 			archives.add(queueItem);
 		}
 		
@@ -531,7 +541,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryArchiveSize()
 	 */
 	public Integer getFormEntryArchiveSize() {
-		File archiveDir = FormEntryUtil.getFormEntryArchiveDir();
+		File archiveDir = FormEntryUtil.getFormEntryArchiveDir(null);
 		
 		return archiveDir.list().length;
 	}
@@ -649,5 +659,11 @@ public class FormEntryServiceImpl implements FormEntryService {
     	getFormEntryDAO().migrateXsnsToDatabase();
     }
 	
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryArchiveNeeded()
+     */
+    public Boolean migrateFormEntryArchiveNeeded() {
+    	return getFormEntryDAO().migrateFormEntryArchiveNeeded();
+    }
 	
 }

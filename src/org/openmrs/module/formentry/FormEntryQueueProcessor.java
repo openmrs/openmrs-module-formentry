@@ -245,6 +245,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		}
 		try {
 			log.debug("Start processing FormEntry queue");
+			log.error("FormEntry processor hash: " + this.hashCode());
 			while (transformNextFormEntryQueue()) {
 				// loop until queue is empty
 			}

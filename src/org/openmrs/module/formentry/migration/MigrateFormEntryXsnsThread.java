@@ -2,10 +2,16 @@ package org.openmrs.module.formentry.migration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleException;
+import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Separate thread to migrate the formentry xsns from the filesystem
@@ -19,17 +25,20 @@ public class MigrateFormEntryXsnsThread extends Thread {
 	 */
 	protected UserContext userContext;
 	
+	protected Module formEntryModule;
+	
 	/**
-	 * Whether or activity should continue with this thread
+	 * Whether or not activity should continue with this thread
 	 */
-	protected boolean active = true;
+	protected static boolean active = true;
 
 	/**
 	 * @param userContext current user's context (to continue on the
 	 *        authorization, etc)
 	 */
-	public MigrateFormEntryXsnsThread(UserContext userContext) {
+	public MigrateFormEntryXsnsThread(UserContext userContext, Module formEntryModule) {
 		this.userContext = userContext;
+		this.formEntryModule = formEntryModule;
 		log.debug("Migrate formentry xsns thread created");
 	}
 
@@ -60,8 +69,34 @@ public class MigrateFormEntryXsnsThread extends Thread {
 				
 				// the getService call may be blocking until the services are refreshed, if 
 				// that happens, we need to check the active var again here
-				if (isActive())
-					service.migrateXsnsToDatabase();
+				if (isActive()) {
+					try {
+						Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+						service.migrateXsnsToDatabase();
+					}
+					catch (APIAuthenticationException auth) {
+						try {
+							String username = Context.getRuntimeProperties().getProperty(FormEntryConstants.STARTUP_USERNAME, "");
+							String password = Context.getRuntimeProperties().getProperty(FormEntryConstants.STARTUP_PASSWORD, "");
+							
+							if (!"".equals(username) && !"".equals(password)) {
+								Context.authenticate(username, password);
+								continue; // jump back to the while loop and try again
+							}
+						}
+						catch (ContextAuthenticationException contextAuth) {
+							throw new ModuleException("This module version migrates xsns from the filesystem to the database.  To do this it requires an authenticated user with rights to Manage the FormEntry XSNs.\n" + 
+							                          "In order to start this module, either use the green 'play' button to the left (if you have the " + FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN + " privilege) \n" +
+							                          "or temporarily define the " + FormEntryConstants.STARTUP_USERNAME + " and " + FormEntryConstants.STARTUP_PASSWORD + " runtime properties and restart the webapp.");
+						}
+						catch (APIAuthenticationException apiAuth) {
+							throw new ModuleException("The user defined by the runtime properties: " + FormEntryConstants.STARTUP_USERNAME + " and " + FormEntryConstants.STARTUP_PASSWORD + " does not have the required privilege " + FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN);
+						}
+					}
+					finally {
+						Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+					}
+				}
 				
 				finishedSuccessfully = true;
 				
@@ -76,7 +111,19 @@ public class MigrateFormEntryXsnsThread extends Thread {
 					log.error("Sleeping was interrupted", e);
 				}
 			}
-			
+			catch (ModuleException moduleException) {
+				// the formentry module needs to be stopped
+				if (formEntryModule != null && formEntryModule.isStarted()) {
+					formEntryModule.setStartupErrorMessage(moduleException.getMessage());
+					//ModuleFactory.stopModule(formEntryModule);
+					//WebModuleUtil.stopModule(formEntryModule);
+				}
+			}
+			finally {
+				
+				// let people know this is done
+				setActive(false);
+			}
 		}
 
 	}
@@ -84,15 +131,15 @@ public class MigrateFormEntryXsnsThread extends Thread {
 	/**
      * @return the active
      */
-    public boolean isActive() {
+    public static boolean isActive() {
     	return active;
     }
 
 	/**
      * @param active the active to set
      */
-    public void setActive(boolean active) {
-    	this.active = active;
+    public static void setActive(boolean a) {
+    	active = a;
     }
 
 }
