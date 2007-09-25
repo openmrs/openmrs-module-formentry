@@ -221,7 +221,7 @@ public class FormDownloadServlet extends HttpServlet {
 					OpenmrsUtil.deleteDirectory(tempDir);
 				}
 			}
-			log.debug(count + " xsn(s) updated");
+			log.debug(count + " xsn(s) rebuilt");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsns.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 		}

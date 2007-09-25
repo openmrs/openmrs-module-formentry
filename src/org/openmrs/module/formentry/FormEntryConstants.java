@@ -52,7 +52,8 @@ public class FormEntryConstants {
 	public static final String PRIV_ADD_FORMENTRY_ERROR = "Add FormEntry Error";
 	public static final String PRIV_EDIT_FORMENTRY_ERROR = "Edit FormEntry Error";
 	public static final String PRIV_DELETE_FORMENTRY_ERROR = "Delete FormEntry Error";
-
+	public static final String PRIV_MANAGE_FORMENTRY_XSN = "Manage FormEntry XSN";
+	
 	/* FormEntry Queue status values for entries in the queue */
 	public static final int FORMENTRY_QUEUE_STATUS_PENDING = 0;
 	public static final int FORMENTRY_QUEUE_STATUS_PROCESSING = 1;
@@ -88,7 +89,7 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_GP_QUEUE_DIR = "formentry.queue_dir";
 	public static final String FORMENTRY_GP_QUEUE_DIR_DEFAULT = "formentry/queue";
 	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR = "formentry.queue_archive_dir";
-	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT = "formentry/archive";
+	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT = "formentry/archive/%Y/%M";
 	
 	/**
 	 * @deprecated As of 2.6, xsns are stored in the formentry_xsn table

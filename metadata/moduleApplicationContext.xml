@@ -12,6 +12,7 @@
 				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
 				<prop key="module/formentry/formEntryError.list">formEntryErrorList</prop>
 				<prop key="module/formentry/xsnUpload.form">xsnUploadForm</prop>
+				<prop key="module/formentry/migrateFormEntryArchive.form">migrateFormEntryForm</prop>
 				
 				<!-- Dynamic FormEntry -->
 				<prop key="module/formentry/dynamicForm.form">dynamicFormEntryController</prop>
@@ -66,6 +67,11 @@
 		<property name="commandName"><value>formList</value></property>
 		<property name="formView"><value>/module/formentry/xsnUploadForm</value></property>
 		<property name="successView"><value>xsnUpload.form</value></property>
+	</bean>
+	<bean id="migrateFormEntryForm" class="org.openmrs.module.formentry.web.controller.MigrateFormEntryArchiveFormController">
+		<property name="commandName"><value>migrateFormEntry</value></property>
+		<property name="formView"><value>/module/formentry/migrateFormEntryArchiveForm</value></property>
+		<property name="successView"><value>migrateFormEntryArchive.form</value></property>
 	</bean>
 	
 	<bean id="dynamicFormEntryController" class="org.openmrs.module.formentry.web.dynamic.DynamicFormEntryController">

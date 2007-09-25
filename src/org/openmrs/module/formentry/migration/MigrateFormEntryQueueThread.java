@@ -19,9 +19,9 @@ public class MigrateFormEntryQueueThread extends Thread {
 	protected UserContext userContext;
 	
 	/**
-	 * Whether or activity should continue with this thread
+	 * Whether or not activity should continue with this thread
 	 */
-	protected boolean active = true;
+	protected static boolean active = false;
 
 	/**
 	 * @param userContext current user's context (to continue on the
@@ -40,14 +40,6 @@ public class MigrateFormEntryQueueThread extends Thread {
 		log.debug("Running the migrate formentry queue thread");
 		
 		Context.setUserContext(userContext);
-		
-		// wait for 30 seconds (waiting for the rest of the module to be loaded)
-		try {
-			Thread.sleep(30000);
-		}
-		catch (InterruptedException e) {
-			log.error("Sleeping was interrupted", e);
-		}
 		
 		// loop until the service is fetched successfully
 		boolean finishedSuccessfully = false;
@@ -75,6 +67,10 @@ public class MigrateFormEntryQueueThread extends Thread {
 					log.error("Sleeping was interrupted", e);
 				}
 			}
+			catch (Exception e) {
+				log.warn("Error while migrating formentry queue items", e);
+				setActive(false);
+			}
 			
 		}
 
@@ -83,15 +79,15 @@ public class MigrateFormEntryQueueThread extends Thread {
 	/**
      * @return the active
      */
-    public boolean isActive() {
+    public static boolean isActive() {
     	return active;
     }
 
 	/**
      * @param active the active to set
      */
-    public void setActive(boolean active) {
-    	this.active = active;
+    public static void setActive(boolean a) {
+    	active = a;
     }
 	
 }

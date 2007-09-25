@@ -312,6 +312,7 @@ public interface FormEntryService {
 	 * @param form
 	 * @return XML Schema for form
 	 */
+	@Transactional(readOnly=true)
 	public String getSchema(Form form);
 	
 	/**
@@ -333,6 +334,7 @@ public interface FormEntryService {
 	 * 
 	 * @param formEntryXsn
 	 */
+	@Authorized({FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN})
 	public void createFormEntryXsn(FormEntryXsn formEntryXsn);
 	
 	/**
@@ -340,6 +342,7 @@ public interface FormEntryService {
 	 * 
 	 * @param formEntryXsn
 	 */
+	@Authorized({FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN})
 	public void archiveFormEntryXsn(FormEntryXsn formEntryXsn);
 	
 	/**
@@ -348,6 +351,7 @@ public interface FormEntryService {
 	 * @param form
 	 * @return FormEntryXSN (non-archived) associated with the form
 	 */
+	@Transactional(readOnly=true)
 	public FormEntryXsn getFormEntryXsn(Form form);
 	
 	/**
@@ -356,6 +360,7 @@ public interface FormEntryService {
 	 * @param formId id of the form that owns the xsn to retrieve
 	 * @return FormEntryXSN (non-archived) associated with the form
 	 */
+	@Transactional(readOnly=true)
 	public FormEntryXsn getFormEntryXsn(Integer formId);
 	
 	/**
@@ -363,4 +368,12 @@ public interface FormEntryService {
 	 * filesystem
 	 */
 	public void migrateXsnsToDatabase();
+	
+	/**
+	 * Check if the formentry_archive table exists.
+	 * 
+	 * @return true/false whether migration is 
+	 * 		needed (by checking for formentry_archive table)
+	 */
+	public Boolean migrateFormEntryArchiveNeeded();
 }

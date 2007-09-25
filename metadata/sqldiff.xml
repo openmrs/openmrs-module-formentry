@@ -170,7 +170,7 @@
 			CREATE TABLE IF NOT EXISTS `formentry_xsn` (
 			  `formentry_xsn_id` int(11) NOT NULL auto_increment,
 			  `form_id` int(11) NOT NULL,
-			  `xsn_data` blob NOT NULL,
+			  `xsn_data` longblob NOT NULL,
 			  `creator` int(11) NOT NULL default '0',
 			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
 			  `archived` int(1) NOT NULL default '0',

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +28,8 @@ import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.db.FormEntryDAO;
+import org.openmrs.module.formentry.migration.MigrateFormEntryQueueThread;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateFormEntryDAO implements FormEntryDAO {
@@ -143,8 +147,6 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			// swallow error
 		}
 		
-		int count = 0;
-		
 		// migrate the formentry queue
 		if (formEntryQueueExists) {
 			try {
@@ -158,10 +160,6 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 					FormEntryQueue queue = new FormEntryQueue();
 					queue.setFormData(data);
 					formEntryService.createFormEntryQueue(queue);
-					
-					// garbage collect (flush to db) every once in a while
-					if (++count % 50 == 0)
-						formEntryService.garbageCollect();
 				}
 				
 				// delete the formentry_queue table
@@ -174,53 +172,107 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			
 		}
 		
+		boolean migrationNeeded = true; // assume true in case of an error
+		boolean deleteTable = true; // assume we want to delete the table when done
+		boolean active = MigrateFormEntryQueueThread.isActive();
+		int chunkSize = 100;
 		
-		
-		boolean formEntryArchiveExists = true; // assume true in case of an error
-		
-		// figure out if the tables exist or not.  If they do not, this has been run before
-		// and we can just skip migrating the queue
+		PreparedStatement selectFormentry = null;
+		PreparedStatement deleteFormentry = null;
 		try {
-			PreparedStatement ps = conn.prepareStatement("select count(*) from formentry_archive");
-			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
-				// pass
-			}
-			formEntryArchiveExists = true;
+			selectFormentry = conn.prepareStatement("select form_data, date_created from formentry_archive limit ?");
+			selectFormentry.setInt(1, chunkSize);
+			
+			deleteFormentry = conn.prepareStatement("delete from formentry_archive limit ?");
+			deleteFormentry.setInt(1, chunkSize);
 		}
-		catch (Exception e) {
-			formEntryArchiveExists = false;
-			// swallow error
+		catch (SQLException sql) {
+			log.warn("Uh oh.  Trouble creating the formentry prepared statements", sql);
 		}
 		
-		// migrate the formentry archive
-		if (formEntryArchiveExists) {
-			try {
-				String sql = "select form_data from formentry_archive";
+		List<FormEntryArchive> toDeleteIfError = new ArrayList<FormEntryArchive>(); 
+		
+		// must do the form entry archive in chunks
+		while (migrationNeeded && active) {
 			
-				PreparedStatement ps = conn.prepareStatement(sql);
-				
-				ResultSet rs = ps.executeQuery();
-				while(rs.next()) {
-					String data = rs.getString("form_data");
-					FormEntryArchive archive = new FormEntryArchive();
-					archive.setFormData(data);
-					formEntryService.createFormEntryArchive(archive);
+			// figure out if the tables exist or not.  If they do not, this has been run before
+			// and we can just skip migrating the queue
+			migrationNeeded = migrateFormEntryArchiveNeeded();
+			toDeleteIfError.clear();
+			
+			// migrate the formentry archive
+			if (migrationNeeded) {
+				try {
+					ResultSet rs = selectFormentry.executeQuery();
+					int count = 0;
+					while(rs.next()) {
+						FormEntryArchive archive = new FormEntryArchive();
+						archive.setFormData(rs.getString("form_data"));
+						archive.setDateCreated(rs.getTimestamp("date_created"));
+						formEntryService.createFormEntryArchive(archive);
+						archive = null;
+						count = count + 1;
+						toDeleteIfError.add(archive);
+					}
 					
-					// garbage collect (flush to db) every once in a while
-					if (++count % 50 == 0)
-						formEntryService.garbageCollect();
+					// force the while loop to stop because we selected zero rows
+					if (count == 0)
+						migrationNeeded = false;
+					
+					deleteFormentry.executeUpdate();
+					
+					conn.commit();
+					
+					toDeleteIfError.clear();
 				}
-				
+				catch (Exception e) {
+					log.error("Error while moving old formentry_archive items to the filesystem", e);
+					
+					// delete archive written before the error
+					for (FormEntryArchive archive : toDeleteIfError) {
+						formEntryService.deleteFormEntryArchive(archive);
+					}
+				}
+			}
+			
+			active = MigrateFormEntryQueueThread.isActive();
+			
+		} // end while loop
+		
+		if (deleteTable && active) {
+			try {
 				// delete the formentry_archive table
-				ps = conn.prepareStatement("drop table formentry_archive");
+				PreparedStatement ps = conn.prepareStatement("drop table if exists formentry_archive");
 				ps.executeUpdate();
 			}
 			catch (Exception e) {
-				log.error("Error while moving old formentry_archive items to the filesystem", e);
+				log.warn("Unable to drop the formentry_archive table", e);
 			}
-			
-		} // /if tablesExist
+		}
+
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#migrateFormEntryArchiveNeeded()
+	 */
+	public Boolean migrateFormEntryArchiveNeeded() {
+		Connection conn = sessionFactory.getCurrentSession().connection();
+        try {
+        	PreparedStatement ps = conn.prepareStatement("select count(*) from INFORMATION_SCHEMA.tables where table_name = 'formentry_archive' and table_schema = '" + OpenmrsConstants.DATABASE_NAME + "'");
+	        ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				if (rs.getInt(1) > 0)
+					return true;
+				else
+					return false;
+			}
+        } catch (SQLException e) {
+	        // essentially swallow the error
+	        log.debug("Error generated while checking for formentry queue", e);
+        }
+        
+        return false;
+		
 	}
 
 	/**

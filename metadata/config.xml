@@ -17,7 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.1.10.2290</require_version>
+	<require_version>1.1.10.2317</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -65,30 +65,67 @@
 		<name>Patient Dashboard - View Forms Section</name>
 		<description>Allows user to view the Forms tab on the patient dashboard</description>
 	</privilege>
+	<privilege>
+		<name>Manage FormEntry XSN</name>
+		<description>Allows user to upload and edit the xsns stored on the server</description>
+	</privilege>
+	<privilege>
+		<name>Add FormEntry Queue</name>
+		<description>Allows user to add a queue item to database</description>
+	</privilege>
+	<privilege>
+		<name>View FormEntry Queue</name>
+		<description>Allows user to view the queue items</description>
+	</privilege>
+	<privilege>
+		<name>Edit FormEntry Queue</name>
+		<description>Allows the user to edit the formentry queue</description>
+	</privilege>
+	<privilege>
+		<name>Delete FormEntry Queue</name>
+		<description>Allows the user to delete formentry queue items</description>
+	</privilege>
+	<privilege>
+		<name>View FormEntry Archive</name>
+		<description>Allows the user to view the formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>Add FormEntry Archive</name>
+		<description>Allows the user to add the formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>Edit FormEntry Archive</name>
+		<description>Allows the user to edit a formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>Delete FormEntry Archive</name>
+		<description>Allows the user to delete a formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>View FormEntry Error</name>
+		<description>Allows a user to view a formentry error</description>
+	</privilege>
+	<privilege>
+		<name>Add FormEntry Error</name>
+		<description>Allows a user to add a formentry error item</description>
+	</privilege>
+	<privilege>
+		<name>Edit FormEntry Error</name>
+		<description>Allows a user to edit a formentry error item</description>
+	</privilege>
+	<privilege>
+		<name>Delete FormEntry Error</name>
+		<description>Allows a user to delete a formentry error item</description>
+	</privilege>
 	<!-- /Required Privileges -->
 
 
 	<!-- Required Global Properties -->
 	<globalProperty>
-		<property>@MODULE_ID@.infopath_output_dir</property> <!-- Must start with `moduleId.` -->
-		<defaultValue></defaultValue>
-		<description>This property should point to a filesystem directory.  When an XSN is uploaded for a form it will be saved here.</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.infopath_server_url</property> <!-- Must start with `moduleId.` -->
-		<defaultValue></defaultValue>
-		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
-	</globalProperty>
-	<globalProperty>
 		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
 		<property>@MODULE_ID@.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>Welcome!</defaultValue>
 		<description>The text seen in the infopath taskpane upon first logging in</description>
-	</globalProperty>
-	<globalProperty>
-		<property>@MODULE_ID@.infopath_archive_date_format</property> <!-- Must start with `moduleId.` -->
-		<defaultValue>dd-MMM-yyyy-HHmmss</defaultValue>
-		<description></description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.infopath_archive_dir</property> <!-- Must start with `moduleId.` -->
@@ -133,10 +170,16 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.queue_archive_dir</property> <!-- Must start with `moduleId.` -->
-		<defaultValue>formentry/archive</defaultValue>
+		<defaultValue>formentry/archive/%Y/%M</defaultValue>
 		<description>
 			Directory containing the formentry archive items.  This will contain xml files that have
-			been submitted by infopath and then processed sucessfully into hl7
+			been submitted by infopath and then processed sucessfully into hl7.
+			Certain date parameters will be replaced with the current date:
+			%Y = four digit year
+			%M = two digit month
+			%D = two digit date of the month
+			%w = week of the year
+     		%W = week of the month
 		</description>
 	</globalProperty>
 	

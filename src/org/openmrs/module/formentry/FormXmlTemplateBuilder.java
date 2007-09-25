@@ -2,6 +2,7 @@ package org.openmrs.module.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -14,6 +15,7 @@ import org.apache.velocity.app.event.EventCartridge;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
+import org.openmrs.Encounter;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -77,6 +79,9 @@ public class FormXmlTemplateBuilder {
 					"yyyyMMdd'T'HH:mm:ss.SSSZ"));
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
+			
+			Collection<Encounter> encounters = Context.getEncounterService().getEncounters(patient);
+			velocityContext.put("patientEncounters", encounters);
 		}
 		
 		// adding the error handler for velocity

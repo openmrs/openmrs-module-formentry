@@ -12,7 +12,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -37,14 +41,13 @@ public class FormEntryUtil {
 	 * Cached directory where queue items are stored
 	 * @see #getFormEntryQueueDir()
 	 */
-	private static File formEntryQueueDir;
+	private static File formEntryQueueDir = null;
 	
 	/**
-	 * Cached directory where archive items are stored
+	 * Cached directory where gp says archive items are stored
 	 * @see #getFormEntryArchiveDir()
 	 */
-	private static File formEntryArchiveDir;
-	
+	private static String formEntryArchiveFileName = null;
 	
 
 	/**
@@ -607,40 +610,121 @@ public class FormEntryUtil {
     /**
      * Gets the directory where the user specified their archives were being stored
      * 
+     * @param optional Date to specify the folder this should possibly be sorted into 
      * @return directory in which to store archived items
      */
-    public static File getFormEntryArchiveDir() {
-		if (formEntryArchiveDir == null) {
-    		AdministrationService as = Context.getAdministrationService();
-    		String folderName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT);
-    		formEntryArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
-    		if (log.isDebugEnabled())
-    			log.debug("Loaded formentry archive directory from global properties: " + formEntryArchiveDir.getAbsolutePath());
+    public static File getFormEntryArchiveDir(Date d) {
+    	// cache the global property location so we don't have to hit the db 
+    	// everytime
+    	if (formEntryArchiveFileName == null) {
+	    	AdministrationService as = Context.getAdministrationService();
+	    	formEntryArchiveFileName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT);
     	}
+    	
+    	// replace %Y %M %D in the folderName with the date
+		String folderName = replaceVariables(formEntryArchiveFileName, d);
 		
+		// get the file object for this potentially new file
+		File formEntryArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
+		
+		if (log.isDebugEnabled())
+			log.debug("Loaded formentry archive directory from global properties: " + formEntryArchiveDir.getAbsolutePath());
+    	
 		return formEntryArchiveDir;
+    }
+    
+    /**
+     * Replaces %Y in the string with the four digit year.
+     * Replaces %M with the two digit month
+     * Replaces %D with the two digit day
+     * Replaces %w with week of the year
+     * Replaces %W with week of the month
+     * 
+     * @param str String filename containing variables to replace with date strings 
+     * @return String with variables replaced
+     */
+    public static String replaceVariables(String str, Date d) {
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	if (d != null)
+    		calendar.setTime(d);
+    	
+    	int year = calendar.get(Calendar.YEAR);
+    	str = str.replace("%Y", Integer.toString(year));
+    	
+    	int month = calendar.get(Calendar.MONTH) + 1;
+    	String monthString = Integer.toString(month);
+    	if (month < 10)
+    		monthString = "0" + monthString;
+    	str = str.replace("%M", monthString);
+    	
+    	int day = calendar.get(Calendar.DATE);
+    	String dayString = Integer.toString(day);
+    	if (day < 10)
+    		dayString = "0" + dayString;
+		str = str.replace("%D", dayString);
+    	
+    	int week = calendar.get(Calendar.WEEK_OF_YEAR);
+    	String weekString = Integer.toString(week);
+    	if (week < 10)
+    		weekString = "0" + week;
+		str = str.replace("%w", weekString);
+    	
+    	int weekmonth = calendar.get(Calendar.WEEK_OF_MONTH);
+    	String weekmonthString = Integer.toString(weekmonth);
+    	if (weekmonth < 10)
+    		weekmonthString = "0" + weekmonthString;
+		str = str.replace("%W", weekmonthString);
+    	
+    	return str;
     }
 
 	/**
+     * Gets an out File object.  If date is not provided, the current 
+     * timestamp is used.
      * 
-     * Creates a psuedorandomly named file in the given dir
-     * 
-     * (Psuedo because currentTimeMillis is used as the filename prefix
+     * If user is not provided, the user id is not put into the filename.
      * 
      * Assumes dir is already created
      * 
      * @param dir directory to make the random filename in
+     * @param date optional Date object used for the name
+     * @param user optional User creating this file object 
      * @return file new file that is able to be written to
      */
-    public static File getOutFile(File dir) {
-    	StringBuilder randomFilename = new StringBuilder();
-    	// the start of the filename is the time it was created
-		randomFilename.append(System.currentTimeMillis());
-		// the end of the filename is a randome number between 0 and 1000
-		randomFilename.append((int)(Math.random() * 1000));
-		randomFilename.append(".xml");
-		
-		File outFile = new File(dir, randomFilename.toString());
+    public static File getOutFile(File dir, Date date, User user) {
+    	
+    	File outFile;
+		do {
+	    	// format to print date in filenmae
+	    	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
+	    	
+	    	// use current date if none provided
+	    	if (date == null)
+	    		date = new Date();
+	    	
+	    	StringBuilder filename = new StringBuilder();
+	    	
+	    	// the start of the filename is the time so we can do some sorting
+			filename.append(dateFormat.format(date));
+			
+			// insert the user id if they provided it
+			if (user != null) {
+				filename.append("-");
+				filename.append(user.getUserId());
+				filename.append("-");
+			}
+			
+			// the end of the filename is a randome number between 0 and 10000
+			filename.append((int)(Math.random() * 10000));
+			filename.append(".xml");
+			
+			outFile = new File(dir, filename.toString());
+			
+			// set to null to avoid very minimal possiblity of an infinite loop
+			date = null;
+			
+		} while (outFile.exists());
 		
 		return outFile;
     }
