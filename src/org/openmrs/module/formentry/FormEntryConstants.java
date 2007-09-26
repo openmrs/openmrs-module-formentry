@@ -83,9 +83,6 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_GP_SERVER_URL = "formentry.infopath_server_url";
 	public static final String FORMENTRY_GP_TASKPANE_KEEPALIVE = "formentry.infopath_taskpane_keepalive_min";
 	
-	public static final String FORMENTRY_GP_CABEXTRACT_LOCATION = "formentry.cabextract_location";
-	public static final String FORMENTRY_GP_LCAB_LOCATION = "formentry.lcab_location";
-	
 	public static final String FORMENTRY_GP_QUEUE_DIR = "formentry.queue_dir";
 	public static final String FORMENTRY_GP_QUEUE_DIR_DEFAULT = "formentry/queue";
 	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR = "formentry.queue_archive_dir";
@@ -108,5 +105,12 @@ public class FormEntryConstants {
 	
 	public static final String STARTUP_USERNAME = "formentry.startup_username";
 	public static final String STARTUP_PASSWORD = "formentry.startup_password";
+
+	// runtime properties for the cabextract and lcab locations
+	// these are not global properties as they could be a security risk for demo sites
+	public static final String FORMENTRY_RP_CABEXTRACT_LOCATION = "formentry.cabextract_location";
+	public static final String FORMENTRY_RP_LCAB_LOCATION = "formentry.lcab_location";
+	public static String FORMENTRY_CABEXTRACT_LOCATION = null; // value of the runtime property loaded at startup
+	public static String FORMENTRY_LCAB_LOCATION = null; // value of the runtime property loaded at startup
 	
 }

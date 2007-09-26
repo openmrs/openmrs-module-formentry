@@ -112,9 +112,9 @@ public class FormEntryUtil {
 				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
 			
 			// retrieve the cabextract path from the global properties
-			String cabextLocation = Context.getAdministrationService().getGlobalProperty(
-					FormEntryConstants.FORMENTRY_GP_CABEXTRACT_LOCATION, 
-					"/usr/bin/cabextract");
+			String cabextLocation = FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION;
+			if (cabextLocation == null)
+				cabextLocation = "/usr/bin/cabextract";
 			
 			cmdBuffer.append(cabextLocation + " -d ").append(
 					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
@@ -122,10 +122,10 @@ public class FormEntryUtil {
 		} 
 		else if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
 			
-			// retrieve the cabextract path from the global properties
-			String cabextLocation = Context.getAdministrationService().getGlobalProperty(
-					FormEntryConstants.FORMENTRY_GP_CABEXTRACT_LOCATION, 
-					"/usr/local/bin/cabextract");
+			// retrieve the cabextract path from the runtime properties
+			String cabextLocation = FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION;
+			if (cabextLocation == null)
+				cabextLocation = "/usr/local/bin/cabextract";
 			
 			cmdBuffer.append(cabextLocation + " -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
@@ -348,9 +348,9 @@ public class FormEntryUtil {
 		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
 				(OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))) {
 			
-			String lcabLocation = Context.getAdministrationService().getGlobalProperty(
-								FormEntryConstants.FORMENTRY_GP_LCAB_LOCATION, 
-								"/usr/local/bin/lcab");
+			String lcabLocation = FormEntryConstants.FORMENTRY_LCAB_LOCATION;
+			if (lcabLocation == null)
+				lcabLocation = "/usr/local/bin/lcab";
 			
 			cmdBuffer.append(lcabLocation + " -rn ").append(tempDir)
 					.append(" ").append(outputDirName).append("/").append(

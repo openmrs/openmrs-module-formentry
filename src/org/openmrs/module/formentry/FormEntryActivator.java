@@ -1,61 +1,63 @@
 package org.openmrs.module.formentry;
 
-import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Activator;
-import org.openmrs.module.ModuleException;
 import org.openmrs.module.formentry.migration.MigrateFormEntryXsnsThread;
-import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * This activator class is called whenever the formentry module is started.
+ * The class checks for property deprecation, loads in runtime properties,
+ * and starts up the xsn migration if it hasn't happened already
+ */
 public class FormEntryActivator implements Activator {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
+	private String[] deprecatedRuntimeProperties = {"formentry.starter_xsn_folder_path", 
+			"formentry.infopath.publish_url",
+			"formentry.infopath.publish_path",
+			"formentry.infopath.submit_url",
+			"formentry.infopath.initial_url" };
+	
+	@SuppressWarnings("deprecation")
+    private String[] deprecatedGlobalProperties = {FormEntryConstants.FORMENTRY_GP_INFOPATH_OUTPUT_DIR,
+			FormEntryConstants.FORMENTRY_GP_INFOPATH_ARCHIVE_DIR,
+			FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT };
+
 	/**
 	 * @see org.openmrs.module.Activator#startup()
 	 */
-	@SuppressWarnings("deprecation")
     public void startup() {
 		log.info("Starting the Form Entry module");
 		
-		Properties p = Context.getRuntimeProperties();
-		String val;
+		Properties runtimeProperties = Context.getRuntimeProperties();
 		
-		String[] deprecatedRuntimeProperties = {"formentry.starter_xsn_folder_path", 
-												"formentry.infopath.publish_url",
-												"formentry.infopath.publish_path",
-												"formentry.infopath.submit_url",
-												"formentry.infopath.initial_url" };
-		
+		// loop over and log these runtime properties as deprecated 
 		for (String s : deprecatedRuntimeProperties) {
-			val = p.getProperty(s, null);
-			if (val != null)
+			if (runtimeProperties.getProperty(s, null) != null)
 				log.warn("Deprecated runtime property: " + s + ".  This property is no longer read in at runtime and can be deleted.");
 		}
 		
-		String[] deprecatedGlobalProperties = {FormEntryConstants.FORMENTRY_GP_INFOPATH_OUTPUT_DIR,
-												FormEntryConstants.FORMENTRY_GP_INFOPATH_ARCHIVE_DIR,
-												FormEntryConstants.FORMENTRY_GP_ARCHIVE_DATE_FORMAT };
-		
-		//AdministrationService as = Context.getAdministrationService();
-		
-		// warn the user and mark them as deprecated in the db
+		// log warnings for the user for global property deprecation
 		for (String s : deprecatedGlobalProperties) {
 			log.warn("Deprecated global property: " + s + ".  This property is no longer used by the formentry and can be deleted.");
-			//as.setGlobalProperty(s, value, "DEPRECATED - Can be removed from global properties.");
 		}
 		
-		List<String> errorMessages = new Vector<String>();
+		// save makecab and lcab locations to the constants
+		FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION = runtimeProperties.getProperty(FormEntryConstants.FORMENTRY_RP_CABEXTRACT_LOCATION);
+		FormEntryConstants.FORMENTRY_LCAB_LOCATION = runtimeProperties.getProperty(FormEntryConstants.FORMENTRY_RP_LCAB_LOCATION);
 		
 		// set up property requirements
-		if (errorMessages.size() > 0)
-			throw new ModuleException(OpenmrsUtil.join(errorMessages, " \n"));
+		//List<String> errorMessages = new Vector<String>();
+		//if (errorMessages.size() > 0)
+		//	throw new ModuleException(OpenmrsUtil.join(errorMessages, " \n"));
 		
+		
+		// migrate the xsns
 		if (MigrateFormEntryXsnsThread.isActive() == false) {
 			// Spawn a thread to do the xsn migration from filesystem to db
 			// A thread is needed instead of a direct call because the formentry 
