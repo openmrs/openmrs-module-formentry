@@ -169,6 +169,12 @@
 		
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
+		
+		<c:if test="${empty param.nodePath}">
+			<c:if test="${empty param.mode}">
+				alert('Error #35233: <spring:message code="formentry.nodePathEmpty"/>');
+			</c:if>
+		</c:if>
 				
 	});
 
