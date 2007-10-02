@@ -237,15 +237,14 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 	public void processFormEntryQueue() throws APIException {
 		synchronized (isRunning) {
 			if (isRunning) {
-				log
-						.warn("FormEntryQueue processor aborting (another processor already running)");
+				log.warn("FormEntryQueue processor aborting (another processor already running)");
 				return;
 			}
 			isRunning = true;
 		}
 		try {
 			log.debug("Start processing FormEntry queue");
-			//log.error("FormEntry processor hash: " + this.hashCode());
+			log.debug("FormEntry processor hash: " + this.hashCode());
 			while (transformNextFormEntryQueue()) {
 				// loop until queue is empty
 			}
