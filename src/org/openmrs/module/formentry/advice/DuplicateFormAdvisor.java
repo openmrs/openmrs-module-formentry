@@ -74,7 +74,8 @@ public class DuplicateFormAdvisor extends StaticMethodMatcherPointcutAdvisor imp
 			}
 			finally {
 				try {
-					OpenmrsUtil.deleteDirectory(tempDir);
+					if (tempDir != null)
+						OpenmrsUtil.deleteDirectory(tempDir);
 				} 
 				catch (IOException ioe) {
 					// pass
