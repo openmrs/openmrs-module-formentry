@@ -494,8 +494,8 @@ public class PublishInfoPath {
 		String fileContent = readFile(file);
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
-			String regexp = "var\\s" + variableName + "\\s=[^\n]*;";
-			String rplcmnt = "var " + variableName + " = " + vars.get(variableName) + ";";
+			String regexp = "var\\s" + variableName + "\\s=[^;]*";
+			String rplcmnt = "var " + variableName + " = " + vars.get(variableName) + "";
 			log.debug("replacing regexp: " + regexp + " with " + rplcmnt);
 			fileContent = fileContent.replaceAll(regexp, rplcmnt);
 		}
