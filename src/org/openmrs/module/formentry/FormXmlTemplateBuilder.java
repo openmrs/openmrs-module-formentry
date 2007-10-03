@@ -2,7 +2,7 @@ package org.openmrs.module.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -80,7 +80,7 @@ public class FormXmlTemplateBuilder {
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 			
-			Collection<Encounter> encounters = Context.getEncounterService().getEncounters(patient);
+			List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
 			velocityContext.put("patientEncounters", encounters);
 		}
 		
