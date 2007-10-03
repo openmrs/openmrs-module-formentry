@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.event.EventCartridge;
+import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -108,6 +110,8 @@ public class FormDownloadServlet extends HttpServlet {
 		velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		velocityContext.put("sessionId", httpSession.getId());
 		velocityContext.put("uid", FormEntryUtil.generateFormUid());
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
+		velocityContext.put("patientEncounters", encounters);
 		
 		// add the error handler
 		EventCartridge ec = new EventCartridge();
