@@ -37,8 +37,8 @@ public class FormEntryFormRowsExt extends TableRowExt {
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
 		try {
-			// if we're not the basic form
-			if (formId != "1") {
+			// if we're not the basic form or a new form
+			if (formId != null && !formId.equals("1")) {
 				FormEntryXsn xsn = ((FormEntryService)Context.getService(FormEntryService.class)).getFormEntryXsn(Integer.valueOf(formId));
 				
 				if (xsn == null)
