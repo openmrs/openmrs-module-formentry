@@ -346,6 +346,15 @@ public interface FormEntryService {
 	public void archiveFormEntryXsn(FormEntryXsn formEntryXsn);
 	
 	/**
+	 * Deletes all xsns (the active one and the archives) that are 
+	 * associated with the given form
+	 * 
+	 * @param form Form object 
+	 */
+	@Authorized({FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN})
+	public void deleteFormEntryXsn(Form form);
+	
+	/**
 	 * Get the formentryxsn for the given form
 	 * 
 	 * @param form

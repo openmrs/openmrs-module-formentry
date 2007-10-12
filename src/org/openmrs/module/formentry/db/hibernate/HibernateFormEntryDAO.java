@@ -291,6 +291,16 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
     public void updateFormEntryXsn(FormEntryXsn formEntryXsn) {
     	sessionFactory.getCurrentSession().saveOrUpdate(formEntryXsn);
     }
+    
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#deleteFormEntryXsn(java.lang.Integer)
+	 */
+	public void deleteFormEntryXsn(Integer formId) {
+		Query query = sessionFactory.getCurrentSession().createQuery("delete from FormEntryXsn where form.formId = :formId");
+		query.setParameter("formId", formId);
+    	 
+    	query.executeUpdate();
+    }
 
 	/**
      * @see org.openmrs.module.formentry.db.FormEntryDAO#migrateXsnsToDatabase()

@@ -110,7 +110,7 @@ public class FormSchemaBuilder {
 						|| datatype.getHl7Abbreviation().equals(
 								FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 					Collection<ConceptAnswer> answers = field.getConcept()
-							.getAnswers();
+							.getAnswers(false);
 					if (field.getSelectMultiple())
 						schema.append(FormSchemaFragment.selectMultiple(token,
 								concept, answers, Context.getLocale()));

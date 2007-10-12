@@ -624,6 +624,13 @@ public class FormEntryServiceImpl implements FormEntryService {
     }
 
 	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(org.openmrs.Form)
+	 */
+	public void deleteFormEntryXsn(Form form) {
+	    getFormEntryDAO().deleteFormEntryXsn(form.getFormId());
+    }
+
+	/**
      * @see org.openmrs.module.formentry.FormEntryService#createFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
      */
     public void createFormEntryXsn(FormEntryXsn formEntryXsn) {

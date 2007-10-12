@@ -48,7 +48,10 @@
 		<point>org.openmrs.api.FormService</point>
 		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
 	</advice>
-	
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>@MODULE_PACKAGE@.advice.BeforeDeleteFormAdvice</class>
+	</advice>
 	<!-- /AOP -->
 	
 	
