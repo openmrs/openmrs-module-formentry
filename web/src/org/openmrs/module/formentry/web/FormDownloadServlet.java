@@ -194,23 +194,17 @@ public class FormDownloadServlet extends HttpServlet {
 			}
 			
 			// Download the XSN and Upload it again
-			Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
-			InputStream formStream = (InputStream) streamAndDir[0];
-			File tempDir = (File) streamAndDir[1];
-			if (formStream == null)
+			try {
+				FormEntryUtil.rebuildXSN(form);
+			}
+			catch (IOException e) {
+				log.warn("Unable to rebuild xsn", e);
 				response.sendError(500);
+			}
 			
-			PublishInfoPath.publishXSN(formStream);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsn.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 			
-			try {
-				formStream.close();
-			} catch (IOException ioe) {}
-			try {
-				OpenmrsUtil.deleteDirectory(tempDir);
-			} catch (IOException ioe) {}
-
 		}
 		else if ("rebuildAll".equals(target)) {
 			// Download all XSNs and upload them again

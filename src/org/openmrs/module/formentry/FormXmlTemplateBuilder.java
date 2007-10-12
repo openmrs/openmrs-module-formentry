@@ -23,6 +23,7 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.FormUtil;
+import org.springframework.util.StringUtils;
 
 /**
  * XML template builder for OpenMRS forms.
@@ -126,32 +127,58 @@ public class FormXmlTemplateBuilder {
 		return xml.toString();
 	}
 
+	/**
+	 * Recursively creates the xml structure for the given formStructure
+	 * 
+	 * @param xml
+	 * @param formStructure
+	 * @param includeDefaultScripts
+	 * @param sectionId
+	 * @param indent
+	 */
 	public void renderStructure(StringBuffer xml,
 			TreeMap<Integer, TreeSet<FormField>> formStructure,
 			boolean includeDefaultScripts, Integer sectionId, int indent) {
+		
+		// if this sectionId is invalid, quit
 		if (!formStructure.containsKey(sectionId))
 			return;
-		Vector<String> tagList = new Vector<String>();
+		
 		TreeSet<FormField> section = formStructure.get(sectionId);
 		if (section == null || section.size() < 1)
 			return;
+		
+		Vector<String> tagList = new Vector<String>();
+		char[] indentation = new char[indent];
+		
+		// loop over each field in this form
 		for (FormField formField : section) {
-			String xmlTag = FormUtil.getNewTag(formField.getField().getName(),
-					tagList);
+			Field field = formField.getField();
+			Integer fieldTypeId = field.getFieldType().getFieldTypeId();
+			String xmlTag = FormUtil.getNewTag(field.getName(), tagList);
 			Integer subSectionId = formField.getFormFieldId();
-			char[] indentation = new char[indent];
 			for (int i = 0; i < indent; i++)
 				indentation[i] = ' ';
 			xml.append(indentation);
+			
+			// if this is a repeating element and they have defined a default value
+			// for the field, then we want to repeat this element
+			boolean repeatingElement = false;
+			if (formField.getMaxOccurs() != null && formField.getMaxOccurs().equals(-1) &&
+					StringUtils.hasLength(field.getDefaultValue()) &&
+					includeDefaultScripts) {
+				xml.append("#{foreach}($listItem in " + field.getDefaultValue() + ")");
+				repeatingElement = true;
+			}
+			
+			// write out the element based on its type
 			xml.append("<" + xmlTag);
-			Field field = formField.getField();
-			Integer fieldTypeId = field.getFieldType().getFieldTypeId();
 			if (fieldTypeId.equals(FormEntryConstants.FIELD_TYPE_DATABASE)) {
 				xml.append(" openmrs_table=\"");
-				xml.append(formField.getField().getTableName());
+				xml.append(field.getTableName());
 				xml.append("\" openmrs_attribute=\"");
-				xml.append(formField.getField().getAttributeName());
-				if (formStructure.containsKey(formField.getFormFieldId())) {
+				xml.append(field.getAttributeName());
+				if (formStructure.containsKey(subSectionId)) {
 					xml.append("\">\n");
 					renderStructure(xml, formStructure, includeDefaultScripts,
 							subSectionId, indent
@@ -174,29 +201,25 @@ public class FormXmlTemplateBuilder {
 			} else if (fieldTypeId
 					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
+				String hl7Abbr = concept.getDatatype().getHl7Abbreviation();
 				xml.append(" openmrs_concept=\"");
 				xml.append(FormEntryUtil.conceptToString(concept, Context
 						.getLocale()));
 				xml.append("\" openmrs_datatype=\"");
-				xml.append(concept.getDatatype().getHl7Abbreviation());
+				xml.append(hl7Abbr);
 				xml.append("\"");
-				if (formStructure.containsKey(formField.getFormFieldId())) {
+				if (formStructure.containsKey(subSectionId)) {
 					xml.append(">\n");
 					renderStructure(xml, formStructure, includeDefaultScripts,
-							subSectionId, indent
-									+ FormEntryConstants.INDENT_SIZE);
+							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 					xml.append("</");
 					xml.append(xmlTag);
 					xml.append(">\n");
 				} else {
-					if (concept.getDatatype().getHl7Abbreviation().equals(
-							FormEntryConstants.HL7_CODED)
-							|| concept
-									.getDatatype()
-									.getHl7Abbreviation()
-									.equals(
-											FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+					if (hl7Abbr.equals(FormEntryConstants.HL7_CODED)
+							|| hl7Abbr.equals(
+									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 						xml.append(" multiple=\"");
 						xml.append(field.getSelectMultiple() ? "1" : "0");
 						xml.append("\"");
@@ -208,12 +231,8 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
-					if ((concept.getDatatype().getHl7Abbreviation().equals(
-							FormEntryConstants.HL7_CODED) || concept
-							.getDatatype()
-							.getHl7Abbreviation()
-							.equals(
-									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
+					if ((hl7Abbr.equals(FormEntryConstants.HL7_CODED) || 
+						 hl7Abbr.equals(FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
 						for (ConceptAnswer answer : concept
 								.getSortedAnswers(Context.getLocale())) {
@@ -255,8 +274,7 @@ public class FormXmlTemplateBuilder {
 						xml.append(indentation);
 						xml.append(indentation);
 						xml.append("<value");
-						if (concept.getDatatype().getHl7Abbreviation().equals(
-								FormEntryConstants.HL7_BOOLEAN))
+						if (hl7Abbr.equals(FormEntryConstants.HL7_BOOLEAN))
 							xml.append(" infopath_boolean_hack=\"1\"");
 						xml.append(" xsi:nil=\"true\"></value>\n");
 					}
@@ -266,6 +284,7 @@ public class FormXmlTemplateBuilder {
 					xml.append(">\n");
 				}
 			} else {
+				// if the type isn't db or concept, just do something generic
 				xml.append(">\n");
 				renderStructure(xml, formStructure, includeDefaultScripts,
 						subSectionId, indent + FormEntryConstants.INDENT_SIZE);
@@ -274,6 +293,13 @@ public class FormXmlTemplateBuilder {
 				xml.append(xmlTag);
 				xml.append(">\n");
 			}
+			
+			// if this element is declared as 0-n and there is a default value on it
+			// then we need to repeat the whole element
+			if (repeatingElement) {
+				xml.append("#{end}");
+			}
+			
 		}
 	}
 }

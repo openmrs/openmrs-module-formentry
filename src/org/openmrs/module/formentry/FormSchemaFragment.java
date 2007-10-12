@@ -229,7 +229,7 @@ public class FormSchemaFragment {
 	 * @param concept
 	 *            OpenMRS concept referred to by this element
 	 * @param answerList
-	 *            valid answers
+	 *            valid answers that are assumed to be non retired
 	 * @param required
 	 *            <code>true</code> if element is required
 	 * @param locale
@@ -249,11 +249,6 @@ public class FormSchemaFragment {
 				+ (required ? "0" : "1") + "\">\n" + "      <xs:simpleType>\n"
 				+ "        <xs:restriction base=\"xs:string\">\n";
 		for (ConceptAnswer answer : answerList) {
-			// TODO: Ideally, Concept domain object shouldn't return retired
-			// answers (Ben needs to fix that before the following line -- to
-			// filter retired concepts -- can be removed)
-			if (answer.getAnswerConcept().isRetired())
-				continue;
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
 			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
@@ -309,11 +304,6 @@ public class FormSchemaFragment {
 				+ "    <xs:element name=\"date\" type=\"xs:date\" nillable=\"true\" minOccurs=\"0\" />\n"
 				+ "    <xs:element name=\"time\" type=\"xs:time\" nillable=\"true\" minOccurs=\"0\" />\n";
 		for (ConceptAnswer answer : answerList) {
-			// TODO: Ideally, Concept domain object shouldn't return retired
-			// answers (Ben needs to fix that before the following line -- to
-			// filter retired concepts -- can be removed)
-			if (answer.getAnswerConcept().isRetired())
-				continue;
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
 			Drug answerDrug = answer.getAnswerDrug();

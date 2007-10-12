@@ -97,13 +97,22 @@
 		</jar>
 	</target>
 
-	<target name="deploy-web" depends="init">
-		<property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5" />
-
-		<copy todir="${tomcat.home}/webapps/openmrs/WEB-INF/view/module/${module.id}">
+	<target name="deploy-web" depends="package-module">
+		<property environment="env"/>
+		<copy todir="${env.CATALINA_HOME}/webapps/openmrs/WEB-INF/view/module/${module.id}">
 			<fileset dir="web/module" includes="**/*" />
 		</copy>
-		
+	</target>
+	
+	<target name="package-jar" depends="package-module" description="Packages class files into jar file to be included in other projects">
+		<!-- Create distributable jar file -->
+		<jar destfile="dist/${module.id}-${module.version}.jar">
+			<fileset dir="build" >
+				<exclude name="web/**/*" />
+				<exclude name="test/**/*" />
+				<exclude name="*" />
+			</fileset>
+		</jar>
 	</target>
 
 </project>

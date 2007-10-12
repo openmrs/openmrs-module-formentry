@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -814,6 +815,33 @@ public class FormEntryUtil {
     				file.deleteOnExit();
     		}
     	}
+    }
+
+	/**
+     * The rebuilding process is basically just a download and reupload of
+     * the xsn.  
+     * 
+     * The point of rebuilding would be to get a new schema into the xsn
+     * or to get new concepts/concept answers into the form
+     * 
+     * @param form Form to rebuild the xsn for
+     */
+    public static void rebuildXSN(Form form) throws IOException {
+    	Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
+		InputStream formStream = (InputStream) streamAndDir[0];
+		File tempDir = (File) streamAndDir[1];
+		
+		if (formStream == null)
+			throw new IOException("The formstream for form: " + form + " should not be null (but it is)");
+		
+		PublishInfoPath.publishXSN(formStream);
+		
+		try {
+			formStream.close();
+		} catch (IOException ioe) {}
+		try {
+			OpenmrsUtil.deleteDirectory(tempDir);
+		} catch (IOException ioe) {}
     }
     
 }

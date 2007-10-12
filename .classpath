@@ -5,7 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2290.jar" sourcepath="/openmrs-alpha"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib-common/spring-2.0.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-2.0.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/hibernate3.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/hibernate-3.2.1.ga.zip"/>
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-dev.jar"/>

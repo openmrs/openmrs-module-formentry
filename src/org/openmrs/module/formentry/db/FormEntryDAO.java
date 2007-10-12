@@ -2,6 +2,7 @@ package org.openmrs.module.formentry.db;
 
 import java.util.Collection;
 
+import org.openmrs.Form;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryXsn;
@@ -73,4 +74,9 @@ public interface FormEntryDAO {
      * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryArchiveNeeded()
      */
     public Boolean migrateFormEntryArchiveNeeded();
+
+    /**
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(org.openmrs.Form)
+	 */
+	public void deleteFormEntryXsn(Integer formId);
 }
