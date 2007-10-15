@@ -110,7 +110,6 @@
 			<fileset dir="build" >
 				<exclude name="web/**/*" />
 				<exclude name="test/**/*" />
-				<exclude name="*" />
 			</fileset>
 		</jar>
 	</target>
