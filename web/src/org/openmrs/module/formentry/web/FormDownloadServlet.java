@@ -216,7 +216,13 @@ public class FormDownloadServlet extends HttpServlet {
 				if (formStream != null) {
 					PublishInfoPath.publishXSN(formStream);
 					count = count + 1;
-					OpenmrsUtil.deleteDirectory(tempDir);
+					try {
+						OpenmrsUtil.deleteDirectory(tempDir);
+					} catch (IOException ioe) {}
+				
+					try {
+						formStream.close();
+					} catch (IOException ioe) {}
 				}
 			}
 			log.debug(count + " xsn(s) rebuilt");

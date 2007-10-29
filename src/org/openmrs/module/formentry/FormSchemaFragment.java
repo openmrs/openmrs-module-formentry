@@ -303,9 +303,11 @@ public class FormSchemaFragment {
 				+ "  <xs:sequence>\n"
 				+ "    <xs:element name=\"date\" type=\"xs:date\" nillable=\"true\" minOccurs=\"0\" />\n"
 				+ "    <xs:element name=\"time\" type=\"xs:time\" nillable=\"true\" minOccurs=\"0\" />\n";
+		
 		for (ConceptAnswer answer : answerList) {
-			String answerConceptName = answer.getAnswerConcept()
-					.getName(locale).getName();
+			Concept answerConcept = answer.getAnswerConcept();
+			
+			String answerConceptName = answerConcept.getName().getName();
 			Drug answerDrug = answer.getAnswerDrug();
 			if (answerDrug != null) {
 				String answerDrugName = answerDrug.getName();
@@ -316,7 +318,7 @@ public class FormSchemaFragment {
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
 						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-						+ FormEntryUtil.conceptToString(answer.getAnswerConcept(),
+						+ FormEntryUtil.conceptToString(answerConcept,
 								locale)
 						+ "^"
 						+ FormEntryUtil.drugToString(answerDrug)
@@ -336,7 +338,7 @@ public class FormSchemaFragment {
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
 						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-						+ FormEntryUtil.conceptToString(answer.getAnswerConcept(),
+						+ FormEntryUtil.conceptToString(answerConcept,
 								locale) + "\" />\n"
 						+ "          </xs:extension>\n"
 						+ "        </xs:simpleContent>\n"
