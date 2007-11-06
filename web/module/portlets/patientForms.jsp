@@ -67,7 +67,26 @@
 				DWRFormService.getForms(this.simpleClosure(this, "doObjectsFound"), '${showUnpublishedForms}');
 			};
 			
-			searchWidget.showAll();
+			// avoid unnecessary dwr call the first time by emulating the following line:
+			//     searchWidget.showAll();
+			var initialForms = new Array();
+			var frm;
+			<openmrs:forEachRecord name="form">
+				<c:if test="${showUnpublishedForms == true || record.published}">
+					frm = new Object();
+					frm.formId = ${record.formId};
+					frm.name = '${fn:replace(record.name, "'", "\\'")}';
+					frm.version = '${fn:replace(record.version, "'", "\\'")}';
+					frm.published = ${record.published};
+					/*
+						frm.encounterType = '${fn:replace(record.encounterType, "'", "\\'")}';
+						frm.description = '${fn:replace(record.description, "'", "\\'")}';
+						frm.build = ${record.build};
+					*/
+					initialForms.push(frm);
+				</c:if>
+			</openmrs:forEachRecord>
+			searchWidget.doObjectsFound(initialForms);
 			
 			searchWidget.searchCleared = function() {
 				searchWidget.showAll();
