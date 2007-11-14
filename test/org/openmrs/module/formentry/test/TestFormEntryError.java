@@ -31,7 +31,12 @@ public class TestFormEntryError extends BaseModuleContextSensitiveTest {
 	 */
 	public void testCreatingErrorQueueItem() throws Exception {
 		
+		initializeInMemoryDatabase();
+		
 		authenticate();
+		
+		//Class c = ATDProducerService.class;
+		//Object service = Context.getService(c);
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
@@ -53,5 +58,5 @@ public class TestFormEntryError extends BaseModuleContextSensitiveTest {
 		assertNotNull(fetchedError);
 		
 	}
-	
+
 }
