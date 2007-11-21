@@ -6,10 +6,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="dist"/>
 	<classpathentry kind="lib" path="metadata"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2585.jar" sourcepath="/openmrs-alpha"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2631.jar" sourcepath="/openmrs-alpha"/>
 	<classpathentry kind="lib" path="lib-common/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.1.10.2546.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.1.10.2585.jar" sourcepath="/openmrs-alpha/test"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.1.10.2631.jar" sourcepath="/openmrs-alpha/test"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-2.0.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
