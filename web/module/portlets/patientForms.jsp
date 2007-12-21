@@ -64,7 +64,11 @@
 			searchWidget.allowAutoJump = function() { return false; };
 			
 			searchWidget.showAll = function() {
-				DWRFormService.getForms(this.simpleClosure(this, "doObjectsFound"), '${showUnpublishedForms}');
+				var thisObj = this;
+				DWRFormService.getForms(function(arg1, arg2) {
+											thisObj.doObjectsFound(arg1, arg2);
+											thisObj.showHighlight();
+										}, '${showUnpublishedForms}');
 			};
 			
 			// avoid unnecessary dwr call the first time by emulating the following line:
@@ -87,6 +91,7 @@
 				</c:if>
 			</openmrs:forEachRecord>
 			searchWidget.doObjectsFound(initialForms);
+			searchWidget.showHighlight();
 			
 			searchWidget.searchCleared = function() {
 				searchWidget.showAll();
