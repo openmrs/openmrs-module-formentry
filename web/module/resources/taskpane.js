@@ -99,13 +99,17 @@ function pickConcept(nodeName, concept, createConceptList, extraMap) {
 		if (extraMap) {
 			for (var i=0; i < extraMap.length; i++) {
 				var entry = extraMap[i];
-				var entryNode = node.selectSingleNode(entry.key);
-				if (entryNode == null)
-					alert("entryNode not found: " + entry.key);
-				else {
-					var valueNode = entryNode.selectSingleNode("value");
-					clearNil(valueNode);
-					valueNode.text = entry.value;
+				/* Only update the extra info if the user puts in a value.  This gets around
+				   infopath's problem with empty strings in integer fields */
+				if (entry != null && entry.value != null && entry.value.length > 0) {
+					var entryNode = node.selectSingleNode(entry.key);
+					if (entryNode == null)
+						alert("entryNode not found: " + entry.key);
+					else {
+						var valueNode = entryNode.selectSingleNode("value");
+						clearNil(valueNode);
+						valueNode.text = entry.value;
+					}
 				}
 			}
 		}
