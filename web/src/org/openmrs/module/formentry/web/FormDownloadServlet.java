@@ -25,9 +25,10 @@ import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.FormService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryConstants;
-import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormSchemaBuilder;
 import org.openmrs.module.formentry.FormXmlTemplateBuilder;
@@ -42,8 +43,6 @@ import org.openmrs.web.WebConstants;
  * trigger the form application (e.g., Microsoft&reg; InfoPath&trade;) on the
  * client, download of an empty template, and download of a form schema.
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class FormDownloadServlet extends HttpServlet {
@@ -77,8 +76,8 @@ public class FormDownloadServlet extends HttpServlet {
 			return;
 		}
 
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-		Patient patient = formEntryService.getPatient(patientId);
+		PatientService ps = Context.getPatientService();
+		Patient patient = ps.getPatient(patientId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
@@ -161,7 +160,7 @@ public class FormDownloadServlet extends HttpServlet {
 		Integer formId = null;
 		String target = request.getParameter("target");
 		HttpSession httpSession = request.getSession();
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormService formService = Context.getFormService();
 		
 		if (Context.isAuthenticated() == false) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
@@ -171,7 +170,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			formId = Integer.parseInt(request.getParameter("formId"));
-			form = formEntryService.getForm(formId);
+			form = formService.getForm(formId);
 		}
 		catch (NumberFormatException e) {
 			// pass.  Error throwing is done in the if statements
@@ -209,7 +208,7 @@ public class FormDownloadServlet extends HttpServlet {
 		else if ("rebuildAll".equals(target)) {
 			// Download all XSNs and upload them again
 			Integer count = 0;
-			for (Form formObj : formEntryService.getForms(false, false)) {
+			for (Form formObj : formService.getForms(false, false)) {
 				Object[] streamAndDir = FormEntryUtil.getCurrentXSN(formObj, false);
 				InputStream formStream = (InputStream) streamAndDir[0];
 				File tempDir = (File) streamAndDir[1];

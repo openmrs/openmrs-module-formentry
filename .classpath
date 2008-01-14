@@ -6,10 +6,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="dist"/>
 	<classpathentry kind="lib" path="metadata"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2631.jar" sourcepath="/openmrs-alpha"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.0.3037.jar" sourcepath="/openmrs-trunk"/>
 	<classpathentry kind="lib" path="lib-common/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.1.10.2546.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.1.10.2631.jar" sourcepath="/openmrs-alpha/test"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.1.10.2631.jar" sourcepath="/openmrs-trunk/test"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-2.0.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
@@ -19,18 +19,18 @@
 	<classpathentry kind="lib" path="lib-common/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/mail/mail.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/jta/jta.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/dom4j/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/commons-collections/commons-collections-3.1.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/cglib/cglib-2.1_3.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/c3p0/c3p0-0.9.1.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/ehcache/ehcache-1.2.4.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/hl7api/hapi-0.5.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/antlr/antlr_2.7.6.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/asm/asm.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/jakarta-log4j/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="/openmrs-alpha/lib/xerces/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/mail/mail.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/jta/jta.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/dom4j/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/commons-collections/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/cglib/cglib-2.1_3.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/c3p0/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/ehcache/ehcache-1.2.4.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/hl7api/hapi-0.5.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/antlr/antlr_2.7.6.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/asm/asm.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/jakarta-log4j/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="/openmrs-trunk/lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
