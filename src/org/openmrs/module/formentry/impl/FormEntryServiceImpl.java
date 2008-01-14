@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.formentry.impl;
 
 import java.io.File;
@@ -6,7 +19,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -14,16 +26,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.RelationshipType;
-import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.APIException;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryArchive;
 import org.openmrs.module.formentry.FormEntryConstants;
@@ -56,306 +60,6 @@ public class FormEntryServiceImpl implements FormEntryService {
 	
 	public void setFormEntryDAO(FormEntryDAO dao) {
 		this.dao = dao;
-	}
-
-	private PatientService getPatientService() {
-		return Context.getPatientService();
-	}
-	
-	private EncounterService getEncounterService() {
-		return Context.getEncounterService();
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.createPatient(org.openmrs.Patient)
-	 */
-	public void createPatient(Patient patient) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-		try {
-			getPatientService().createPatient(patient);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatient(java.lang.Integer)
-	 */
-	public Patient getPatient(Integer patientId) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Patient p;
-		try {
-			p = getPatientService().getPatient(patientId);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.updatePatient(org.openmrs.Patient)
-	 */
-	public void updatePatient(Patient patient) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
-		try {
-			getPatientService().updatePatient(patient);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByIdentifier(java.lang.String,boolean)
-	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier,
-			boolean includeVoided) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
-		try {
-			p = getPatientService().getPatientsByIdentifier(identifier,
-					includeVoided);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String)
-	 */
-	public Set<Patient> getPatientsByName(String name) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
-		try {
-			p = getPatientsByName(name, false);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String,boolean)
-	 */
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
-			throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
-		try {
-			p = getPatientService().getPatientsByName(name, includeVoided);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientIdentifierTypes()
-	 */
-	public List<PatientIdentifierType> getPatientIdentifierTypes()
-			throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		List<PatientIdentifierType> p;
-		try {
-			p = getPatientService().getPatientIdentifierTypes();
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientIdentifierType(java.lang.Integer)
-	 */
-	public PatientIdentifierType getPatientIdentifierType(
-			Integer patientIdentifierTypeId) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		PatientIdentifierType p;
-		try {
-			p = getPatientService().getPatientIdentifierType(
-					patientIdentifierTypeId);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return p;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getTribe(java.lang.Integer)
-	 */
-	public Tribe getTribe(Integer tribeId) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Tribe t;
-		try {
-			t = getPatientService().getTribe(tribeId);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return t;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getTribes()
-	 */
-	public List<Tribe> getTribes() throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		List<Tribe> t;
-		try {
-			t = getPatientService().getTribes();
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return t;
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService.findTribes(java.lang.String)
-	 */
-	public List<Tribe> findTribes(String s) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		List<Tribe> t;
-		try {
-			t = getPatientService().findTribes(s);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return t;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getLocations()
-	 */
-	public List<Location> getLocations() throws APIException {
-		return getEncounterService().getLocations();
-	}
-	
-	/**
-	 * @see org.openmrs.api.EncounterService.findLocations()
-	 */
-	public List<Location> findLocations(String txt) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
-		List<Location> locs;
-		try {
-			locs = getEncounterService().findLocations(txt);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
-		}
-		return locs;
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.getLocation(java.lang.Integer)
-	 */
-	public Location getLocation(Integer locationId) throws APIException {
-		return getEncounterService().getLocation(locationId);
-	}
-
-	/**
-	 * @see org.openmrs.api.PatientService.findPatients(java.lang.String,boolean)
-	 */
-	public List<Patient> findPatients(String query, boolean includeVoided) {
-
-		List<Patient> patients;
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		try {
-			patients = getPatientService().findPatients(query, includeVoided);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		}
-		return patients;
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService.getRelationshipType(java.lang.Integer)
-	 */
-	public RelationshipType getRelationshipType(Integer id) throws APIException {
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-		RelationshipType t;
-		try {
-			t = Context.getPersonService().getRelationshipType(id);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-		}
-		return t;
-	}
-
-	/**
-	 * @see org.openmrs.api.FormService.getForm(java.lang.Integer)
-	 */
-	public Form getForm(Integer formId) {
-
-		Form form;
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
-		try {
-			form = Context.getFormService().getForm(formId);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
-		}
-		return form;
-	}
-	
-	public Collection<Form> getForms(boolean onlyPublished, boolean includeRetired) {
-		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_FORM_ENTRY);
-		
-		List<Form> forms = new Vector<Form>();
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
-		try {
-			forms = Context.getFormService().getForms(onlyPublished, includeRetired);
-		} catch (Exception e) {
-			log.error("Error getting forms", e);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
-		}
-		return forms;
-	}
-	
-	public User getUserByUsername(String username) {
-		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_FORM_ENTRY);
-		
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		User ret = null;
-		try {
-			ret = Context.getUserService().getUserByUsername(username);
-		} catch (Exception e) {
-			log.error("Error getting user by username", e);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		}
-		return ret;
-	}
-
-	/**
-	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, boolean)
-	 */
-	public Collection<User> findUsers(String searchValue, List<String> roles,
-			boolean includeVoided) {
-		if (!Context.hasPrivilege(FormEntryConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_FORM_ENTRY);
-		
-		List<User> users = new Vector<User>();
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		try {
-			users = Context.getUserService().findUsers(searchValue, roles, includeVoided);
-		} catch (Exception e) {
-			log.error("Error finding users", e);
-		} finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		}
-		return users;
-	}
-
-	/**
-	 * @deprecated
-	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, boolean)
-	 */
-	public Collection<User> getAllUsers(List<String> strRoles,
-			boolean includeVoided) {
-		throw new APIException ("FormEntryService.getAllUsers(List<String>, boolean) has been removed");
 	}
 	
 	/**
