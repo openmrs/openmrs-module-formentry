@@ -125,6 +125,11 @@
 
 	<!-- Required Global Properties -->
 	<globalProperty>
+		<property>@MODULE_ID@.infopath_server_url</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
+	</globalProperty>
+	<globalProperty>
 		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
 		<property>@MODULE_ID@.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
 		<defaultValue>Welcome!</defaultValue>
