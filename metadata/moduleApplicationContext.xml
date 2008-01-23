@@ -6,9 +6,9 @@
 <beans>
 	
     <bean id="formEntryUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="order"><value>1</value></property>
     	<property name="mappings">
             <props>
-	            <prop key="module/formentry/taskpane/tribe.htm">tribeListTaskpane</prop>
 				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
 				<prop key="module/formentry/formEntryError.list">formEntryErrorList</prop>
 				<prop key="module/formentry/xsnUpload.form">xsnUploadForm</prop>
@@ -98,14 +98,6 @@
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 	
-	<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
-		<property name="commandName"><value>tribes</value></property>
-		<property name="commandClass"><value>java.util.List</value></property>
-		<property name="formView"><value>/module/formentry/taskpane/tribe</value></property>
-		<property name="successView"><value>/module/formentry/taskpane/tribe</value></property>
-	</bean>	
-	
 	<!-- /Controllers -->
-	
 	
 </beans>
