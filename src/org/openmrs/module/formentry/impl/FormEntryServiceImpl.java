@@ -123,9 +123,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String)
 	 */
-	public Set<Patient> getPatientsByName(String name) throws APIException {
+	public Collection<Patient> getPatientsByName(String name) throws APIException {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
+		Collection<Patient> p;
 		try {
 			p = getPatientsByName(name, false);
 		} finally {
@@ -137,10 +137,10 @@ public class FormEntryServiceImpl implements FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String,boolean)
 	 */
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided)
 			throws APIException {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		Set<Patient> p;
+		Collection<Patient> p;
 		try {
 			p = getPatientService().getPatientsByName(name, includeVoided);
 		} finally {
@@ -253,9 +253,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.findPatients(java.lang.String,boolean)
 	 */
-	public List<Patient> findPatients(String query, boolean includeVoided) {
+	public Collection<Patient> findPatients(String query, boolean includeVoided) {
 
-		List<Patient> patients;
+		Collection<Patient> patients;
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
 			patients = getPatientService().findPatients(query, includeVoided);

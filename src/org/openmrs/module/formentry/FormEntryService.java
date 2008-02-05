@@ -57,14 +57,14 @@ public interface FormEntryService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Set<Patient> getPatientsByName(String name) throws APIException;
+	public Collection<Patient> getPatientsByName(String name) throws APIException;
 
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String,boolean)
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided)
 			throws APIException;
 
 	/**
@@ -130,7 +130,7 @@ public interface FormEntryService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<Patient> findPatients(String query, boolean includeVoided);
+	public Collection<Patient> findPatients(String query, boolean includeVoided);
 
 	/**
 	 * @see org.openmrs.api.FormService.getForm(java.lang.Integer)
