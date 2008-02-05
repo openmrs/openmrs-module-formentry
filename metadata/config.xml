@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>2.7</version>
+	<version>2.9</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -17,7 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.1.10.2580</require_version>
+	<require_version>1.2.0.3196</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -124,6 +124,11 @@
 
 
 	<!-- Required Global Properties -->
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_server_url</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
+	</globalProperty>
 	<globalProperty>
 		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
 		<property>@MODULE_ID@.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->

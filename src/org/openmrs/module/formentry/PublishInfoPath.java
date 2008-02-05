@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.formentry;
 
 import java.io.File;
@@ -28,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
@@ -307,6 +321,16 @@ public class PublishInfoPath {
 		writeXml(doc, file.getAbsolutePath());
 	}
 
+	/**
+	 * Convenience method to find the correct OpenMRS Form object that
+	 * this xsn refers to.
+	 * 
+	 * Currently this is a simplistic lookup of form.id in the header 
+	 * 
+	 * @param tempDir directory in which to look for the xsd
+	 * 
+	 * @return Form that this xsn refers to or null if none
+	 */
 	private static Form determineForm(File tempDir) {
 		File xsd = FormEntryUtil.findFile(tempDir, "FormEntry.xsd");
 		Form form = null;
@@ -327,8 +351,8 @@ public class PublishInfoPath {
 
 			Integer formId = Integer.valueOf(elem.getAttribute("fixed"));
 			
-			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-			form = formEntryService.getForm(formId);
+			FormService formService = Context.getFormService();
+			form = formService.getForm(formId);
 
 		}
 		catch (ParserConfigurationException e) {

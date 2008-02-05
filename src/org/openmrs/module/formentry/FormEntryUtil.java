@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.formentry;
 
 import java.io.BufferedReader;
@@ -34,6 +47,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ *
+ */
 public class FormEntryUtil {
 
 	private static Log log = LogFactory.getLog(FormEntryUtil.class);
@@ -109,19 +125,7 @@ public class FormEntryUtil {
 
 		StringBuffer cmdBuffer = new StringBuffer();
 
-		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX
-				.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
-			
-			// retrieve the cabextract path from the global properties
-			String cabextLocation = FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION;
-			if (cabextLocation == null)
-				cabextLocation = "/usr/bin/cabextract";
-			
-			cmdBuffer.append(cabextLocation + " -d ").append(
-					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
-			execCmd(cmdBuffer.toString(), tempDir);
-		} 
-		else if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 			
 			// retrieve the cabextract path from the runtime properties
 			String cabextLocation = FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION;
@@ -157,7 +161,7 @@ public class FormEntryUtil {
 		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
 		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
-		Class c = FormEntryUtil.class;
+		Class<FormEntryUtil> c = FormEntryUtil.class;
 		/*
 		URL url = c.getResource(xsnFolderPath);
 		File xsnFolder = null;
@@ -346,8 +350,7 @@ public class FormEntryUtil {
 		StringBuffer cmdBuffer = new StringBuffer();
 
 		// Special case : Linux operating sytem uses lcab utility
-		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-				(OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))) {
+		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 			
 			String lcabLocation = FormEntryConstants.FORMENTRY_LCAB_LOCATION;
 			if (lcabLocation == null)
@@ -377,12 +380,12 @@ public class FormEntryUtil {
 	}
 
 	/**
+	 * Convenience method to execute the given command in an environment
+	 * agnostic manner
 	 * 
-	 * @param cmd
-	 *            command to execute
-	 * @param wd
-	 *            working directory
-	 * @return
+	 * @param cmd command to execute
+	 * @param wd working directory (can be null)
+	 * @return command output
 	 */
 	private static String execCmd(String cmd, File wd) {
 		log.debug("executing command: " + cmd);
@@ -395,6 +398,7 @@ public class FormEntryUtil {
 			Process p = (wd != null) ? Runtime.getRuntime().exec(cmd, null, wd)
 					: Runtime.getRuntime().exec(cmd);
 			
+			// get the stdout
 			out.append("Normal cmd output:\n");
 			Reader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader input = new BufferedReader(reader);
@@ -405,6 +409,7 @@ public class FormEntryUtil {
 			input.close();
 			reader.close();
 			
+			// get the errout
 			out.append("ErrorStream cmd output:\n");
 			reader = new InputStreamReader(p.getErrorStream());
 			input = new BufferedReader(reader);
@@ -415,20 +420,28 @@ public class FormEntryUtil {
 			input.close();
 			reader.close();
 			
-			log.debug("Process exit value: " + p.exitValue());
+			// wait for the thread to finish and get the exit value
+			int exitValue = p.waitFor();
+			
+			if (log.isDebugEnabled())
+				log.debug("Process exit value: " + exitValue);
 			
 		} catch (Exception e) {
 			log.error("Error while executing command: '" + cmd + "'", e);
-		}	
-		log.debug("execCmd output: \n" + out.toString());
+		}
+		
+		if (log.isDebugEnabled())
+			log.debug("execCmd output: \n" + out.toString());
+		
 		return out.toString();
 	}
 
 	/**
 	 * Create a temporary directory with the given prefix and a random suffix
 	 * 
-	 * @param prefix
+	 * @param prefix String to insert before the random generated filename
 	 * @return New temp directory pointer
+	 * 
 	 * @throws IOException
 	 */
 	public static File createTempDirectory(String prefix) throws IOException {

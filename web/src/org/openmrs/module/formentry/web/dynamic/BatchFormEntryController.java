@@ -27,7 +27,6 @@ import org.openmrs.Patient;
 import org.openmrs.PersonAttribute;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.reporting.PatientSet;
@@ -86,8 +85,7 @@ public class BatchFormEntryController extends SimpleFormController {
     		User u = Context.getUserService().getUser(providerId);
     		batchForm.setProvider(u);
     	} else {
-    		FormEntryService fes = (FormEntryService)Context.getService(FormEntryService.class);
-    		User u = fes.getUserByUsername("Unknown");
+    		User u = Context.getUserService().getUserByUsername("Unknown");
     		batchForm.setProvider(u);
     	}
     	
