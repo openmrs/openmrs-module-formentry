@@ -26,8 +26,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +42,7 @@ import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -532,16 +531,12 @@ public class FormEntryUtil {
 		}
 	}
 
-	public static String getFormUriWithoutExtension(Form form) {
-		return String.valueOf(form.getFormId());
-	}
-
 	public static String getFormUriExtension(Form form) {
 		return ".xsn";
 	}
 
 	public static String getFormUri(Form form) {
-		return getFormUriWithoutExtension(form) + getFormUriExtension(form);
+		return FormUtil.getFormUriWithoutExtension(form) + getFormUriExtension(form);
 	}
 
 	public static String getFormAbsoluteUrl(Form form) {
@@ -576,31 +571,30 @@ public class FormEntryUtil {
 		return version;
 	}
 	
+	/**
+	 * @deprecated use org.openmrs.util#FormUtil.conceptToString(Concept, Locale)
+	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		return concept.getConceptId() + "^" + concept.getName(locale).getName()
-				+ "^" + FormEntryConstants.HL7_LOCAL_CONCEPT;
+		return org.openmrs.util.FormUtil.conceptToString(concept, locale);
 	}
 
+	/**
+	 * @deprecated use org.openmrs.util.FormUtil#drugToString(Drug)
+	 */
 	public static String drugToString(Drug drug) {
-		return drug.getDrugId() + "^" + drug.getName() + "^"
-				+ FormEntryConstants.HL7_LOCAL_DRUG;
+		return org.openmrs.util.FormUtil.drugToString(drug);
 	}
 	
 	// max length of HL7 message control ID is 20
 	private static final int FORM_UID_LENGTH = 20;
 
+	/**
+	 * Generates a uid in a length acceptable to hl7
+	 * 
+	 * @return relatively unique string
+	 */
 	public static String generateFormUid() {
-		StringBuffer sb = new StringBuffer(FORM_UID_LENGTH);
-		for (int i = 0; i < FORM_UID_LENGTH; i++) {
-			int ch = (int) (Math.random() * 62);
-			if (ch < 10) // 0-9
-				sb.append(ch);
-			else if (ch < 36) // a-z
-				sb.append((char) (ch - 10 + 'a'));
-			else
-				sb.append((char) (ch - 36 + 'A'));
-		}
-		return sb.toString();
+		return OpenmrsUtil.generateUid(FORM_UID_LENGTH);
 	}
 
 	/**
@@ -694,53 +688,11 @@ public class FormEntryUtil {
     }
 
 	/**
-     * Gets an out File object.  If date is not provided, the current 
-     * timestamp is used.
-     * 
-     * If user is not provided, the user id is not put into the filename.
-     * 
-     * Assumes dir is already created
-     * 
-     * @param dir directory to make the random filename in
-     * @param date optional Date object used for the name
-     * @param user optional User creating this file object 
-     * @return file new file that is able to be written to
+     * @deprecated this method has been moved into the OpenmrsUtil class
+     * @see org.openmrs.util.OpenmrsUtil#getOutFile(File,Date,User)
      */
     public static File getOutFile(File dir, Date date, User user) {
-    	
-    	File outFile;
-		do {
-	    	// format to print date in filenmae
-	    	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
-	    	
-	    	// use current date if none provided
-	    	if (date == null)
-	    		date = new Date();
-	    	
-	    	StringBuilder filename = new StringBuilder();
-	    	
-	    	// the start of the filename is the time so we can do some sorting
-			filename.append(dateFormat.format(date));
-			
-			// insert the user id if they provided it
-			if (user != null) {
-				filename.append("-");
-				filename.append(user.getUserId());
-				filename.append("-");
-			}
-			
-			// the end of the filename is a randome number between 0 and 10000
-			filename.append((int)(Math.random() * 10000));
-			filename.append(".xml");
-			
-			outFile = new File(dir, filename.toString());
-			
-			// set to null to avoid very minimal possiblity of an infinite loop
-			date = null;
-			
-		} while (outFile.exists());
-		
-		return outFile;
+    	return OpenmrsUtil.getOutFile(dir, date, user);
     }
 
 	/**

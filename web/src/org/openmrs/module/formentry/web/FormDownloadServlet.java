@@ -80,7 +80,7 @@ public class FormDownloadServlet extends HttpServlet {
 		Patient patient = ps.getPatient(patientId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
-		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
+		String title = form.getName() + "(" + FormUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
 		// Set up a VelocityContext in which to evaluate the template's default

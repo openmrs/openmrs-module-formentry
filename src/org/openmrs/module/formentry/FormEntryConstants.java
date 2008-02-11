@@ -1,28 +1,109 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.formentry;
 
 import java.util.Hashtable;
+import org.openmrs.util.FormConstants;
 
+/**
+ * Constants used by the formentry module
+ */
 public class FormEntryConstants {
+	
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_CONCEPT
+	 */
+	public static final Integer FIELD_TYPE_CONCEPT = FormConstants.FIELD_TYPE_CONCEPT;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_DATABASE
+	 */
+	public static final Integer FIELD_TYPE_DATABASE = FormConstants.FIELD_TYPE_DATABASE;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_TERM_SET
+	 */
+	public static final Integer FIELD_TYPE_TERM_SET = FormConstants.FIELD_TYPE_TERM_SET;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_MISC_SET
+	 */
+	public static final Integer FIELD_TYPE_MISC_SET = FormConstants.FIELD_TYPE_MISC_SET;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_SECTION
+	 */
+	public static final Integer FIELD_TYPE_SECTION = FormConstants.FIELD_TYPE_SECTION;
 
-	public static final Integer FIELD_TYPE_CONCEPT = 1;
-	public static final Integer FIELD_TYPE_DATABASE = 2;
-	public static final Integer FIELD_TYPE_TERM_SET = 3;
-	public static final Integer FIELD_TYPE_MISC_SET = 4;
-	public static final Integer FIELD_TYPE_SECTION = 5;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_TEXT
+	 */
+	public static final String HL7_TEXT = FormConstants.HL7_TEXT;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_CODED
+	 */
+	public static final String HL7_CODED = FormConstants.HL7_CODED;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_CODED_WITH_EXCEPTIONS
+	 */
+	public static final String HL7_CODED_WITH_EXCEPTIONS = FormConstants.HL7_CODED_WITH_EXCEPTIONS;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_NUMERIC
+	 */
+	public static final String HL7_NUMERIC = FormConstants.HL7_NUMERIC;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_DATE
+	 */
+	public static final String HL7_DATE = FormConstants.HL7_DATE;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_TIME
+	 */
+	public static final String HL7_TIME = FormConstants.HL7_TIME;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_DATETIME
+	 */
+	public static final String HL7_DATETIME = FormConstants.HL7_DATETIME;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_BOOLEAN
+	 */
+	public static final String HL7_BOOLEAN = FormConstants.HL7_BOOLEAN;
 
-	public static final String HL7_TEXT = "ST";
-	public static final String HL7_CODED = "CE";
-	public static final String HL7_CODED_WITH_EXCEPTIONS = "CWE";
-	public static final String HL7_NUMERIC = "NM";
-	public static final String HL7_DATE = "DT";
-	public static final String HL7_TIME = "TM";
-	public static final String HL7_DATETIME = "TS";
-	public static final String HL7_BOOLEAN = "BIT";
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.CLASS_DRUG
+	 */
+	public static final Integer CLASS_DRUG = FormConstants.CLASS_DRUG;
 
-	public static final Integer CLASS_DRUG = 3;
-
-	public static final String HL7_LOCAL_CONCEPT = "99DCT";
-	public static final String HL7_LOCAL_DRUG = "99RX";
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_LOCAL_CONCEPT
+	 */
+	public static final String HL7_LOCAL_CONCEPT = FormConstants.HL7_LOCAL_CONCEPT;
+	
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_LOCAL_DRUG
+	 */
+	public static final String HL7_LOCAL_DRUG = FormConstants.HL7_LOCAL_DRUG;
 
 	// List of datatypes that do not require complex definitions
 	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
@@ -37,7 +118,10 @@ public class FormEntryConstants {
 		simpleDatatypes.put(HL7_BOOLEAN, "_infopath_boolean");
 	}
 
-	public static final int INDENT_SIZE = 2;
+	/**
+	 * @deprecated Use org.openmrs.util.form.FormConstants.INDENT_SIZE
+	 */
+	public static final int INDENT_SIZE = FormConstants.INDENT_SIZE;
 
 	/* FormEntry Queue baked-in prileges */
 	public static final String PRIV_VIEW_FORMENTRY_QUEUE = "View FormEntry Queue";
