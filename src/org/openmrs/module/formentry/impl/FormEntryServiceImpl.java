@@ -360,6 +360,9 @@ public class FormEntryServiceImpl implements FormEntryService {
      * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(java.lang.Integer)
      */
     public FormEntryXsn getFormEntryXsn(Integer formId) {
+    	if (formId == null)
+    		return null;
+    	
 	    return getFormEntryDAO().getFormEntryXsn(formId);
     }
 
