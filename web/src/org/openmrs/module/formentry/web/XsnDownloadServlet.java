@@ -3,6 +3,8 @@ package org.openmrs.module.formentry.web;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,8 +23,6 @@ import org.openmrs.module.formentry.FormEntryXsn;
  * modify the template or schema files inside of the xsn. This class simply
  * writes the named schema to the response
  * 
- * @author Ben Wolfe
- * @version 1.0
  */
 public class XsnDownloadServlet extends HttpServlet {
 
@@ -30,6 +30,17 @@ public class XsnDownloadServlet extends HttpServlet {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
+	/**
+	 * The filename pattern matcher.  Matches the first n numbers in the filename
+	 */
+	private static final Pattern pattern = Pattern.compile(".*/formentry/forms/(\\d+).*");
+	
+	/**
+	 * This method is called by Infopath to get the compiled and uploaded xsn from
+	 * openmrs's xsn repository
+	 * 
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 
@@ -38,11 +49,22 @@ public class XsnDownloadServlet extends HttpServlet {
 		// since we've got a "/formentry/form/*" servlet-mapping,
 		// getServletPath() will only return /formentry/form.
 		String filename = request.getRequestURI();
-		// get only the file name out of path
-		filename = filename.substring(filename.lastIndexOf("/") + 1);
 		
-		String formIdString = filename.substring(0, filename.indexOf("."));
-		Integer formId = Integer.valueOf(formIdString);
+		// get only the file name out of path
+		//filename = filename.substring(filename.lastIndexOf("/") + 1);
+		
+		Matcher matcher = pattern.matcher(filename);
+		
+		Integer formId = null;
+		
+		if (matcher.matches() == false) {
+			log.warn("Unable to find the form id in the url: " + filename);
+		}
+		else {
+			// get the form id out of the matcher.  This should be the first parentheses
+			String formIdString = matcher.group(1);
+			formId = Integer.valueOf(formIdString);
+		}
 		
 		//File file = FormEntryUtil.getXSNFile(filename);
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
@@ -54,9 +76,9 @@ public class XsnDownloadServlet extends HttpServlet {
 			Long timeModified = dateModified.getTime();
 			
 			if (log.isDebugEnabled()) {
-				log.debug("testing modified date: " + dateModified);
-				log.debug("testing etag: " + timeModified);
-				log.debug("length of xsn.getXsn(): " + xsn.getXsnData().length);
+				log.debug("xsn modified date: " + dateModified);
+				log.debug("xsn etag: " + timeModified);
+				log.debug("length of xsn.getXsnData(): " + xsn.getXsnData().length);
 			}
 			
 			// InfoPath checks one or both of these values to determine if it needs to 
@@ -72,7 +94,7 @@ public class XsnDownloadServlet extends HttpServlet {
 		} 
 		else {
 			log.error(
-			        "The request for '"
+			        "The xsn for formId '"
 			        	+ formId
 			            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in Form Entry administration).");
 			response.sendError(404);
