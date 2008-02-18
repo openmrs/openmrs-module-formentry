@@ -1,19 +1,10 @@
 package org.openmrs.module.formentry;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 
 import org.openmrs.Form;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.RelationshipType;
-import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.APIException;
 import org.openmrs.module.formentry.db.FormEntryDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,151 +17,12 @@ public interface FormEntryService {
 	public void setFormEntryDAO(FormEntryDAO dao);
 
 	/**
-	 * @see org.openmrs.api.PatientService.createPatient(org.openmrs.Patient)
-	 */
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public void createPatient(Patient patient) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatient(java.lang.Integer)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Patient getPatient(Integer patientId) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.updatePatient(org.openmrs.Patient)
-	 */
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public void updatePatient(Patient patient) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByIdentifier(java.lang.String,boolean)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Set<Patient> getPatientsByIdentifier(String identifier,
-			boolean includeVoided) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Collection<Patient> getPatientsByName(String name) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String,boolean)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Collection<Patient> getPatientsByName(String name, boolean includeVoided)
-			throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientIdentifierTypes()
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<PatientIdentifierType> getPatientIdentifierTypes()
-			throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getPatientIdentifierType(java.lang.Integer)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public PatientIdentifierType getPatientIdentifierType(
-			Integer patientIdentifierTypeId) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getTribe(java.lang.Integer)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Tribe getTribe(Integer tribeId) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getTribes()
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<Tribe> getTribes() throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.findTribes(java.lang.String)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<Tribe> findTribes(String s) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getLocations()
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<Location> getLocations() throws APIException;
-
-	/**
-	 * @see org.openmrs.api.EncounterService.findLocations()
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public List<Location> findLocations(String txt) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.getLocation(java.lang.Integer)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Location getLocation(Integer locationId) throws APIException;
-
-	/**
-	 * @see org.openmrs.api.PatientService.findPatients(java.lang.String,boolean)
-	 */
-	@Transactional(readOnly=true)
-	@Authorized({FormEntryConstants.PRIV_FORM_ENTRY})
-	public Collection<Patient> findPatients(String query, boolean includeVoided);
-
-	/**
-	 * @see org.openmrs.api.FormService.getForm(java.lang.Integer)
-	 */
-	@Transactional(readOnly=true)
-	public Form getForm(Integer formId);
-
-	@Transactional(readOnly=true)
-	public Collection<Form> getForms(boolean onlyPublished, boolean includeRetired);
-
-	/**
-	 * @see org.openmrs.api.UserService.getUserByUsername(String)
-	 */
-	@Transactional(readOnly=true)
-	public User getUserByUsername(String username);
-	
-	/**
-	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, boolean)
-	 */
-	@Transactional(readOnly=true)
-	public Collection<User> findUsers(String searchValue, List<String> roles,
-			boolean includeVoided);
-
-	/**
-	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, boolean)
-	 */
-	@Transactional(readOnly=true)
-	public Collection<User> getAllUsers(List<String> strRoles,
-			boolean includeVoided);
-
-	/**
 	 * Get the list of key value pairs showing important formentry information
 	 * 
 	 * @return map of system variables
 	 */
 	@Transactional(readOnly=true)
 	public SortedMap<String, String> getSystemVariables();
-	
-	@Transactional(readOnly=true)
-	public RelationshipType getRelationshipType(Integer id);
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
