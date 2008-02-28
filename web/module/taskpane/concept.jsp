@@ -10,6 +10,7 @@
 	function miniObject(c) {
 		this.key = c.conceptId;
 		this.value = c.name;
+		this.nameKey = c.conceptNameId;
 	}
 	
 	function miniMapEntry(key) {

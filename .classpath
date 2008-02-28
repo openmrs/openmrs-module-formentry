@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="lib-common/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.0.3367.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.0.3367.jar" sourcepath="/openmrs-mvp/src/api"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

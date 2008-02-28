@@ -13,6 +13,8 @@
 	function miniObject(c) {
 		this.key = c.conceptId;
 		this.value = c.name;
+		this.namekey = c.conceptNameId;
+		this.nameValue = c.name;
 	}
 	
 	var searchWidget;
