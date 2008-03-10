@@ -13,16 +13,24 @@
  */
 package org.openmrs.module.formentry;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,10 +47,13 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -64,6 +75,20 @@ public class PublishInfoPath {
 
 	private static Log log = LogFactory.getLog(PublishInfoPath.class);
 
+	/**
+	 * A FilenameFilter for xsl files. 
+	 */
+	private static FilenameFilter xslFilenameFilter = null;
+	
+	/**
+	 * Regex pattern for an unqualified (lacking concept name) concept specification in HL7 format.
+	 * 
+	 * group(1) should be the single character that starts the HL7 spec
+	 * group(2) should be the Hl7 spec
+	 * group(3) should be the single character that ends the HL7 spec
+	 */
+	private static Pattern hl7ConceptNamePattern = Pattern.compile("([\"|&quot;|>])([0-9]+)\\^[^\\^]+\\^99DCT([\"|&quot;|<])");
+	
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -243,6 +268,9 @@ public class PublishInfoPath {
 		vars.put(FormEntryConstants.FORMENTRY_SUBMIT_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/moduleServlet/formentry/formUpload\"");
 		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
+		// ABK: apply any needed updates to XSL files
+		updateXslFiles(tempDir);
+		
 		// make cab
 		// creates the file in the same temp directory
 		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), outputFilename);
@@ -564,5 +592,79 @@ public class PublishInfoPath {
 			}
 		}
 		return elem;
+	}
+	
+
+    /**
+     * Scans a directory for XSL files, applying any needed updates.
+     * 
+     * @param tempDir
+     */
+	private static void updateXslFiles(File tempDir) {
+		if (tempDir.isDirectory()) {
+			String[] xslFilenames = tempDir.list(getXslFilenameFilter());
+			for (String xslFilename : xslFilenames) {
+				appendConceptnamesInXsl(xslFilename, tempDir);
+			}
+		}
+	}
+	
+	/** 
+	 * Scans an XSL file for HL7 concept specifications, appending the
+	 * appropriate concept-name specification. 
+	 * 
+	 * @param xslFilename
+	 */
+	private static void appendConceptnamesInXsl(String xslFilename, File tempDir) {
+		ConceptService cs = Context.getConceptService();
+		Locale defaultLocale = Context.getLocale();
+		
+		try {
+			File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
+			File tmpXslFile = File.createTempFile("infopath", ".xsltmp", tempDir);
+			
+			BufferedReader xslReader = new BufferedReader(new FileReader(xslFile));
+			PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(tmpXslFile));
+
+			String line = xslReader.readLine();
+		    while (line != null) {
+		    	Matcher m = hl7ConceptNamePattern.matcher(line); 
+		    	if (m.find()) {
+		    		String conceptId = m.group(2);
+		    		Concept concept = cs.getConceptByIdOrName(conceptId);
+		    		String appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(3);
+		    		
+		    		line = m.replaceFirst(appendedHl7);
+		    	} else {
+		    		tmpXslWriter.println(line);
+		    		line = xslReader.readLine();
+		    	}
+		    }
+		 
+		    tmpXslWriter.close();
+		    xslReader.close();
+		    // xslFile.delete();
+		    // tmpXslFile.renameTo(xslFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Lazy factory method of xslFilenameFilter.
+	 * 
+	 * @return
+	 */
+	private static FilenameFilter getXslFilenameFilter() {
+		if (xslFilenameFilter == null) {
+			xslFilenameFilter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith("xsl");
+				}};
+		}
+		return xslFilenameFilter;
 	}
 }
