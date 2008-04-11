@@ -76,7 +76,7 @@
 			var initialForms = new Array();
 			var frm;
 			<openmrs:forEachRecord name="form">
-				<c:if test="${showUnpublishedForms == true || record.published}">
+				<c:if test="${(showUnpublishedForms == true || record.published) && record.retired == false}">
 					frm = new Object();
 					frm.formId = ${record.formId};
 					frm.name = '${fn:replace(record.name, "'", "\\'")}';
