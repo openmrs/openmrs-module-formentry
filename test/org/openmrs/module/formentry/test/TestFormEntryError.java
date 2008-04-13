@@ -13,10 +13,10 @@
  */
 package org.openmrs.module.formentry.test;
 
-import org.openmrs.BaseModuleContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
