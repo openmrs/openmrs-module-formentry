@@ -3,11 +3,8 @@ package org.openmrs.module.formentry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.scheduler.Schedulable;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
  * Implementation of a task that process all form entry queues.
@@ -18,13 +15,10 @@ import org.openmrs.scheduler.TaskConfig;
  * @author Justin Miranda
  * @version 1.0
  */
-public class ProcessFormEntryQueueTask implements Schedulable {
+public class ProcessFormEntryQueueTask extends AbstractTask {
 
 	// Logger
 	private static Log log = LogFactory.getLog(ProcessFormEntryQueueTask.class);
-
-	// Task configuration 
-	private TaskConfig taskConfig;
 	
 	// Instance of form processor
 	private FormEntryQueueProcessor processor = null;
@@ -43,7 +37,7 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	 * Process the next form entry in the database and then remove the form
 	 * entry from the database.
 	 */
-	public void run() {
+	public void execute() {
 		Context.openSession();
 		log.debug("Processing form entry queue ... ");
 		try {
@@ -63,27 +57,8 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	 *
 	 */
 	public void shutdown() {
-		
-	}
-	
-	/**
-	 * Initialize task.
-	 * 
-	 * @param config
-	 */
-	public void initialize(TaskConfig config) { 
-		this.taskConfig = config;
-	}
-	
-	private void authenticate() {
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			Context.authenticate(adminService.getGlobalProperty("scheduler.username"),
-				adminService.getGlobalProperty("scheduler.password"));
-			
-		} catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}
+		log.debug("Shutting down ProcessFormEntryQueue task ...");
+		processor = null;
 	}
 
 }
