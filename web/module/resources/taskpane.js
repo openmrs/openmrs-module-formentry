@@ -16,6 +16,16 @@ function clearNil(node) {
 		node.removeAttribute("xsi:nil");
 }
 
+// Add xsi:nil entry
+function addNil(node) {
+	// The xsi:nil 
+	if (node.getAttribute("xsi:nil") == null) {
+		var xmlNil = node.ownerDocument.createNode(2, "xsi:nil", "http://www.w3.org/2001/XMLSchema-instance");
+		xmlNil.text = "true";
+		node.setAttributeNode(xmlNil);
+	}
+}
+
 // Close the InfoPath TaskPane
 function closeTaskPane() {
 	window.external.Window.XDocument.View.Window.TaskPanes.Item(0).Visible = false;
@@ -143,8 +153,10 @@ function pickConcept(nodeName, concept, createConceptList, extraMap, hasOtherSib
 					// if not blank text and not the concept we just filled in, erase the text content
 					if (childNode && childNode != newConceptNode) {
 						var innerValueNode = childNode.selectSingleNode("value");
-						if (innerValueNode)
+						if (innerValueNode) {
 							innerValueNode.text = "";
+							addNil(innerValueNode);
+						}
 					}
 				}
 			}
