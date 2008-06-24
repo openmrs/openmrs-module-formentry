@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Form;
@@ -17,14 +18,13 @@ import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryConstants;
-import org.openmrs.reporting.PatientSet;
 
 public class BatchFormEntryModel {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Form form;
-	private PatientSet patientSet;
+	private Cohort patientSet;
 	private List<FormField> obsFields;
 	private List<Class> obsFieldClasses;
 	private List<FormField> encounterFields;
@@ -120,11 +120,11 @@ public class BatchFormEntryModel {
 		this.obsFieldParameters = obsFieldParameters;
 	}
 
-	public PatientSet getPatientSet() {
+	public Cohort getPatientSet() {
 		return patientSet;
 	}
 
-	public void setPatientSet(PatientSet patientSet) {
+	public void setPatientSet(Cohort patientSet) {
 		this.patientSet = patientSet;
 		refreshObsData();
 		refreshEncounterData();

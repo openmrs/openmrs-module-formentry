@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -29,7 +30,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -55,7 +55,7 @@ public class BatchFormEntryController extends SimpleFormController {
     protected BatchFormEntryModel formBackingObject(HttpServletRequest request) throws Exception {
     	BatchFormEntryModel batchForm = new BatchFormEntryModel();
 
-    	PatientSet ps = Context.getPatientSetService().getMyPatientSet();
+    	Cohort ps = Context.getPatientSetService().getMyPatientSet();
     	if (ps == null || ps.size() == 0)
     		throw new RuntimeException("You need a patient set first");
  
