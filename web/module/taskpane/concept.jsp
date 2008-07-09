@@ -122,7 +122,7 @@
 		<c:forEach var="node" items="${paramValues.extraNodePath}" varStatus="nodeStatus">
 			extraMap.push(new miniMapEntry("${node}"));
 		</c:forEach>
-		pickConcept('${param.nodePath}', extraMiniObject, '${param.createConceptList}', extraMap);
+		pickConcept('${param.nodePath}', extraMiniObject, '${param.createConceptList}', extraMap, '${param.nodeHasSiblings}');
 		
 		return false;
 	}
@@ -143,7 +143,7 @@
 						for (i=0; i<msg.objs.length; i++) {
 							<c:choose>
 								<c:when test="${not empty param.nodePath}">
-									pickConcept('${param.nodePath}', new miniObject(msg.objs[i]), '${param.createConceptList}');
+									pickConcept('${param.nodePath}', new miniObject(msg.objs[i]), '${param.createConceptList}', null, '${param.nodeHasSiblings}');
 								</c:when>
 								<c:otherwise>
 									pickProblem('<%= request.getParameter("mode") %>', '//problem_list', new miniObject(msg.objs[i]));

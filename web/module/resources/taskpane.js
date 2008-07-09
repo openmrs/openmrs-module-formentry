@@ -16,6 +16,16 @@ function clearNil(node) {
 		node.removeAttribute("xsi:nil");
 }
 
+// Add xsi:nil entry
+function addNil(node) {
+	// The xsi:nil 
+	if (node.getAttribute("xsi:nil") == null) {
+		var xmlNil = node.ownerDocument.createNode(2, "xsi:nil", "http://www.w3.org/2001/XMLSchema-instance");
+		xmlNil.text = "true";
+		node.setAttributeNode(xmlNil);
+	}
+}
+
 // Close the InfoPath TaskPane
 function closeTaskPane() {
 	window.external.Window.XDocument.View.Window.TaskPanes.Item(0).Visible = false;
@@ -81,8 +91,17 @@ function pickProblem(mode, nodeName, obj) {
 	closeTaskPane();
 }
 
-// add this concept as an answer to the given node
-function pickConcept(nodeName, concept, createConceptList, extraMap) {
+/**
+* add this concept as an answer to the given node
+*
+* nodeName
+* concept
+* createConceptList if true, will add new row.  if false, will replace current value at `nodePath`
+* extraMap key-value mapping of path to value
+* hasOtherSiblings if true, will assume `nodePath` is in obsGroup and duplicate parent element, if
+*			false, will duplicate only single element.  (redundant if extraMap is non-null) 
+*/
+function pickConcept(nodeName, concept, createConceptList, extraMap, hasOtherSiblings) {
 	var node = oDOM.selectSingleNode(nodeName);
 	if (node == null) {
 		alert("ERROR 2345: Node '" + nodeName + "' was not found");
@@ -116,24 +135,46 @@ function pickConcept(nodeName, concept, createConceptList, extraMap) {
 		}
 	}
 	else {
-		if (extraMap) {
+		if (extraMap || hasOtherSiblings) {
 			var newParentNode = cloneAndInsertNode(node.parentNode);
 			
 			var newConceptNode = newParentNode.selectSingleNode(node.nodeName);
 			var newConceptNodeValueNode = newConceptNode.selectSingleNode("value");
 			clearNil(newConceptNodeValueNode);
 			newConceptNodeValueNode.text = getConceptNodeValue(concept);
-
-			for (var i=0; i < extraMap.length; i++) {
-				var entry = extraMap[i];
-				// get the first node defined for this type of extra value (just for nodeName of it)
-				var refNode = node.parentNode.selectSingleNode(entry.key);
-				// this extraValue's node
-				var newExtraValueNode = newParentNode.selectSingleNode(refNode.nodeName);
-				// set the extraValue as text
-				valueNode = newExtraValueNode.selectSingleNode("value");
-				clearNil(valueNode);
-				valueNode.text = entry.value;
+			
+			// if there are other siblings, clear the values in those so as to 
+			// require the user to fill them in 
+			if (hasOtherSiblings) {
+				var childNodes = newParentNode.childNodes;
+				
+				for (var i=0; i < childNodes.length; i++) {
+					var childNode = childNodes[i];
+					
+					// if not blank text and not the concept we just filled in, erase the text content
+					if (childNode && childNode != newConceptNode) {
+						var innerValueNode = childNode.selectSingleNode("value");
+						if (innerValueNode) {
+							innerValueNode.text = "";
+							addNil(innerValueNode);
+						}
+					}
+				}
+			}
+			
+			if (extraMap) {
+				for (var i=0; i < extraMap.length; i++) {
+					var entry = extraMap[i];
+					// get the first node defined for this type of extra value (just for nodeName of it)
+					var refNode = node.parentNode.selectSingleNode(entry.key);
+					
+					// this extraValue's node
+					var newExtraValueNode = newParentNode.selectSingleNode(refNode.nodeName);
+					// set the extraValue as text
+					valueNode = newExtraValueNode.selectSingleNode("value");
+					clearNil(valueNode);
+					valueNode.text = entry.value;
+				}
 			}
 		}
 		else {
