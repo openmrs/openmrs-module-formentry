@@ -18,7 +18,8 @@
 				<prop key="module/formentry/dynamicForm.form">dynamicFormEntryController</prop>
 				<prop key="module/formentry/batchForm.form">batchFormEntryController</prop>
 				<prop key="module/formentry/patientForm.form">patientFormEntryController</prop>
-					
+				
+				<prop key="module/formentry/taskpane/encounter.htm">encounterTaskpaneController</prop>
 			</props>
 		</property>
 	</bean>
@@ -96,6 +97,13 @@
 		<property name="validator"><ref bean="patientFormEntryModelValidator"/></property>
 		<property name="formView"><value>/module/formentry/dynamic/patientForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean>
+	
+	<bean id="encounterTaskpaneController" class="org.openmrs.module.formentry.web.controller.EncounterTaskpaneController">
+		<property name="commandName"><value>encounters</value></property>
+		<property name="commandClass"><value>java.util.List</value></property>
+		<property name="formView"><value>/module/formentry/taskpane/encounter</value></property>
+		<property name="successView"><value>encounter.htm</value></property>
 	</bean>
 	
 	<!-- /Controllers -->
