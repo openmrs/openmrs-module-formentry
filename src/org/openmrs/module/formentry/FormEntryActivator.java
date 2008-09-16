@@ -44,7 +44,8 @@ public class FormEntryActivator implements Activator {
 		
 		// log warnings for the user for global property deprecation
 		for (String s : deprecatedGlobalProperties) {
-			log.warn("Deprecated global property: " + s + ".  This property is no longer used by the formentry and can be deleted.");
+			if (Context.getAdministrationService().getGlobalProperty(s) != null)
+				log.warn("Deprecated global property: " + s + ".  This property is no longer used by the formentry and can be deleted.");
 		}
 		
 		// save makecab and lcab locations to the constants
