@@ -4,7 +4,7 @@
 	</li>
 	
 	<openmrs:hasPrivilege privilege="Upload XSN">
-		<li <c:if test="<%= request.getRequestURI().contains("formentry/xsnUpload") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("formentry/xsnUpload") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/formentry/xsnUpload.form">
 				<spring:message code="formentry.xsn.title"/>
 			</a>
@@ -12,14 +12,14 @@
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="View FormEntry Error">
-		<li <c:if test="<%= request.getRequestURI().contains("formentry/formEntryError") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("formentry/formEntryError") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/module/formentry/formEntryError.list">
 				<spring:message code="formentry.FormEntryError.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	
-	<li <c:if test="<%= request.getRequestURI().contains("formentry/formEntryInfo") %>">class="active"</c:if>>
+	<li <c:if test='<%= request.getRequestURI().contains("formentry/formEntryInfo") %>'>class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/module/formentry/formEntryInfo.htm">
 			<spring:message code="formentry.info"/>
 		</a>
