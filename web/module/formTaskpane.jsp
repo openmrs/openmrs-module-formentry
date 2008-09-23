@@ -18,7 +18,7 @@
 		
 	</script>
 			
-	<c:if test="<%= request.getParameter("jsessionid") == null %>">
+	<c:if test='<%= request.getParameter("jsessionid") == null %>'>
 		 
 		<!-- This is the first loading of the page, get the session id and post it back -->
 		
@@ -40,7 +40,7 @@
 		
 	</c:if>
 	
-	<c:if test="<%= request.getParameter("jsessionid") != null %>">
+	<c:if test='<%= request.getParameter("jsessionid") != null %>'>
 
 		<!-- The session id has been posted back, save it to the session cookie -->
 		
