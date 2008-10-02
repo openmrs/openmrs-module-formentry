@@ -77,7 +77,7 @@
 		searchWidget.inputNode.select();
 		
 		// prefill users on page load
-		searchWidget.showAll();
+		setTimeout(function() {searchWidget.showAll()}, 250);
 	});
 
 </script>

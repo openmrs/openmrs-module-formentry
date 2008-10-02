@@ -644,7 +644,7 @@ public class PublishInfoPath {
 		    tmpXslWriter.close();
 		    xslReader.close();
 		    // xslFile.delete();
-		    // tmpXslFile.renameTo(xslFile);
+		    tmpXslFile.renameTo(xslFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

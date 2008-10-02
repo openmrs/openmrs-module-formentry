@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.formentry.test;
 
+import junit.framework.Assert;
+
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryService;
@@ -29,7 +32,8 @@ public class TestFormEntryError extends BaseModuleContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCreatingErrorQueueItem() throws Exception {
+	@Test
+	public void shouldCreateErrorQueueItem() throws Exception {
 		
 		initializeInMemoryDatabase();
 		
@@ -55,7 +59,7 @@ public class TestFormEntryError extends BaseModuleContextSensitiveTest {
 		
 		FormEntryError fetchedError = formEntryService.getFormEntryError(1);
 		
-		assertNotNull(fetchedError);
+		Assert.assertNotNull(fetchedError);
 		
 	}
 
