@@ -8,7 +8,6 @@
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
-	<classpathentry kind="lib" path="lib-common/velocity-1.6-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/junit-4.4.jar"/>
@@ -31,5 +30,7 @@
 	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="lib-common/velocity-1.6-beta1.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-lang-2.4.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

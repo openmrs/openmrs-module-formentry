@@ -20,7 +20,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
@@ -50,6 +53,8 @@ public class FormDownloadServlet extends HttpServlet {
 	public static final long serialVersionUID = 123423L;
 
 	private Log log = LogFactory.getLog(this.getClass());
+	
+	private boolean isVelocityInitialized = false;
 	
 	/**
 	 * Serve up the xml file for filling out a form 
@@ -83,9 +88,13 @@ public class FormDownloadServlet extends HttpServlet {
 		String title = form.getName() + "(" + FormUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
+		if (!isVelocityInitialized) {
+			initializeVelocity();
+		}
 		// Set up a VelocityContext in which to evaluate the template's default
 		// values
 		try {
+			
 			Velocity.init();
 		}
 		catch (Exception e) {
@@ -149,6 +158,30 @@ public class FormDownloadServlet extends HttpServlet {
 	}
 	
 	
+	/**
+	 * A utility method to initialize Velocity. This could be
+	 * called in the constructor, but putting it in a separte
+	 * method like this allows for late-initialization only
+	 * when someone actually uses this servlet.
+	 */
+	private void initializeVelocity() {
+		if (!isVelocityInitialized) {
+			VelocityEngine ve = new VelocityEngine();
+
+			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
+			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
+					"formentry_velocity");
+			try {
+				ve.init();
+				isVelocityInitialized = true;
+			} catch (Exception e) {
+				log.error("velocity init failed, because: " + e);
+			}		
+		}
+	}
+
+
 	/**
 	 * Sort out the multiple options for formDownload.  This servlet does things like
 	 * the formEntry xsn template download, the xsn/schema/template download, and xsn rebuliding
