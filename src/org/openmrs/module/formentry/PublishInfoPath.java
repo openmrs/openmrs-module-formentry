@@ -236,6 +236,7 @@ public class PublishInfoPath {
 		    FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
 		if (templateWithDefaultsFile == null) {
 			// if template containing defaults is missing, create one on the fly
+			templateWithDefaultsFile = new File(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
 			templateWithDefaults = new FormXmlTemplateBuilder(form, publishUrl)
 			    .getXmlTemplate(true);
 			try {
@@ -269,6 +270,8 @@ public class PublishInfoPath {
 		vars.put(FormEntryConstants.FORMENTRY_SUBMIT_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/moduleServlet/formentry/formUpload\"");
 		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
+		updateXslFiles(tempDir);
+		
 		// make cab
 		// creates the file in the same temp directory
 		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), outputFilename);
@@ -290,7 +293,7 @@ public class PublishInfoPath {
 
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
-		Context.getFormService().updateForm(form);
+		Context.getFormService().saveForm(form);
 		
 		return form;
 	}
