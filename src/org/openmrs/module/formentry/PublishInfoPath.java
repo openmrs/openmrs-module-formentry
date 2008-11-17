@@ -48,6 +48,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Form;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -84,10 +85,11 @@ public class PublishInfoPath {
 	 * Regex pattern for an unqualified (lacking concept name) concept specification in HL7 format.
 	 * 
 	 * group(1) should be the single character that starts the HL7 spec
-	 * group(2) should be the Hl7 spec
-	 * group(3) should be the single character that ends the HL7 spec
+	 * group(2) should be the concept id
+	 * group(3) should be the text of the concept
+	 * group(4) should be the single character that ends the HL7 spec
 	 */
-	private static Pattern hl7ConceptNamePattern = Pattern.compile("([\"|&quot;|>])([0-9]+)\\^[^\\^]+\\^99DCT([\"|&quot;|<])");
+	public static Pattern hl7ConceptNamePattern = Pattern.compile("([\"|&quot;|>])([0-9]+)\\^([^^]+)\\^99DCT([\"|&quot;|<])");
 	
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
@@ -631,8 +633,14 @@ public class PublishInfoPath {
 		    	Matcher m = hl7ConceptNamePattern.matcher(line); 
 		    	if (m.find()) {
 		    		String conceptId = m.group(2);
-		    		Concept concept = cs.getConceptByIdOrName(conceptId);
-		    		String appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(3);
+		    		Concept concept = cs.getConcept(new Integer(conceptId));
+		    		ConceptName matchingConceptName = findNameMatching(m.group(3), concept);
+		    		String appendedHl7 = "";
+		    		if (matchingConceptName != null) {
+		    			appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, matchingConceptName) + m.group(3);
+		    		} else {
+		    			appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(3);
+		    		}
 		    		
 		    		line = m.replaceFirst(appendedHl7);
 		    	} else {
@@ -643,15 +651,31 @@ public class PublishInfoPath {
 		 
 		    tmpXslWriter.close();
 		    xslReader.close();
-		    // xslFile.delete();
+
+		    xslFile.delete();
 		    tmpXslFile.renameTo(xslFile);
 		} catch (FileNotFoundException e) {
+			log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
 			e.printStackTrace();
 		} catch (IOException e) {
+			log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
 			e.printStackTrace();
 		}
 	}
 
+
+	private static ConceptName findNameMatching(String textName, Concept inConcept) {
+		ConceptName matchingName = null;
+		if (textName != null) {
+			for (ConceptName possibleName : inConcept.getNames()) {
+				if (textName.equals(possibleName.getName())) {
+					matchingName = possibleName;
+					break;
+				}
+			}
+		}
+		return matchingName;
+	}
 
 	/**
 	 * Lazy factory method of xslFilenameFilter.

@@ -14,9 +14,6 @@
 	<classpathentry kind="lib" path="lib-common/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.0.02.5594.jar" sourcepath="/openmrs-trunk"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.0.02.5544.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.0.02.5544.jar"/>
 	<classpathentry kind="lib" path="lib-common/simple-xml-1.6.1-mod.jar"/>
 	<classpathentry kind="lib" path="lib-common/mail.jar"/>
 	<classpathentry kind="lib" path="lib-common/jta.jar"/>
@@ -33,5 +30,8 @@
 	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-beta2.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.5.0.01.6031.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.5.0.01.6031.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.5.0.01.6031.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
