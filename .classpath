@@ -33,5 +33,6 @@
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.0.20.6032.jar"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.0.20.6032.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.0.20.6032.jar"/>
+	<classpathentry kind="lib" path="resources"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
