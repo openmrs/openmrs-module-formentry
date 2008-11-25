@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +31,8 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import com.sun.tools.javac.code.Attribute.Array;
 
 public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
+
+	static FileFilter NO_DOT_FILES;
 
 	/**
 	 * Directory containing original files used for testing. These
@@ -59,6 +62,14 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		ORIGINAL_UNIT_TEST_DIR = findDirNamed("original_unit_test_dir");
 		EXPECTED_UNIT_TEST_DIR = findDirNamed("expected_unit_test_dir");
 		ACTUAL_UNIT_TEST_DIR = findDirNamed("actual_unit_test_dir");
+		
+		NO_DOT_FILES = new FileFilter() {
+
+			public boolean accept(File pathname) {
+				return !pathname.getName().startsWith(".");
+			}
+			
+		};
 	}
 	
 	private static File findDirNamed(String dirname) {
@@ -69,11 +80,13 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		FileUtils.deleteDirectory(ACTUAL_UNIT_TEST_DIR);
 	}
 	
 	@Before
 	public void setupBeforeEachTest() throws IOException {
-		FileUtils.copyDirectory(ORIGINAL_UNIT_TEST_DIR, ACTUAL_UNIT_TEST_DIR);
+		FileUtils.deleteDirectory(ACTUAL_UNIT_TEST_DIR);
+		FileTestUtils.filteredCopy(ORIGINAL_UNIT_TEST_DIR, ACTUAL_UNIT_TEST_DIR, NO_DOT_FILES);
 	}
 	
 	@Test

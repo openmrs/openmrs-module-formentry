@@ -3,8 +3,12 @@ package org.openmrs.module.formentry.test;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 public class FileTestUtils {
 
@@ -32,6 +36,22 @@ public class FileTestUtils {
 				assertTrue("missing expected filename \"" + expectedFilename + "\" in directory \"" + actual.getPath() + "\"",
 						actualFilenames.contains(expectedFilename));
 				assertContentEquals(new File(expected, expectedFilename), new File(actual, expectedFilename));
+			}
+		}
+	}
+	
+	public static void filteredCopy(File from, File to, FileFilter filtered) throws IOException {
+
+		if (filtered.accept(from)) {
+			if (from.isDirectory()) {
+				if (!to.exists()) {
+					to.mkdir();
+				}
+				for (String child : from.list()) {
+					filteredCopy(new File(from, child), new File(to, child), filtered);
+				}
+			} else {
+				FileUtils.copyFile(from, to);
 			}
 		}
 	}
