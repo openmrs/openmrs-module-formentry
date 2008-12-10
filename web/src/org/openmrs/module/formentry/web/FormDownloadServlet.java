@@ -53,8 +53,8 @@ public class FormDownloadServlet extends HttpServlet {
 	public static final long serialVersionUID = 123423L;
 
 	private Log log = LogFactory.getLog(this.getClass());
-	
-	private boolean isVelocityInitialized = false;
+
+	private VelocityEngine ve;
 	
 	/**
 	 * Serve up the xml file for filling out a form 
@@ -88,18 +88,8 @@ public class FormDownloadServlet extends HttpServlet {
 		String title = form.getName() + "(" + FormUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
-		if (!isVelocityInitialized) {
-			initializeVelocity();
-		}
-		// Set up a VelocityContext in which to evaluate the template's default
-		// values
-		try {
-			
-			Velocity.init();
-		}
-		catch (Exception e) {
-			log.error("Error initializing Velocity engine", e);
-		}
+		initializeVelocity();
+
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("form", form);
 		velocityContext.put("url", url);
@@ -134,7 +124,7 @@ public class FormDownloadServlet extends HttpServlet {
 		String xmldoc = null;
 		try {
 			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this.getClass().getName(), template);
+			ve.evaluate(velocityContext, w, this.getClass().getName(), template);
 			xmldoc = w.toString();
 		}
 		catch (Exception e) {
@@ -160,13 +150,13 @@ public class FormDownloadServlet extends HttpServlet {
 	
 	/**
 	 * A utility method to initialize Velocity. This could be
-	 * called in the constructor, but putting it in a separte
+	 * called in the constructor, but putting it in a separate
 	 * method like this allows for late-initialization only
 	 * when someone actually uses this servlet.
 	 */
 	private void initializeVelocity() {
-		if (!isVelocityInitialized) {
-			VelocityEngine ve = new VelocityEngine();
+		if (ve == null) {
+			ve = new VelocityEngine();
 
 			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
 				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
@@ -174,7 +164,6 @@ public class FormDownloadServlet extends HttpServlet {
 					"formentry_velocity");
 			try {
 				ve.init();
-				isVelocityInitialized = true;
 			} catch (Exception e) {
 				log.error("velocity init failed, because: " + e);
 			}		
