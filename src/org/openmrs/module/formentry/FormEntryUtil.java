@@ -131,6 +131,12 @@ public class FormEntryUtil {
 			if (cabextLocation == null)
 				cabextLocation = "/usr/local/bin/cabextract";
 			
+			File cabextractExecutable = new File(cabextLocation);
+			if (!cabextractExecutable.exists()) {
+				log.warn("cabextract not found at " + cabextLocation + ", using cabextract from search path. SERIOUS: This may be a security violation!");
+				cabextLocation = "cabextract"; // ABK: hope to find it on the path
+			}
+			
 			cmdBuffer.append(cabextLocation + " -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
 		}
@@ -354,6 +360,12 @@ public class FormEntryUtil {
 			String lcabLocation = FormEntryConstants.FORMENTRY_LCAB_LOCATION;
 			if (lcabLocation == null)
 				lcabLocation = "/usr/local/bin/lcab";
+			
+			File lcabExecutable = new File(lcabLocation);
+			if (!lcabExecutable.exists()) {
+				log.warn("lcab not found at " + lcabLocation + ", using lcab from search path. SERIOUS: This may be a security violation!");
+				lcabLocation = "lcab"; // ABK: not at the hard-coded location, so hope to find it on the path
+			}
 			
 			cmdBuffer.append(lcabLocation + " -rn ").append(tempDir)
 					.append(" ").append(outputDirName).append("/").append(
