@@ -142,12 +142,6 @@
 		</description>
 		<sql>
 			
-			DELETE FROM
-				global_property
-			WHERE
-				property in ('formEntry.started', 'formEntry.database_version');
-				
-			
 			UPDATE 
 				global_property
 			SET

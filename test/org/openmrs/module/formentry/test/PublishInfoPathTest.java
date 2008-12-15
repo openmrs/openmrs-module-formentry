@@ -1,21 +1,14 @@
 package org.openmrs.module.formentry.test;
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 
 import org.apache.commons.io.FileUtils;
@@ -23,12 +16,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.PublishInfoPath;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-
-import com.sun.tools.javac.code.Attribute.Array;
 
 public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 
