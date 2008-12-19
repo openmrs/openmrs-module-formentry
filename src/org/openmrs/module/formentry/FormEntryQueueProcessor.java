@@ -18,6 +18,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -88,15 +89,21 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 			hl7SourceKey = xp.evaluate("/form/header/uid", doc);
 		} catch (Exception e) {
 			errorDetails = e.getMessage();
-			log.error("Error while parsing formentry ("
-					+ formEntryQueue.getFormEntryQueueId() + ")", e);
+			log.error("Error while parsing formentry ("+ formEntryQueue.getFormEntryQueueId() + ")", e);
+			setFatalError(formEntryQueue, "Error while parsing the formentry xml", errorDetails);
 		}
 
 		// If we failed to obtain the formId, move the queue entry into the
 		// error bin and abort
 		if (formId == null) {
-			setFatalError(formEntryQueue, "Error retrieving form ID from data",
-					errorDetails);
+			setFatalError(formEntryQueue, "Error retrieving form ID from data", errorDetails);
+			return;
+		}
+		
+		// If we can't get a form object for this formId, throw this to the error bin
+		Form form = formService.getForm(formId);
+		if (form == null) {
+			setFatalError(formEntryQueue, "The form id: " + formId + " does not exist in the form table!", errorDetails);
 			return;
 		}
 
@@ -106,7 +113,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 
 		// Now that we've determined the form used to create the XML data,
 		// we can obtain the associated XSLT to perform the transform to HL7.
-		String xsltDoc = formService.getForm(formId).getXslt();
+		String xsltDoc = form.getXslt();
 
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(formData));
@@ -131,8 +138,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		// If the transform failed, move the queue entry into the error bin
 		// and exit
 		if (out == null) {
-			setFatalError(formEntryQueue, "Unable to transform to HL7",
-					errorDetails);
+			setFatalError(formEntryQueue, "Unable to transform to HL7", errorDetails);
 			return;
 		}
 
