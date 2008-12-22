@@ -44,7 +44,7 @@
 		);
 		
 		searchWidget.doFindObjects = function(phrase) {
-			DWRPatientService.findTribes(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), phrase);
+			DWRPatientService.findTribes(phrase, searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
 			return false;
 		};
 		

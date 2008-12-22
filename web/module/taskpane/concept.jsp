@@ -43,7 +43,7 @@
 		else {
 			$('proposeConceptForm').style.display = "none";
 			$('searchForm').style.display = "";
-			DWRConceptService.findProposedConcepts(preProposedConcepts, box.value);
+			DWRConceptService.findProposedConcepts(box.value, preProposedConcepts);
 		}
 	}
 	
