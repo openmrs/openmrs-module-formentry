@@ -48,7 +48,7 @@
 			};
 			
 			searchWidget.doFindObjects = function(searchPhrase) {
-				DWRFormService.findForms(this.simpleClosure(this, "doObjectsFound"), searchPhrase, '${showUnpublishedForms}');
+				DWRFormService.findForms(searchPhrase, '${showUnpublishedForms}', this.simpleClosure(this, "doObjectsFound"));
 			}
 			
 			dojo.event.topic.subscribe("fSearch/select", 
@@ -65,10 +65,10 @@
 			
 			searchWidget.showAll = function() {
 				var thisObj = this;
-				DWRFormService.getForms(function(arg1, arg2) {
+				DWRFormService.getForms('${showUnpublishedForms}', function(arg1, arg2) {
 											thisObj.doObjectsFound(arg1, arg2);
 											thisObj.showHighlight();
-										}, '${showUnpublishedForms}');
+										});
 			};
 			
 			// avoid unnecessary dwr call the first time by emulating the following line:

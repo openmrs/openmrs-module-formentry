@@ -46,7 +46,7 @@
 		);
 		
 		searchWidget.doFindObjects = function(phrase) {
-			DWREncounterService.findLocations(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), phrase);
+			DWREncounterService.findLocations(phrase, searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
 			return false;
 		};
 		
