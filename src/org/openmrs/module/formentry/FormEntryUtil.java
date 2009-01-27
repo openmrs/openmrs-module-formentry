@@ -133,7 +133,7 @@ public class FormEntryUtil {
 			
 			File cabextractExecutable = new File(cabextLocation);
 			if (!cabextractExecutable.exists()) {
-				log.warn("cabextract not found at " + cabextLocation + ", using cabextract from search path. SERIOUS: This may be a security violation!");
+				log.warn("cabextract not found at " + cabextLocation + ", using cabextract from search path. SERIOUS: This may be a security violation! Please set the formentry.cabextract_location runtime property to the proper path");
 				cabextLocation = "cabextract"; // ABK: hope to find it on the path
 			}
 			
@@ -363,7 +363,7 @@ public class FormEntryUtil {
 			
 			File lcabExecutable = new File(lcabLocation);
 			if (!lcabExecutable.exists()) {
-				log.warn("lcab not found at " + lcabLocation + ", using lcab from search path. SERIOUS: This may be a security violation!");
+				log.warn("lcab not found at " + lcabLocation + ", using lcab from search path. SERIOUS: This may be a security violation! Please set the formentry.lcab_location runtime property to the proper path.");
 				lcabLocation = "lcab"; // ABK: not at the hard-coded location, so hope to find it on the path
 			}
 			

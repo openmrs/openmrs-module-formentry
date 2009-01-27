@@ -33,7 +33,7 @@ public class XsnDownloadServlet extends HttpServlet {
 	/**
 	 * The filename pattern matcher.  Matches the first n numbers in the filename
 	 */
-	private static final Pattern pattern = Pattern.compile(".*/formentry/forms/(\\d+).*");
+	private static final Pattern pattern = Pattern.compile(".*/formentry/forms/(\\d+).*\\.xsn");
 	
 	/**
 	 * This method is called by Infopath to get the compiled and uploaded xsn from
