@@ -19,8 +19,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
@@ -33,9 +35,9 @@ import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormSchemaBuilder;
 import org.openmrs.module.formentry.FormXmlTemplateBuilder;
 import org.openmrs.module.formentry.PublishInfoPath;
-import org.openmrs.module.formentry.VelocityExceptionHandler;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.VelocityExceptionHandler;
 import org.openmrs.web.WebConstants;
 
 /**
@@ -50,6 +52,8 @@ public class FormDownloadServlet extends HttpServlet {
 	public static final long serialVersionUID = 123423L;
 
 	private Log log = LogFactory.getLog(this.getClass());
+	
+	private VelocityEngine ve;
 	
 	/**
 	 * Serve up the xml file for filling out a form 
@@ -83,14 +87,8 @@ public class FormDownloadServlet extends HttpServlet {
 		String title = form.getName() + "(" + FormUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
-		// Set up a VelocityContext in which to evaluate the template's default
-		// values
-		try {
-			Velocity.init();
-		}
-		catch (Exception e) {
-			log.error("Error initializing Velocity engine", e);
-		}
+		initializeVelocity();
+
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("form", form);
 		velocityContext.put("url", url);
@@ -125,7 +123,7 @@ public class FormDownloadServlet extends HttpServlet {
 		String xmldoc = null;
 		try {
 			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this.getClass().getName(), template);
+			ve.evaluate(velocityContext, w, this.getClass().getName(), template);
 			xmldoc = w.toString();
 		}
 		catch (Exception e) {
@@ -149,6 +147,29 @@ public class FormDownloadServlet extends HttpServlet {
 	}
 	
 	
+	/**
+	 * A utility method to initialize Velocity. This could be
+	 * called in the constructor, but putting it in a separate
+	 * method like this allows for late-initialization only
+	 * when someone actually uses this servlet.
+	 */
+	private void initializeVelocity() {
+		if (ve == null) {
+			ve = new VelocityEngine();
+
+			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
+			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
+					"formentry_velocity");
+			try {
+				ve.init();
+			} catch (Exception e) {
+				log.error("velocity init failed", e);
+			}		
+		}
+	}
+
+
 	/**
 	 * Sort out the multiple options for formDownload.  This servlet does things like
 	 * the formEntry xsn template download, the xsn/schema/template download, and xsn rebuliding
