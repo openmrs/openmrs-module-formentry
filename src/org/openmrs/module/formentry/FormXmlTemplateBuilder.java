@@ -276,7 +276,9 @@ public class FormXmlTemplateBuilder {
 						xml.append("<value");
 						if (hl7Abbr.equals(FormEntryConstants.HL7_BOOLEAN))
 							xml.append(" infopath_boolean_hack=\"1\"");
-						xml.append(" xsi:nil=\"true\"></value>\n");
+						if (!formField.isRequired())
+							xml.append(" xsi:nil=\"true\"");
+						xml.append("></value>\n");
 					}
 					xml.append(indentation);
 					xml.append("</");
