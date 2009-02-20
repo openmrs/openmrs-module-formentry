@@ -201,7 +201,10 @@ public class PublishInfoPath {
 		else if (!form.equals(determineForm(tempDir))) {
 			modifyFormId(tempDir, form);
 		}
-			
+		
+		if (form == null)
+			throw new IOException("A form matching this xsn cannot be determined from the formId attribute in this object.  Make sure a fow exists in the form table for this xsn");
+		
 		String originalFormUri = FormEntryUtil.getFormUri(form);
 		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
 
@@ -600,7 +603,7 @@ public class PublishInfoPath {
      * 
      * @param xsnDir directory containing an expanded XSN
      */
-	public static void updateXslFiles(File xsnDir) {
+	public static void updateXslFiles(File xsnDir) throws IOException {
 		if (xsnDir.isDirectory()) {
 			String[] xslFilenames = xsnDir.list(getXslFilenameFilter());
 			for (String xslFilename : xslFilenames) {
@@ -615,7 +618,7 @@ public class PublishInfoPath {
 	 * 
 	 * @param xslFilename
 	 */
-	public static void appendConceptnamesInXsl(String xslFilename, File tempDir) {
+	public static void appendConceptnamesInXsl(String xslFilename, File tempDir) throws IOException {
 		ConceptService cs = Context.getConceptService();
 		Locale defaultLocale = Context.getLocale();
 		
@@ -633,7 +636,7 @@ public class PublishInfoPath {
 		    		String conceptId = m.group(2);
 		    		Concept concept = cs.getConcept(new Integer(conceptId));
 		    		if (concept == null) {
-		    			log.warn("xsl \"" + xslFilename + "\" contains unknown concept: " + m.group(3) + "(" + conceptId + ")");
+		    			throw new IOException("xsl \"" + xslFilename + "\" contains unknown concept: " + m.group(3) + "(" + conceptId + ")");
 		    		} else {
 			    		ConceptName matchingConceptName = findNameMatching(m.group(3), concept);
 			    		String appendedHl7 = "";
@@ -655,7 +658,9 @@ public class PublishInfoPath {
 		    xslReader.close();
 
 		    xslFile.delete();
-		    tmpXslFile.renameTo(xslFile);
+		    if (!tmpXslFile.renameTo(xslFile)) {
+		    	throw new IOException("Unable to rename xsl file from " + tmpXslFile.getAbsolutePath() + " to " + xslFile.getAbsolutePath());
+		    }
 		} catch (FileNotFoundException e) {
 			log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
 			e.printStackTrace();

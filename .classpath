@@ -29,9 +29,9 @@
 	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/spring-test.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.0.22.6444.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.0.22.6444.jar"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.0.22.6444.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.4.0.22.6892.jar" sourcepath="/openmrs-1.4.x"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.4.0.22.6892.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.4.0.22.6892.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-beta2.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
