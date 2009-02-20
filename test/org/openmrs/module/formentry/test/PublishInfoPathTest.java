@@ -7,17 +7,22 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.regex.Matcher;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openmrs.Form;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.PublishInfoPath;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 
@@ -46,7 +51,6 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 	 */
 	static File ACTUAL_UNIT_TEST_DIR;
 	
-	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		ORIGINAL_UNIT_TEST_DIR = findDirNamed("original_unit_test_dir");
 		EXPECTED_UNIT_TEST_DIR = findDirNamed("expected_unit_test_dir");
@@ -67,12 +71,11 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		return new File(fullPathToDir);
 	}
 
-	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		FileUtils.deleteDirectory(ACTUAL_UNIT_TEST_DIR);
+		if (ACTUAL_UNIT_TEST_DIR != null)
+			FileUtils.deleteDirectory(ACTUAL_UNIT_TEST_DIR);
 	}
 	
-	@Before
 	public void setupBeforeEachTest() throws IOException {
 		FileUtils.deleteDirectory(ACTUAL_UNIT_TEST_DIR);
 		FileTestUtils.filteredCopy(ORIGINAL_UNIT_TEST_DIR, ACTUAL_UNIT_TEST_DIR, NO_DOT_FILES);
@@ -99,6 +102,25 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
     	
     	assertTrue(m.find());
 	}
+	
+	@Test
+	public void shouldMatchHl7MessagesWithSpacesInName2() {
+		final String HL7_TO_BE_UPDATED = "<div><input class=\"xdBehavior_Boolean\" title=\"\" type=\"radio\" name=\"{generate-id(obs/pay_category/value)}\" xd:xctname=\"OptionButton\" xd:CtrlId=\"CTRL25\" tabIndex=\"0\" xd:binding=\"obs/pay_category/value\" xd:boundProp=\"xd:value\" xd:onValue=\"1144^AWAITING ASSIGNMENT^99DCT\">";
+
+    	Matcher m = PublishInfoPath.hl7ConceptNamePattern.matcher(HL7_TO_BE_UPDATED);
+    	
+    	assertTrue(m.find());
+	}
+	
+	@Test
+	public void shouldMatchHl7MessagesWithSpacesInName3() {
+		final String HL7_TO_BE_UPDATED = "<xsl:if test=\"obs/pay_category/value=&quot;1144^AWAITING ASSIGNMENT^99DCT&quot;\">";
+
+    	Matcher m = PublishInfoPath.hl7ConceptNamePattern.matcher(HL7_TO_BE_UPDATED);
+    	
+    	assertTrue(m.find());
+	}
+	
 	
 	/**
 	 * The XSL update should match HL7 formatted messages with 
@@ -178,4 +200,23 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		
 	}
 	
+	@Test
+	public void shouldUpdateXslFile() throws Exception {
+		executeDataSet("org/openmrs/module/formentry/test/include/standardTestDataset.xml");
+		InputStream xslFileInputStream = this.getClass().getClassLoader().getResourceAsStream("org/openmrs/module/formentry/test/include/pre1.4.xsn");
+		Form form = PublishInfoPath.publishXSN(xslFileInputStream);
+		
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormEntryXsn xsn = formEntryService.getFormEntryXsn(form);
+		
+		byte[] xsnbytes = xsn.getXsnData();
+		File tempDir = FormEntryUtil.expandXsnContents(xsn.getXsnData());
+		File xsl = new File(tempDir, "Page1.xsl");
+		String xslString = OpenmrsUtil.getFileAsString(xsl);
+		
+		// the concept names should have been inserted into the xsl file
+		assertFalse(xslString.contains("xd:onValue=\"1142^MTCT STAFF^99DCT\""));
+		assertFalse(xslString.contains("\"obs/pay_category/value=&quot;1142^MTCT STAFF^99DCT&quot;\""));
+		tempDir.delete();
+	}
 }
