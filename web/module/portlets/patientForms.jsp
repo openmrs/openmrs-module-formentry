@@ -33,11 +33,10 @@
 			
 			searchWidget = dojo.widget.manager.getWidgetById("fSearch");			
 			
-			searchWidget.doFindObjects = function() {
-				this.doObjectsFound(this.allObjectsFound);
-			};
-			
 			searchWidget.getCellContent = function(form) {
+				if (typeof form == 'string') {
+					return form;
+				}
 				var s = '<span onMouseOver="window.status=\'formId=' + form.formId + '\'">';
 				s += form.name + " (v." + form.version + ")";
 				if (form.published == false)
@@ -49,7 +48,7 @@
 			
 			searchWidget.doFindObjects = function(searchPhrase) {
 				DWRFormService.findForms(searchPhrase, '${showUnpublishedForms}', this.simpleClosure(this, "doObjectsFound"));
-			}
+			};
 			
 			dojo.event.topic.subscribe("fSearch/select", 
 				function(msg) {
@@ -59,7 +58,6 @@
 			);
 			
 			searchWidget.resetSearch();
-			
 			
 			searchWidget.allowAutoJump = function() { return false; };
 			
