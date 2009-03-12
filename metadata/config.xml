@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>3.6.2</version>
+	<version>3.6.3</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -188,6 +188,14 @@
 			%D = two digit date of the month
 			%w = week of the year
      		%W = week of the month
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_taskpane.showAllUsersOnLoad</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>true</defaultValue>
+		<description>
+			When you view the 'users.htm' page in the taskpane, i.e. by clicking on the Choose a Provider
+			button, should the system automatically preload a list of all users? 
 		</description>
 	</globalProperty>
 	

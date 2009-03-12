@@ -75,9 +75,12 @@
 
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
-		
-		// prefill users on page load
-		setTimeout(function() {searchWidget.showAll()}, 250);
+
+		// maybe prefill users on page load
+		<openmrs:globalProperty var="showAllUsersOnLoad" key="formentry.infopath_taskpane.showAllUsersOnLoad" defaultValue="true"/>
+		<c:if test="${showAllUsersOnLoad}">
+			setTimeout(function() {searchWidget.showAll()}, 250);
+		</c:if>
 	});
 
 </script>
