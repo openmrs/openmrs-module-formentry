@@ -1,5 +1,6 @@
 package org.openmrs.module.formentry;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,6 +26,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  * Processes FormEntryQueue entries. Each entry is translated into an HL7
@@ -84,7 +86,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			XPathFactory xpf = getXPathFactory();
 			XPath xp = xpf.newXPath();
-			Document doc = db.parse(IOUtils.toInputStream(formData));
+			Document doc = db.parse(new InputSource(new StringReader(formData)));
 			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
 			hl7SourceKey = xp.evaluate("/form/header/uid", doc);
 		} catch (Exception e) {
@@ -116,7 +118,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		String xsltDoc = form.getXslt();
 
 		StringWriter outWriter = new StringWriter();
-		Source source = new StreamSource(IOUtils.toInputStream(formData));
+		Source source = new StreamSource(new StringReader(formData), "UTF-8");
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsltDoc));
 		Result result = new StreamResult(outWriter);
 
