@@ -1,6 +1,7 @@
 package org.openmrs.module.formentry.web;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -21,6 +22,7 @@ import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -53,8 +55,8 @@ public class FormUploadServlet extends HttpServlet {
 		String xml = "no xml!";
 		try {
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			xml = IOUtils.toString(request.getInputStream());
-			Document doc = db.parse(IOUtils.toInputStream(xml));
+			xml = IOUtils.toString(request.getInputStream(), "UTF-8");
+			Document doc = db.parse(new InputSource(new StringReader(xml)));
 			NodeList formElemList = doc.getElementsByTagName("form");
 			if (formElemList != null && formElemList.getLength() > 0) {
 				Element formElem = (Element)formElemList.item(0);
