@@ -100,7 +100,10 @@
 	<target name="deploy-web" depends="package-module">
 		<property environment="env"/>
 		<copy todir="${env.CATALINA_HOME}/webapps/openmrs/WEB-INF/view/module/${module.id}">
-			<fileset dir="web/module" includes="**/*" />
+			<fileset dir="web/module">
+				<include name="**/*" />
+				<exclude name="**/*Test*" />
+			</fileset>
 		</copy>
 	</target>
 	
