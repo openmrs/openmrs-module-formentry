@@ -24,7 +24,7 @@ public class BeforeDeleteFormAdvice implements MethodBeforeAdvice {
 		if (log.isDebugEnabled())
 			log.debug("Calling form advice for method: " + m.getName());
 		
-		if (m.getName().equals("deleteForm")) {
+		if (m.getName().equals("deleteForm") || m.getName().equals("purgeForm")) {
 			
 			// TODO: Should be concerned about transaction rollback if the delete fails?
 			

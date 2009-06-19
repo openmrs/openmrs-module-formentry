@@ -151,7 +151,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		hl7InQueue.setHL7Data(out.toString());
 		hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
 		hl7InQueue.setHL7SourceKey(hl7SourceKey);
-		Context.getHL7Service().createHL7InQueue(hl7InQueue);
+		Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 
 		FormEntryArchive formEntryArchive = new FormEntryArchive(formEntryQueue);
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
