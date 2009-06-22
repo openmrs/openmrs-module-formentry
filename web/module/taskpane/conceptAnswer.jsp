@@ -13,7 +13,7 @@
 	function miniObject(c) {
 		this.key = c.conceptId;
 		this.value = c.name;
-		this.namekey = c.conceptNameId;
+		this.nameKey = c.conceptNameId;
 		this.nameValue = c.name;
 	}
 	
