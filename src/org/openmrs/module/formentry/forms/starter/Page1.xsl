@@ -60,7 +60,7 @@ SELECT {
 								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 1px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 1px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 1px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
 										<font face="Verdana" size="2">
-											<font face="Arial"> <strong>Date:</strong>
+											<font face="Arial"> <strong>Date:</strong>
 											</font>
 											<div class="xdDTPicker" title="Every form must have a date assigned to it!  Please enter one by clicking on the calendar to the right." style="FONT-SIZE: small; WIDTH: 97px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center" noWrap="1" xd:xctname="DTPicker" xd:CtrlId="CTRL2"><span class="xdDTText xdBehavior_GTFormattingNoBUI" hideFocus="1" contentEditable="true" xd:xctname="DTPicker_DTText" tabIndex="0" xd:binding="encounter/encounter.encounter_datetime" xd:datafmt="&quot;datetime&quot;,&quot;dateFormat:dd MMMM, yyyy;timeFormat:none;&quot;" xd:boundProp="xd:num" xd:innerCtrl="_DTText">
 													<xsl:attribute name="xd:num">
@@ -228,7 +228,7 @@ SELECT {
 								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<font size="2">
 										<font face="Arial">
-											<div>Location: </div>
+											<div>Location: </div>
 											<div>
 												<div><input class="xdBehavior_Boolean" title="" type="radio" name="{generate-id(encounter/encounter.location_id)}" xd:xctname="OptionButton" xd:CtrlId="CTRL17" tabIndex="0" xd:binding="encounter/encounter.location_id" xd:boundProp="xd:value" xd:onValue="1^Unknown">
 														<xsl:attribute name="xd:value">
@@ -246,7 +246,7 @@ SELECT {
 							<tr style="MIN-HEIGHT: 36px">
 								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
-										<font face="Arial" size="2">Gender:  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL19" tabIndex="-1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; WIDTH: 43px">
+										<font face="Arial" size="2">Gender:  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL19" tabIndex="-1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; WIDTH: 43px">
 												<xsl:value-of select="patient/patient.sex"/>
 											</span>
 										</font>
@@ -256,7 +256,7 @@ SELECT {
 						</tbody>
 					</table>
 				</div>
-				<div align="left"> </div>
+				<div align="left"> </div>
 				<div align="left">
 					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 752px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
 						<colgroup>
@@ -346,7 +346,7 @@ SELECT {
 						</tbody>
 					</table>
 				</div>
-				<div align="left"> </div>
+				<div align="left"> </div>
 				<div align="left">
 					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 756px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" width="undefined" border="1">
 						<colgroup>
@@ -358,7 +358,7 @@ SELECT {
 									<div>
 										<font face="Arial" size="2">Form completed today by: <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL120" tabIndex="-1" xd:binding="substring-after(encounter/encounter.provider_id, &quot;^&quot;)" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 369px; FONT-FAMILY: Bradley Hand ITC">
 												<xsl:value-of select="substring-after(encounter/encounter.provider_id, &quot;^&quot;)"/>
-											</span>  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL121" tabIndex="-1" xd:disableEditing="yes">
+											</span>  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL121" tabIndex="-1" xd:disableEditing="yes">
 												<xsl:attribute name="style">FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 10px; COLOR: #ffffff;<xsl:choose>
 														<xsl:when test="encounter/encounter.provider_id = &quot;&quot;">COLOR: #ff0000</xsl:when>
 													</xsl:choose>
@@ -373,7 +373,7 @@ SELECT {
 						</tbody>
 					</table>
 				</div>
-				<div align="left"> </div>
+				<div align="left"> </div>
 				<div align="right"><input class="langFont" title="" style="FONT-SIZE: medium; WIDTH: 129px; FONT-FAMILY: Arial" type="button" size="1" value="Submit" xd:xctname="Button" xd:CtrlId="SubmitButton" tabIndex="0"/>
 				</div>
 			</body>
