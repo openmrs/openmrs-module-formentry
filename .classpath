@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="web/src"/>
-	<classpathentry kind="src" path="metadata"/>
-	<classpathentry kind="src" path="web"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="metadata"/>
 	<classpathentry kind="lib" path="dist"/>
@@ -14,7 +12,7 @@
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/-4.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib-common/simple-xml-1.6.1-mod.jar"/>
 	<classpathentry kind="lib" path="lib-common/mail.jar"/>
