@@ -53,43 +53,7 @@ public class BatchFormEntryController extends SimpleFormController {
 	}
     
     protected BatchFormEntryModel formBackingObject(HttpServletRequest request) throws Exception {
-    	BatchFormEntryModel batchForm = new BatchFormEntryModel();
-
-    	Cohort ps = Context.getPatientSetService().getMyPatientSet();
-    	if (ps == null || ps.size() == 0)
-    		throw new RuntimeException("You need a patient set first");
- 
-    	batchForm.setPatientSet(ps);
-    	Form form = Context.getFormService().getForm(Integer.valueOf(request.getParameter("formId")));
-    	batchForm.setForm(form);
-    	batchForm.getFieldsFromForm();
-    	
-    	if (request.getParameter("locationId") != null) {
-    		Integer locationId = Integer.valueOf(request.getParameter("locationId"));
-    		Location l = Context.getEncounterService().getLocation(locationId);
-    		batchForm.setLocation(l);
-    	} else {
-    		// TODO: check all patients for their assigned location / last encounter location, and default to the most common one, or else none
-    		Patient p = Context.getPatientService().getPatient(ps.getPatientIds().iterator().next());
-    		PersonAttribute attr = p.getAttribute("Health Center");
-    		if (attr != null) {
-	    		String value = attr.getValue();
-	    		if (value != null && !value.equals(""))
-	    			batchForm.setLocation(new Location(Integer.valueOf(value)));
-    		}
-    	}
-    	
-    	request.getParameter("providerId");
-    	if (request.getParameter("providerId") != null) {
-    		Integer providerId = Integer.valueOf(request.getParameter("providerId"));
-    		User u = Context.getUserService().getUser(providerId);
-    		batchForm.setProvider(u);
-    	} else {
-    		User u = Context.getUserService().getUserByUsername("Unknown");
-    		batchForm.setProvider(u);
-    	}
-    	
-		return batchForm;
+   		throw new RuntimeException("You need a patient set first");
     }
     
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,

@@ -47,12 +47,13 @@ import org.openmrs.util.OpenmrsConstants;
  * @see org.openmrs.module.formentry.FormEntryService
  */
 public class FormEntryServiceImpl implements FormEntryService {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private FormEntryDAO dao;
 	
-	public FormEntryServiceImpl() { }
+	public FormEntryServiceImpl() {
+	}
 	
 	private FormEntryDAO getFormEntryDAO() {
 		return dao;
@@ -65,14 +66,17 @@ public class FormEntryServiceImpl implements FormEntryService {
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#getSystemVariables()
 	 */
-	public SortedMap<String,String> getSystemVariables() {
+	public SortedMap<String, String> getSystemVariables() {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
 		
-		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
-		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
+		TreeMap<String, String> systemVariables = new TreeMap<String, String>();
+		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String
+		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String
+		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String
+		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
 		systemVariables.put("FORMENTRY_GP_QUEUE_DIR", FormEntryUtil.getFormEntryQueueDir().getAbsolutePath());
 		systemVariables.put("FORMENTRY_GP_QUEUE_ARCHIVE_DIR", FormEntryUtil.getFormEntryArchiveDir(null).getAbsolutePath());
 		
@@ -80,7 +84,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		
 		return systemVariables;
 	}
-
+	
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
 	 **************************************************************************/
@@ -117,7 +121,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		}
 		
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryQueues()
 	 */
@@ -143,19 +147,19 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 	
 	/**
-     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryQueue(org.openmrs.module.formentry.FormEntryQueue)
-     */
-    public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
-	    if (formEntryQueue == null || formEntryQueue.getFileSystemUrl() == null)
-	    	throw new FormEntryException("Unable to load formEntryQueue with empty file system url");
-	    
-	    File file = new File(formEntryQueue.getFileSystemUrl());
-	    
-	    if (file.exists()) {
-	    	file.delete();
-	    }
-    }
-
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryQueue(org.openmrs.module.formentry.FormEntryQueue)
+	 */
+	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
+		if (formEntryQueue == null || formEntryQueue.getFileSystemUrl() == null)
+			throw new FormEntryException("Unable to load formEntryQueue with empty file system url");
+		
+		File file = new File(formEntryQueue.getFileSystemUrl());
+		
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#getNextFormEntryQueue()
 	 */
@@ -182,7 +186,6 @@ public class FormEntryServiceImpl implements FormEntryService {
 		return queueDir.list().length;
 	}
 	
-	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
 	 */
@@ -200,7 +203,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		catch (IOException io) {
 			throw new FormEntryException("Unable to save formentry archive", io);
 		}
-
+		
 	}
 	
 	/**
@@ -228,18 +231,18 @@ public class FormEntryServiceImpl implements FormEntryService {
 	}
 	
 	/**
-     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
-     */
-    public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) {
-	    if (formEntryArchive == null || formEntryArchive.getFileSystemUrl() == null)
-	    	throw new FormEntryException("Unable to load formEntryArchive with empty file system url");
-	    
-	    File file = new File(formEntryArchive.getFileSystemUrl());
-	    
-	    if (file.exists()) {
-	    	file.delete();
-	    }
-    }
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryArchive(org.openmrs.module.formentry.FormEntryArchive)
+	 */
+	public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) {
+		if (formEntryArchive == null || formEntryArchive.getFileSystemUrl() == null)
+			throw new FormEntryException("Unable to load formEntryArchive with empty file system url");
+		
+		File file = new File(formEntryArchive.getFileSystemUrl());
+		
+		if (file.exists()) {
+			file.delete();
+		}
+	}
 	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryArchiveSize()
@@ -249,7 +252,6 @@ public class FormEntryServiceImpl implements FormEntryService {
 		
 		return archiveDir.list().length;
 	}
-	
 	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryError(org.openmrs.module.formentry.FormEntryError)
@@ -315,30 +317,30 @@ public class FormEntryServiceImpl implements FormEntryService {
 	public void migrateQueueAndArchiveToFilesystem() {
 		getFormEntryDAO().migrateQueueAndArchiveToFilesystem();
 	}
-
+	
 	/**
-     * @see org.openmrs.module.formentry.FormEntryService#archiveFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
-     */
-    public void archiveFormEntryXsn(FormEntryXsn formEntryXsn) {
-    	formEntryXsn.setArchived(true);
-    	formEntryXsn.setArchivedBy(Context.getAuthenticatedUser());
-    	formEntryXsn.setDateArchived(new Date());
-    	
-	    getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
-    }
-
+	 * @see org.openmrs.module.formentry.FormEntryService#archiveFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
+	 */
+	public void archiveFormEntryXsn(FormEntryXsn formEntryXsn) {
+		formEntryXsn.setArchived(true);
+		formEntryXsn.setArchivedBy(Context.getAuthenticatedUser());
+		formEntryXsn.setDateArchived(new Date());
+		
+		getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
+	}
+	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(org.openmrs.Form)
 	 */
 	public void deleteFormEntryXsn(Form form) {
-	    getFormEntryDAO().deleteFormEntryXsn(form.getFormId());
-    }
-
+		getFormEntryDAO().deleteFormEntryXsn(form.getFormId());
+	}
+	
 	/**
-     * @see org.openmrs.module.formentry.FormEntryService#createFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
-     */
-    public void createFormEntryXsn(FormEntryXsn formEntryXsn) {
-    	formEntryXsn.setCreator(Context.getAuthenticatedUser());
+	 * @see org.openmrs.module.formentry.FormEntryService#createFormEntryXsn(org.openmrs.module.formentry.FormEntryXsn)
+	 */
+	public void createFormEntryXsn(FormEntryXsn formEntryXsn) {
+		formEntryXsn.setCreator(Context.getAuthenticatedUser());
 		formEntryXsn.setDateCreated(new Date());
 		
 		// archive the matching xsn if it exists
@@ -347,37 +349,56 @@ public class FormEntryServiceImpl implements FormEntryService {
 			archiveFormEntryXsn(oldXsn);
 		
 		getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
-    }
-
-	/**
-     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(org.openmrs.Form)
-     */
-    public FormEntryXsn getFormEntryXsn(Form form) {
-	    return getFormEntryXsn(form.getFormId());
-    }
-    
-    /**
-     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(java.lang.Integer)
-     */
-    public FormEntryXsn getFormEntryXsn(Integer formId) {
-    	if (formId == null)
-    		return null;
-    	
-	    return getFormEntryDAO().getFormEntryXsn(formId);
-    }
-
-	/**
-     * @see org.openmrs.module.formentry.FormEntryService#migrateXsnsToDatabase()
-     */
-    public void migrateXsnsToDatabase() {
-    	getFormEntryDAO().migrateXsnsToDatabase();
-    }
+	}
 	
-    /**
-     * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryArchiveNeeded()
-     */
-    public Boolean migrateFormEntryArchiveNeeded() {
-    	return getFormEntryDAO().migrateFormEntryArchiveNeeded();
-    }
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(org.openmrs.Form)
+	 */
+	public FormEntryXsn getFormEntryXsn(Form form) {
+		return getFormEntryXsn(form.getFormId());
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(java.lang.Integer)
+	 */
+	public FormEntryXsn getFormEntryXsn(Integer formId) {
+		if (formId == null)
+			return null;
+		
+		return getFormEntryDAO().getFormEntryXsn(formId);
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#migrateXsnsToDatabase()
+	 */
+	public void migrateXsnsToDatabase() {
+		getFormEntryDAO().migrateXsnsToDatabase();
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryArchiveNeeded()
+	 */
+	public Boolean migrateFormEntryArchiveNeeded() {
+		return getFormEntryDAO().migrateFormEntryArchiveNeeded();
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormsWithXsn(boolean)
+	 */
+	public List<Form> getFormsWithXsn(boolean publishedOnly) {
+		List<Form> formsWithXsns = new Vector<Form>();
+		List<Form> possibleForms = null;
+		if (publishedOnly)
+			possibleForms = Context.getFormService().getPublishedForms();
+		else
+			possibleForms = Context.getFormService().getAllForms();
+		
+		for (Form form : possibleForms) {
+			if (getFormEntryXsn(form) != null)
+				formsWithXsns.add(form);
+		}
+		
+		return formsWithXsns;
+	}
 	
 }
