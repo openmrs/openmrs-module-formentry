@@ -14,6 +14,7 @@
 package org.openmrs.module.formentry;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedMap;
 
 import org.openmrs.Form;
@@ -250,4 +251,12 @@ public interface FormEntryService {
 	 * 		needed (by checking for formentry_archive table)
 	 */
 	public Boolean migrateFormEntryArchiveNeeded();
+	
+	/**
+	 * Gets forms that have an xsn defined for them already
+	 * 
+	 * @param publishedOnly if true, only fetches forms marked as published
+	 * @return list of forms that have an xsn defined
+	 */
+	public List<Form> getFormsWithXsn(boolean publishedOnly);
 }

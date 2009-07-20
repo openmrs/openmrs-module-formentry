@@ -6,18 +6,19 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>3.6.6</version>
+	<version>4.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
-			OpenMRS FormEntry Module
+			Allows for designing and submitting Microsoft Infopath forms to OpenMRS.
 	</description>
 	<activator>@MODULE_PACKAGE@.FormEntryActivator</activator>
 
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<require_version>1.4.0.22</require_version>
+	<!-- can be downgraded to a 1.5 requirement once the FormEntryHandler code is backported -->
+	<require_version>1.6.0.9132</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -37,8 +38,8 @@
 		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormListHeaderExt</class>
 	</extension>
 	<extension>
-		<point>org.openmrs.patientDashboardTab</point>
-		<class>@MODULE_PACKAGE@.extension.html.FormEntryPatientDashboardTabExt</class>
+		<point>formentryHandler</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryEncountersTabExt</class>
 	</extension>
 	<!-- /Extensions -->
 	
