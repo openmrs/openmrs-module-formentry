@@ -18,7 +18,7 @@
 	<!-- /Base Module Properties -->
 	
 	<!-- can be downgraded to a 1.5 requirement once the FormEntryHandler code is backported -->
-	<require_version>1.6.0.9132</require_version>
+	<require_version>1.5.0.9305</require_version>
 	
 	<!-- Extensions -->
 	<extension>
@@ -38,7 +38,7 @@
 		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormListHeaderExt</class>
 	</extension>
 	<extension>
-		<point>formentryHandler</point>
+		<point>org.openmrs.module.web.extension.FormEntryHandler</point>
 		<class>@MODULE_PACKAGE@.extension.html.FormEntryEncountersTabExt</class>
 	</extension>
 	<!-- /Extensions -->
