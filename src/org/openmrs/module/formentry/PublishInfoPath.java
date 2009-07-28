@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -49,6 +51,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Form;
+import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
@@ -89,6 +93,16 @@ public class PublishInfoPath {
 	 * group(4) should be the single character (or HTML entity) that ends the HL7 spec
 	 */
 	public static Pattern hl7ConceptNamePattern = Pattern.compile("(\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
+	
+	/**
+     * Regex pattern for an unqualified (lacking concept name) concept specification in HL7 format.
+     * 
+     * group(1) should be the single character (or HTML entity) that starts the HL7 spec
+     * group(2) should be the concept id
+     * group(3) should be the text of the concept
+     * group(4) should be the single character (or HTML entity) that ends the HL7 spec
+     */
+    public static Pattern hl7ConceptNamePatternWithOldPreciseName = Pattern.compile("((\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT)\\^([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
 	
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
@@ -140,7 +154,7 @@ public class PublishInfoPath {
 	public static Form publishXSN(InputStream inputStream) throws IOException {
 		return publishXSN(inputStream, null);
 	}
-		
+	
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -604,12 +618,21 @@ public class PublishInfoPath {
      * @param xsnDir directory containing an expanded XSN
      */
 	public static void updateXslFiles(File xsnDir) throws IOException {
+	    /* this is not actually correct behavior 
 		if (xsnDir.isDirectory()) {
 			String[] xslFilenames = xsnDir.list(getXslFilenameFilter());
 			for (String xslFilename : xslFilenames) {
 				appendConceptnamesInXsl(xslFilename, xsnDir);
 			}
 		}
+		*/
+		// remove any conceptnames that were done with the incorrect appendConceptnames method
+	    if (xsnDir.isDirectory()) {
+            String[] xslFilenames = xsnDir.list(getXslFilenameFilter());
+            for (String xslFilename : xslFilenames) {
+                removeConceptnamesInXsl(xslFilename, xsnDir);
+            }
+        }
 	}
 	
 	/** 
@@ -669,9 +692,79 @@ public class PublishInfoPath {
 			e.printStackTrace();
 		}
 	}
+	
+	
+    /** 
+     * Scans an XSL file for HL7 concept specifications, appending the
+     * appropriate concept-name specification. 
+     * 
+     * @param xslFilename
+     */
+    public static void removeConceptnamesInXsl(String xslFilename, File tempDir) throws IOException {
+        ConceptService cs = Context.getConceptService();
+        Locale defaultLocale = Context.getLocale();
+        
+        try {
+            File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
+            File tmpXslFile = File.createTempFile("infopath", ".xsltmp", tempDir);
+            
+            BufferedReader xslReader = new BufferedReader(new FileReader(xslFile));
+            PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(tmpXslFile));
+
+            removeConceptNamesInXslHelper(xslReader, tmpXslWriter);
+         
+            tmpXslWriter.close();
+            xslReader.close();
+
+            xslFile.delete();
+            if (!tmpXslFile.renameTo(xslFile)) {
+                throw new IOException("Unable to rename xsl file from " + tmpXslFile.getAbsolutePath() + " to " + xslFile.getAbsolutePath());
+            }
+        } catch (FileNotFoundException e) {
+            log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
+            e.printStackTrace();
+        } catch (IOException e) {
+            log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
+            e.printStackTrace();
+        }
+    }
 
 
-	private static ConceptName findNameMatching(String textName, Concept inConcept) {
+	public static void removeConceptNamesInXslHelper(BufferedReader xslReader, PrintWriter tmpXslWriter) throws IOException {
+	    String line = xslReader.readLine();
+        while (line != null) {
+            Matcher m = hl7ConceptNamePatternWithOldPreciseName.matcher(line); 
+            if (m.find()) {
+                /*
+                String conceptId = m.group(2);
+                Concept concept = cs.getConcept(new Integer(conceptId));
+                if (concept == null) {
+                    throw new IOException("xsl \"" + xslFilename + "\" contains unknown concept: " + m.group(3) + "(" + conceptId + ")");
+                } else {
+                    ConceptName matchingConceptName = findNameMatching(m.group(3), concept);
+                    String appendedHl7 = "";
+                    if (matchingConceptName != null) {
+                        appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, matchingConceptName) + m.group(m.groupCount());
+                    } else {
+                        appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(m.groupCount());
+                    }
+                    
+                    line = m.replaceFirst(appendedHl7);
+                }
+                */
+                String withoutPreciseName = m.group(1) + m.group(7);
+                log.debug("---------------");
+                for (int i = 0; i < 6; ++i)
+                    log.error(i + " -> " + m.group(i));
+                line = m.replaceFirst(withoutPreciseName);
+            } else {
+                tmpXslWriter.println(line);
+                line = xslReader.readLine();
+            }
+        }
+    }
+
+    private static ConceptName findNameMatching(String textName, Concept inConcept) {
 		ConceptName matchingName = null;
 		if ((textName != null) && (inConcept != null)) {
 			for (ConceptName possibleName : inConcept.getNames()) {
