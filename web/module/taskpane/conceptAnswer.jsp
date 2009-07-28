@@ -12,9 +12,16 @@
 	
 	function miniObject(c) {
 		this.key = c.conceptId;
-		this.value = c.name;
-		this.nameKey = c.conceptNameId;
-		this.nameValue = c.name;
+
+		if (c.preferredName)
+			this.value = c.preferredName;
+		else
+			this.value = c.name;
+
+		// don't set the nameKey and name value because
+		// we don't want a sextuplet generated and returned to the form.
+		this.nameKey = null; //c.conceptNameId;
+		this.nameValue = null; //c.name;
 	}
 	
 	var searchWidget;

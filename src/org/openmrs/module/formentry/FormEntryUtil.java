@@ -14,6 +14,9 @@
 package org.openmrs.module.formentry;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,7 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -42,6 +47,7 @@ import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -587,7 +593,8 @@ public class FormEntryUtil {
 	 * @deprecated use org.openmrs.util#FormUtil.conceptToString(Concept, Locale)
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		return org.openmrs.util.FormUtil.conceptToString(concept, locale);
+		//return org.openmrs.util.FormUtil.conceptToString(concept, locale);
+	    return concept.getConceptId() + "^" + encodeUTF8String(concept.getName(locale).getName()) + "^" + FormConstants.HL7_LOCAL_CONCEPT;
 	}
 
 	/**
@@ -821,4 +828,67 @@ public class FormEntryUtil {
 		} catch (IOException ioe) {}
     }
     
+    /**
+     * Converts utf-8 characters into unicode escape characters
+     * 
+     * @param s the string to convert 
+     * @return the string with characters converted to unicode escapes with backslashes
+     */
+    public static String encodeUTF8String(String s) {
+		
+		try {
+			BufferedReader reader = null;
+			BufferedWriter writer = null;
+			ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+			try {
+				reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes("UTF-8"))));
+				writer = new BufferedWriter(new OutputStreamWriter(byteOutputStream, "ISO8859_1")); // or ASCII
+				int temp;
+				while ((temp = reader.read()) != -1) {
+					if (temp <= 0x7f)
+						writer.write(temp);
+					else
+						writer.write(toEscape((char) temp));
+				}
+			}
+			catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+			finally {
+				try {
+					if (reader != null)
+						reader.close();
+					if (writer != null)
+						writer.close();
+				}
+				catch (IOException ex) {
+					;
+				}
+			}
+			
+			return byteOutputStream.toString("ISO8859-1");
+		}
+		catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			log.error("Unable to convert to unicode escape characters", e);
+			return s;
+		}
+	}
+	
+	/**
+	 * Helper method for the encodeUTF8String method above.
+	 * 
+	 * @param c
+	 * @return
+	 */
+	private static String toEscape(char c) { //instead of this method charToHex() can be used
+		int n = (int) c;
+		String body = Integer.toHexString(n);
+		//String body=charToHex(c);  //instead of this the above can be used
+		String zeros = "000";
+		return ("\\u" + zeros.substring(0, 4 - body.length()) + body);
+	} //end of method
+
 }
+
+

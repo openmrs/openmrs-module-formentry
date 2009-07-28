@@ -45,8 +45,13 @@ function setObj(nodeName, obj) {
 
 // returns HL7 version of problem for inserting into form
 function getConceptNodeValue(obj) {
-	return obj.key + "^" + obj.value.toUpperCase() + "^99DCT" +  "^" +
-		obj.nameKey + "^" + obj.value + "^99DCT";
+	var str = obj.key + "^" + obj.value.toUpperCase() + "^99DCT";
+	
+	// if the obj has a name key in it, make the triplet into a sextuplet
+	if (obj.nameKey)
+		str = str +  "^" + obj.nameKey + "^" + obj.value + "^99NAM";
+	
+	return str;
 }
 
 // add problem (diagnosis) concept to a list (new problems or resolved problems)
