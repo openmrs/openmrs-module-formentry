@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formentry/taskpane/concept.htm" />
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" ></openmrs:htmlInclude>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");

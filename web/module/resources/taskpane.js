@@ -1,7 +1,10 @@
 
-if (window.external != null) {
+if (window.external != null && window.external.Window != null) {
 	// Reference to InfoPath document
 	var oXDocument = window.external.Window.XDocument;
+}
+else {
+	document.write("Warning: window.external.Window does not exist.  Some things might not work in a non-infopath environment<br/>");
 }
 
 if (typeof oXDocument != 'undefined') {
