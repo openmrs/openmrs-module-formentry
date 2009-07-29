@@ -4,10 +4,6 @@
 
 <h3><spring:message code="Location.title"/></h3>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
-
 <c:choose>
 	<c:when test="${not empty param.nodePath}">
 		<c:set var="nodePath" value="${param.nodePath}"/>

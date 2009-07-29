@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/module/formentry/taskpane/conceptAnswer.htm" />
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" ></openmrs:htmlInclude>
 
 <script type="text/javascript">
 	<c:if test="${empty param.nodePath}">alert("Error 3947: A parameter named 'nodePath' must be defined");</c:if>

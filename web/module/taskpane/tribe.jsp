@@ -13,8 +13,6 @@
 
 <h3><spring:message code="Tribe.title"/></h3>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 	dojo.require("dojo.widget.openmrs.PatientSearch");

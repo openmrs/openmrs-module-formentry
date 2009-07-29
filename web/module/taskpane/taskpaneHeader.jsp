@@ -14,6 +14,13 @@
 		
 		<openmrs:htmlInclude file="/moduleResources/formentry/taskpane.css" />
 		<openmrs:htmlInclude file="/moduleResources/formentry/taskpane.js" />
+		
+		<%-- These are imported here because IE doesn't like our import js from js and dwr doesn't get loaded properly --%>
+		<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
+		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+		<openmrs:htmlInclude file="/dwr/engine.js" />
+		<openmrs:htmlInclude file="/dwr/util.js" />
+		
 		<meta http-equiv="msthemecompatible" content="yes" />
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="expires" content="-1" />
