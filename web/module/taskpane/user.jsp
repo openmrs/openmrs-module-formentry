@@ -20,8 +20,8 @@
 	</c:otherwise>
 </c:choose>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" ></openmrs:htmlInclude>
+<openmrs:htmlInclude file="/dwr/interface/DWRUserService.js" ></openmrs:htmlInclude>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.UserSearch");
