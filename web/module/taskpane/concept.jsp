@@ -9,7 +9,15 @@
 	
 	function miniObject(c) {
 		this.key = c.conceptId;
-		this.value = c.name;
+
+		// if preferredName is non-null, this means that the user chose a
+		// synonym name and that is what is stored in the c.name variable.
+		// if preferredName is null, the user chose a preferredName from the list 
+		if (c.preferredName)
+			this.value = c.preferredName;
+		else
+			this.value = c.name;
+		
 		this.nameKey = c.conceptNameId;
 		this.nameValue = c.name;
 	}
