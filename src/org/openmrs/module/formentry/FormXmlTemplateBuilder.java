@@ -2,7 +2,9 @@ package org.openmrs.module.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -22,6 +24,8 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.FormUtil;
@@ -82,6 +86,9 @@ public class FormXmlTemplateBuilder {
 			
 			List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
 			velocityContext.put("patientEncounters", encounters);
+			
+			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+			velocityContext.put("relationships", relationships);
 		}
 		
 		// adding the error handler for velocity
