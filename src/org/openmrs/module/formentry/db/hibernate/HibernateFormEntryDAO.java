@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -80,8 +81,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<FormEntryError> getFormEntryErrors() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery(
-				"from FormEntryError order by formEntryErrorId").list();
+		return sessionFactory.getCurrentSession().createCriteria(FormEntryError.class).addOrder(Order.asc("formEntryErrorId")).list();
 	}
 
 	/**
