@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>4.3</version>
+	<version>4.4</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -17,8 +17,7 @@
 	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
 	<!-- /Base Module Properties -->
 	
-	<!-- can be downgraded to a 1.5 requirement once the FormEntryHandler code is backported -->
-	<require_version>1.5.0.9305</require_version>
+	<require_version>1.6.0</require_version>
 	
 	<!-- Extensions -->
 	<extension>
