@@ -26,8 +26,8 @@ import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.PatientService;
@@ -111,14 +111,23 @@ public class FormDownloadServlet extends HttpServlet {
 		velocityContext.put("uid", FormEntryUtil.generateFormUid());
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
 		velocityContext.put("patientEncounters", encounters);
-        // search both the left side and the right side of the relationship
-        // for this person
-        List<Relationship> rels = Context.getPersonService().getRelationships(patient, null, null);
-        rels.addAll(Context.getPersonService().getRelationships(null, patient, null));
-        velocityContext.put("relationships", rels);
-        List<RelationshipType> relTypes = Context.getPersonService().getAllRelationshipTypes();
-        velocityContext.put("relationshipTypes", relTypes);
-
+		List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+		// change Person objects to Patient objects if applicable
+		for (Relationship rel : relationships) {
+			Person otherPerson = null;
+			if (rel.getPersonA().equals(patient)) {
+				otherPerson = rel.getPersonB();
+				if (otherPerson.isPatient())
+					rel.setPersonB(Context.getPatientService().getPatient(otherPerson.getPersonId()));
+			}
+			else {
+				otherPerson = rel.getPersonA();
+				if (otherPerson.isPatient())
+					rel.setPersonA(Context.getPatientService().getPatient(otherPerson.getPersonId()));
+			}
+		}
+		velocityContext.put("relationships", relationships);
+		
 		// add the error handler
 		EventCartridge ec = new EventCartridge();
 		ec.addEventHandler(new VelocityExceptionHandler());

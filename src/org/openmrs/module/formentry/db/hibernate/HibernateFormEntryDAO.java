@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -80,8 +81,7 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<FormEntryError> getFormEntryErrors() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery(
-				"from FormEntryError order by formEntryErrorId").list();
+		return sessionFactory.getCurrentSession().createCriteria(FormEntryError.class).addOrder(Order.asc("formEntryErrorId")).list();
 	}
 
 	/**
@@ -257,22 +257,26 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	 */
 	public Boolean migrateFormEntryArchiveNeeded() {
 		Connection conn = sessionFactory.getCurrentSession().connection();
+		PreparedStatement ps = null;
         try {
-        	PreparedStatement ps = conn.prepareStatement("select count(*) from INFORMATION_SCHEMA.tables where table_name = 'formentry_archive' and table_schema = '" + OpenmrsConstants.DATABASE_NAME + "'");
+        	ps = conn.prepareStatement("select * from formentry_archive");
 	        ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
-				if (rs.getInt(1) > 0)
-					return true;
-				else
-					return false;
-			}
+			if (rs.next())
+				return true;
+			else
+				return false;
         } catch (SQLException e) {
 	        // essentially swallow the error
-	        log.debug("Error generated while checking for formentry queue", e);
+	        log.trace("The table doesn't exist, so migration is not needed", e);
+	        return false;
+        }
+        finally {
+        	try {
+	            ps.close();
+            }
+            catch (SQLException e) { }
         }
         
-        return false;
-		
 	}
 
 	/**
