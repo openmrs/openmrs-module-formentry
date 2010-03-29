@@ -18,13 +18,21 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	
+
 	<li <c:if test='<%= request.getRequestURI().contains("formentry/formEntryInfo") %>'>class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/module/formentry/formEntryInfo.htm">
 			<spring:message code="formentry.info"/>
 		</a>
 	</li>
 
+	<openmrs:hasPrivilege privilege="Edit Forms">
+		<li <c:if test='<%= request.getRequestURI().contains("formentry/setupRelationshipSchemas") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/formentry/setupRelationshipSchemas.form" class="retired">
+				<spring:message code="formentry.relationships.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	
 	<openmrs:extensionPoint pointId="org.openmrs.admin.formentry.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
