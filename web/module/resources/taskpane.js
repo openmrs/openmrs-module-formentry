@@ -29,11 +29,6 @@ function addNil(node) {
 	}
 }
 
-// Close the InfoPath TaskPane
-function closeTaskPane() {
-	window.external.Window.XDocument.View.Window.TaskPanes.Item(0).Visible = false;
-}
-
 // set nodeName's value to obj
 function setObj(nodeName, obj) {
 	// Fetch reference to the node
@@ -201,6 +196,70 @@ function pickConcept(nodeName, concept, createConceptList, extraMap, hasOtherSib
 	
 
 	closeTaskPane();
+}
+
+/** 
+ * adds a relationship to the patient node in the form
+ * 
+ * @param relationship JSON object containing relationship data and relative description 
+ */
+function pickRelationship(relationship) {
+	var refNode = oDOM.selectSingleNode("//patient/patient_relationship");
+	
+	// freak out if a patient_relationship node cannot be found
+	if (refNode == null) {
+		alert("ERROR: No existing patient_relationship element to copy");
+		closeTaskPane();
+		return;
+	}
+
+	// add relationship specifics
+	var newNode = cloneAndInsertNode(refNode);
+	newNode.selectSingleNode("patient_relationship.relationship_type_id").text = nullToBlank(relationship.type);
+	newNode.selectSingleNode("patient_relationship.a_or_b").text = nullToBlank(relationship.aOrB);
+	newNode.selectSingleNode("patient_relationship.description").text = nullToBlank(relationship.description);
+	newNode.selectSingleNode("patient_relationship.reverse_description").text = nullToBlank(relationship.reverseDescription);
+	newNode.selectSingleNode("patient_relationship.exists").text = 0;
+	newNode.selectSingleNode("patient_relationship.voided").text = "false";
+
+	// add relative information
+	var relativeNode = newNode.selectSingleNode("relative"); 
+	relativeNode.selectSingleNode("relative.uuid").text = nullToBlank(relationship.relative.uuid);
+	relativeNode.selectSingleNode("relative.identifier").text = ("identifier" in relationship.relative) ? nullToBlank(relationship.relative.identifier) : "";
+	relativeNode.selectSingleNode("relative.birthdate").text = formatHL7Date(relationship.relative.birthdate);
+	relativeNode.selectSingleNode("relative.gender").text = nullToBlank(relationship.relative.gender);
+	relativeNode.selectSingleNode("relative.given_name").text = nullToBlank(relationship.relative.givenName);
+	relativeNode.selectSingleNode("relative.middle_name").text = nullToBlank(relationship.relative.middleName);
+	relativeNode.selectSingleNode("relative.family_name").text = nullToBlank(relationship.relative.familyName);
+	// TODO: somehow acquire identifier types and location from PatientService
+	relativeNode.selectSingleNode("relative.identifier_type").text = "";
+	relativeNode.selectSingleNode("relative.location").text = "";
+
+	// get out
+	closeTaskPane();
+}
+/**
+ * formats a date object into HL7 format (i.e. 3/29/2010 --> 20100329)
+ * 
+ * @param datetime the date object to format
+ * @return the formatted date as a string
+ */
+function formatHL7Date(datetime) {
+	if (datetime == null) { return ""; }
+	out = '' + datetime.getFullYear();
+	out += (datetime.getMonth() + 1 < 10) ? '0' + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+	out += (datetime.getDate() < 10) ? '0' + datetime.getDate() : datetime.getDate();
+	return out;
+}
+
+/**
+ * converts an object to blank text if null, otherwise sends it back
+ * 
+ * @param text string to check for null
+ * @return empty string if text is null, otherwise text
+ */
+function nullToBlank(text) {
+	return (text == null) ? "" : text;
 }
 
 function cloneAndInsertNode(node) {
