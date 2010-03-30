@@ -36,7 +36,7 @@
 				<c:forEach var="form" items="${forms}" varStatus="status">
 					<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 						<td><input type="checkbox" name="formId" value="${form.formId}" /></td>
-						<td><a href="formEdit.form?formId=${form.formId}">${form.name}</a></td>
+						<td><a href="<openmrs:contextPath/>/admin/forms/formEdit.form?formId=${form.formId}">${form.name}</a></td>
 						<td>${form.version}</td>
 						<td><c:if test="${form.published == true}"><spring:message code="general.yes"/></c:if></td>
 					</tr>

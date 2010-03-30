@@ -79,7 +79,7 @@
 	</bean>
 	
 	<bean id="setupRelationshipSchemas" class="@MODULE_PACKAGE@.web.controller.SetupRelationshipSchemasFormController">
-		<property name="commandName"><value>setupRelationshipSchemas</value></property>
+		<property name="commandName"><value>forms</value></property>
 		<property name="formView"><value>/module/formentry/setupRelationshipSchemasForm</value></property>
 		<property name="successView"><value>setupRelationshipSchemas.form</value></property>
 	</bean>

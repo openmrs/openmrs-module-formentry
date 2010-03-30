@@ -148,12 +148,14 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
 
     		Map<String, FormField> map = getFormFieldMap(form);
 
-    		FormField relationshipFormField = map.get(PATIENT_RELATIONSHIP.toUpperCase());
+			FormField relationshipFormField = map.get(PATIENT_RELATIONSHIP.toUpperCase());
 
-    		if (relationshipFormField != null) {
+    		while(relationshipFormField != null) {
     			// there is a PATIENT_RELATIONSHIP element, remove it so
     			// we can just add all of the new ones
     			removeFormFieldAndChildren(form, relationshipFormField);
+    			// cannot refer to map variable because it is not updated
+    			relationshipFormField = getFormFieldMap(form).get(PATIENT_RELATIONSHIP.toUpperCase());
     		}
 
     		// check for patient field before adding relationship fields
@@ -213,10 +215,10 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
     		Map<String, String> fieldNames = new LinkedHashMap<String, String>();
     		
     		// create the Relationships
-    		FormField relationshipFormField = getNewFormField(PATIENT_RELATIONSHIP,
-    			                           rootFormField, true, 0, -1,
-    			                           "$!{relationships}");
-    		form.addFormField(relationshipFormField);
+			FormField relationshipFormField = getNewFormField(
+					PATIENT_RELATIONSHIP, rootFormField, true, 0, -1,
+					"$!{relationships}");
+			form.addFormField(relationshipFormField);
     		
     		fieldNames.clear();
     		fieldNames.put(PATIENT_RELATIONSHIP_TYPE, "$!{listItem.getRelationshipType().getRelationshipTypeId()}");
