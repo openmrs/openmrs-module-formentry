@@ -6,7 +6,7 @@ import org.openmrs.Form;
 import org.openmrs.User;
 
 /**
- * This class holds metadat about the formentry xsn
+ * This class holds metadata about the formentry xsn
  */
 public class FormEntryXsn {
 	//private Log log = LogFactory.getLog(this.getClass());
