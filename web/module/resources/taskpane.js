@@ -226,13 +226,13 @@ function pickRelationship(relationship) {
 	var relativeNode = newNode.selectSingleNode("relative"); 
 	relativeNode.selectSingleNode("relative.uuid").text = nullToBlank(relationship.relative.uuid);
 	relativeNode.selectSingleNode("relative.identifier").text = ("identifier" in relationship.relative) ? nullToBlank(relationship.relative.identifier) : "";
+	relativeNode.selectSingleNode("relative.identifier_type").text = ("identifierTypeName" in relationship.relative) ? nullToBlank(relationship.relative.identifierTypeName) : "";
 	relativeNode.selectSingleNode("relative.birthdate").text = formatHL7Date(relationship.relative.birthdate);
 	relativeNode.selectSingleNode("relative.gender").text = nullToBlank(relationship.relative.gender);
 	relativeNode.selectSingleNode("relative.given_name").text = nullToBlank(relationship.relative.givenName);
 	relativeNode.selectSingleNode("relative.middle_name").text = nullToBlank(relationship.relative.middleName);
 	relativeNode.selectSingleNode("relative.family_name").text = nullToBlank(relationship.relative.familyName);
-	// TODO: somehow acquire identifier types and location from PatientService
-	relativeNode.selectSingleNode("relative.identifier_type").text = "";
+	// TODO: somehow acquire location from PatientService
 	relativeNode.selectSingleNode("relative.location").text = "";
 
 	// get out

@@ -1,11 +1,14 @@
 package org.openmrs.module.formentry.web.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -22,7 +25,9 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.formentry.PublishInfoPath;
 import org.openmrs.util.FormConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -59,28 +64,48 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
     		FormService formService = Context.getFormService();
     		
     		FormConverter formConverter = new FormConverter();
+
+    		// combine addSchema and addWidget parameters
+    		String[] addSchemas = request.getParameterValues("addSchema");
+    		String[] addWidgets = request.getParameterValues("addWidget");
+    		Set<String> formIds = new HashSet<String>();
+    		if (addSchemas != null)
+    			formIds.addAll(Arrays.asList(addSchemas));
+    		if (addWidgets != null)
+    			formIds.addAll(Arrays.asList(addWidgets));
     		
-    		String[] formIds = request.getParameterValues("formId");
     		if (formIds != null) {
 	    		for (String formId : formIds) {
 	    			Form form = formService.getForm(Integer.valueOf(formId));
 	    			
-	    			// make sure the form is unpublished
-    				formConverter.addOrUpdateSchema(form);
-	    			formService.saveForm(form);
-	    			
-	    			// get the new form fields into the xsn
-	    			try {
-	    				FormEntryUtil.rebuildXSN(form);
+	    			if (OpenmrsUtil.isStringInArray(formId, addSchemas)) {
+		    			// add or update the schema if selected
+	    				formConverter.addOrUpdateSchema(form);
+	    				formService.saveForm(form);
 	    			}
-	    			catch (IOException io) {
-	    				log.warn("unable to rebuild the xsn for form" + form, io);
+
+	    			if (OpenmrsUtil.isStringInArray(formId, addWidgets)) {
+		    			// modify the form to include the new control if selected
+		    			try {
+		    				FormEntryUtil.addWidgetToForm(form, "relationships");
+		    			} catch (IOException io) {
+		    				log.warn("unable to add relationship widget to form " + form, io);
+		    			}
+
+	    			} else {
+		    			// get the new form fields into the xsn; doesn't need to be rebuilt
+		    			// if the relationship widget was added (publish is included in that process)
+		    			try {
+		    				FormEntryUtil.rebuildXSN(form);
+		    			}
+		    			catch (IOException io) {
+		    				log.warn("unable to rebuild the xsn for form " + form, io);
+		    			}
 	    			}
 	    			
 	    			// at least one form was successful
-	    			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.relationships.formsSaved");
-	    			// at least one form was not successful
-	    			//httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "formentry.relationships.publishedAlready");
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
+							"formentry.relationships.formsSaved");
 	    		}
     		}
     		else
@@ -97,7 +122,7 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
      */
     protected Map referenceData(HttpServletRequest arg0, Object arg1, Errors arg2) throws Exception {
     	return new HashMap<String, Object>();
-}
+    }
 	
     /**
      * Converts the form to have the fields/formFields necessary to be a remote form
@@ -162,7 +187,6 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
 			FormField patientFormField = map.get(PATIENT.toUpperCase());
     		if (patientFormField == null) {
     			// add the PATIENT field if it does not exist
-    			// TODO make this optional
 				patientFormField = getNewFormField(PATIENT.toUpperCase(), null, true, null, null, "");
 				form.addFormField(patientFormField);
 			}
@@ -196,8 +220,6 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
     	private void addAllFields(Form form, FormField rootFormField) {
     		log.debug("Adding relationship fields to form: " + form);
     		
-    		// TODO surely there is a better way to do this
-
     		// example schema layout
     		// PATIENT (assumed)
     		//  PATIENT_RELATIONSHIP
@@ -249,7 +271,7 @@ public class SetupRelationshipSchemasFormController extends SimpleFormController
     		fieldNames.clear();
     		fieldNames.put(RELATIVE_UUID, "$!{otherPerson.getUuid()}");
     		fieldNames.put(RELATIVE_IDENTIFIER, "$!{otherPerson.getPatientIdentifier()}");
-    		fieldNames.put(RELATIVE_IDENTIFIER_TYPE, "$!{otherPerson.getPatientIdentifier().getIdentifierType().getPatientIdentifierTypeId()}");
+    		fieldNames.put(RELATIVE_IDENTIFIER_TYPE, "$!{otherPerson.getPatientIdentifier().getIdentifierType().getName()}");
     		fieldNames.put(RELATIVE_IDENTIFIER_LOC, "$!{otherPerson.getPatientIdentifier().getLocation().getLocationId()}");
     		fieldNames.put(RELATIVE_BIRTHDATE, "$!{date.format($otherPerson.getBirthdate())}");
     		fieldNames.put(RELATIVE_GENDER, "$!{otherPerson.getGender()}");
