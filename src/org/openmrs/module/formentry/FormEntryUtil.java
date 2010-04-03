@@ -21,12 +21,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -36,6 +39,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -71,7 +76,16 @@ public class FormEntryUtil {
 	 */
 	private static String formEntryArchiveFileName = null;
 	
-
+	/**
+	 * A FilenameFilter for xsl files. 
+	 */
+	private static FilenameFilter xslFilenameFilter = null;
+	
+	/**
+	 * Regex pattern for the end of the form in an XSL page (</body>)
+	 */
+	public static Pattern endOfXSLPattern = Pattern.compile("(</body>)");
+	
 	/**
 	 * Expand the xsn defined by <code>xsnFileContents</code> into a temp dir
 	 * 
@@ -155,7 +169,33 @@ public class FormEntryUtil {
 		return tempDir;
 	}
 		
+	/**
+	 * Finds a folder path within resources and returns it as a File
+	 * 
+	 * @should throw a FileNotFoundException if the folderPath does not exist
+	 * @should return both directories and files
+	 * 
+	 * @param resourcePath path to the resource
+	 * @return file handle for the resource
+	 * @throws IOException
+	 */
+	public static File getResourceFile(String resourcePath) throws IOException {
 
+		log.debug("Getting URL directory: " + resourcePath);
+
+		Class<FormEntryUtil> c = FormEntryUtil.class;
+
+		// get the location of the starter documents
+		URL url = c.getResource(resourcePath);
+		if (url == null) {
+			String err = "Could not open resource folder directory: " + resourcePath;
+			log.error(err);
+			throw new FileNotFoundException(err);
+		}
+		
+		return OpenmrsUtil.url2file(url);
+	}
+	
 	/**
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
 	 * to play with in Infopath.  Should be used similar to 
@@ -169,47 +209,13 @@ public class FormEntryUtil {
 	 */
 	public static File getExpandedStarterXSN() throws IOException {
 
-		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
-		log.debug("Getting starter XSN contents: " + xsnFolderPath);
-
-		Class<FormEntryUtil> c = FormEntryUtil.class;
-		/*
-		URL url = c.getResource(xsnFolderPath);
-		File xsnFolder = null;
-		try {
-			log.error("url.getFile: " + url.getFile());
-			log.error("xsnFolderPath - : " + xsnFolderPath);
-			xsnFolder = OpenmrsUtil.url2file(url);
-		}
-		catch (Exception e) {
-			String err = "Unable to open starter xsn: " + xsnFolderPath + " : " + url;
-			log.error(err, e);
-			throw new IOException(err);
-		}
-		
-		if (xsnFolder == null || !xsnFolder.exists()) {
-			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			if (xsnFolder != null) err += ". Absolute path: " + xsnFolder.getAbsolutePath();
-			log.error(err);
-			throw new FileNotFoundException(err);
-		}
-		*/
-
-		// get the location of the starter documents
-		URL url = c.getResource(xsnFolderPath);
-		if (url == null) {
-			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			log.error(err);
-			throw new FileNotFoundException(err);
-		}
-		
 		// temp directory to hold the new xsn contents
 		File tempDir = FormEntryUtil.createTempDirectory("XSN-starter");
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
 
 		// iterate over and copy each file in the given folder
-		File starterDir = OpenmrsUtil.url2file(url);
+		File starterDir = getResourceFile(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH);
 		for (File f : starterDir.listFiles()) {
 			File newFile = new File(tempDir, f.getName());
 			FileChannel in = null, out = null;
@@ -264,18 +270,6 @@ public class FormEntryUtil {
 		
 		return new Object[] {compileXSN(form, tempDir), tempDir};
 	}
-
-	/**
-	 * Returns a .xsn file compiled from the starter data set
-	 * 
-	 * @param form
-	 * @return .xsn file
-	 * @throws IOException
-	 */
-//	public static FileInputStream getStarterXSN(Form form) throws IOException {
-//		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
-//		return compileXSN(form, tmpXSN);
-//	}
 
 	/**
 	 * Modifies schema, template.xml, and sample data, defaults, urls in
@@ -888,6 +882,127 @@ public class FormEntryUtil {
 		String zeros = "000";
 		return ("\\u" + zeros.substring(0, 4 - body.length()) + body);
 	} //end of method
+
+	/**
+	 * adds a widget to the end of every XSL file in a form and publishes it
+	 * 
+	 * @should throw an IOException if the widget does not exist
+	 * @should use the starter XSN if no XSN currently exists for the form
+	 * @should only increment the build by one digit
+	 * 
+	 * @param form the form to be modified
+	 * @param widgetName the name of the widget (should exist already in the application context)
+	 * @return the modified form
+	 * @throws IOException
+	 */
+	public static Form addWidgetToForm(Form form, String widgetName) throws IOException {
+		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+
+		// get the widget's contents
+		File widgetFolder = FormEntryUtil.getResourceFile(FormEntryConstants.FORMENTRY_INFOPATH_WIDGET_PATH);
+		if (!OpenmrsUtil.folderContains(widgetFolder, widgetName))
+			throw new IOException("cannot find widget folder for '" + widgetName + "'");
+		
+		widgetFolder = new File(widgetFolder.getAbsolutePath(), widgetName);
+		if (!OpenmrsUtil.folderContains(widgetFolder, FormEntryConstants.FORMENTRY_INFOPATH_WIDGET_FILENAME))
+			throw new IOException("cannot find widget file for '" + widgetName + "'");
+		
+		File widgetFile = new File(widgetFolder.getAbsolutePath(), FormEntryConstants.FORMENTRY_INFOPATH_WIDGET_FILENAME);
+		String widgetContents = OpenmrsUtil.getFileAsString(widgetFile);
+		
+		// get the XSN extracted to a temporary location
+		FormEntryXsn xsn = formEntryService.getFormEntryXsn(form);
+		File tempDir = null;
+		if (xsn == null) 
+			tempDir = FormEntryUtil.getExpandedStarterXSN();
+		else
+			tempDir = FormEntryUtil.expandXsnContents(xsn.getXsnData());
+				
+		// iterate over the XSL files
+        String[] xslFilenames = tempDir.list(getXslFilenameFilter());
+        for (String xslFilename : xslFilenames) {
+			File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
+       		try {
+       			FormEntryUtil.addWidgetToXSLFile(widgetContents, xslFile);
+    		} catch (FileNotFoundException e) {
+    			log.error("update of relationship widget in \"" + xslFilename + "\" failed, because: " + e);
+    			e.printStackTrace();
+    		} catch (IOException e) {
+    			log.error("update of relationship widget in \"" + xslFilename + "\" failed, because: " + e);
+    			e.printStackTrace();
+    		}
+        }
+        
+		// repackage the XSN
+        InputStream newXSN = FormEntryUtil.compileXSN(form, tempDir);
+        
+        // publish the modified XSN
+		form = PublishInfoPath.publishXSN(newXSN, form);
+
+		// close the stream
+		try {
+			newXSN.close();
+		} catch (IOException ioe) {}
+
+		// delete the temp folder
+		try {
+			OpenmrsUtil.deleteDirectory(tempDir);
+		} catch (IOException ioe) {}
+		
+		return form;
+	}
+	
+	/**
+	 * adds a widget before the bottom of the <body/> of a XSL file
+	 * 
+	 * @should throw an IOException if the XSL file is not found
+	 * @should inject the widget's content directly before the body tag of each XSL in the form
+	 * 
+	 * @param widget the contents of the widget to inject
+	 * @param xslFile the XSL file to update
+	 * @throws IOException
+	 */
+	private static void addWidgetToXSLFile(String widget, File xslFile) throws IOException {
+
+		BufferedReader xslReader = new BufferedReader(new FileReader(xslFile));
+		File tmpXslFile = File.createTempFile("infopath", ".xsltmp", xslFile.getParentFile());
+		PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(tmpXslFile));
+		
+		// drop the widget right before the </body> tag
+		String line = xslReader.readLine();
+	    while (line != null) {
+	    	Matcher m = endOfXSLPattern.matcher(line); 
+	    	if (m.find()) {
+				tmpXslWriter.println(widget);
+	    	}
+    		tmpXslWriter.println(line);
+    		line = xslReader.readLine();
+	    }
+	    
+	    // swap files
+	    tmpXslWriter.close();
+	    xslReader.close();
+	    xslFile.delete();
+	    if (!tmpXslFile.renameTo(xslFile)) {
+	    	throw new IOException("Unable to rename xsl file from " + tmpXslFile.getAbsolutePath() + " to " + xslFile.getAbsolutePath());
+	    }
+	}
+	
+	/**
+	 * Lazy factory method of xslFilenameFilter.
+	 * STOLEN from PublishInfoPath
+	 * 
+	 * @return a cached FilenameFilter for *.xsl files
+	 */
+	private static FilenameFilter getXslFilenameFilter() {
+		if (xslFilenameFilter == null) {
+			xslFilenameFilter = new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith("xsl");
+				}};
+		}
+		return xslFilenameFilter;
+	}
 
 }
 

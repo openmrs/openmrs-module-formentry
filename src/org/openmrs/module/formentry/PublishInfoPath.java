@@ -217,7 +217,7 @@ public class PublishInfoPath {
 		}
 		
 		if (form == null)
-			throw new IOException("A form matching this xsn cannot be determined from the formId attribute in this object.  Make sure a fow exists in the form table for this xsn");
+			throw new IOException("A form matching this xsn cannot be determined from the formId attribute in this object.  Make sure a row exists in the form table for this xsn");
 		
 		String originalFormUri = FormEntryUtil.getFormUri(form);
 		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
@@ -560,7 +560,10 @@ public class PublishInfoPath {
 
 	private static void setVariables(File dir, String filename, Map<String, String> vars)
 	    throws IOException {
-		File file = FormEntryUtil.findFile(dir, filename);
+		// pull the default JS file from the starter folder to acquire updates
+		File file = FormEntryUtil.findFile(
+				FormEntryUtil.getResourceFile(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH),
+				filename);
 		String fileContent = readFile(file);
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
