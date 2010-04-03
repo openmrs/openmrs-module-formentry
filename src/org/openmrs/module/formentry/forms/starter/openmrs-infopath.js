@@ -122,6 +122,20 @@ function selectAnswer(nodePath) {
 }
 
 //===============================================================
+// Add an offline (in-form only) relationship
+//===============================================================
+function addRelationship() {
+	if (XDocument.DOM.selectSingleNode("//patient/patient_relationship") == null) {
+		alert("Your schema does not include the PATIENT_RELATIONSHIPS element.");
+		return;
+	}
+	var patientId = XDocument.DOM.selectSingleNode("//patient/patient.patient_id");
+	if (patientId)
+		patientId = patientId.text;
+	taskPaneNavigateTo("/relationshipOffline.htm?patientId=" + patientId);
+}
+
+//===============================================================
 // Submit form to server and close (if successful)
 //===============================================================
 // usage:
