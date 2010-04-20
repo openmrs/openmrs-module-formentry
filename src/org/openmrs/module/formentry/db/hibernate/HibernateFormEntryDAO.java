@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.formentry.db.hibernate;
 
 import java.io.File;
@@ -30,7 +43,6 @@ import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.db.FormEntryDAO;
 import org.openmrs.module.formentry.migration.MigrateFormEntryQueueThread;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateFormEntryDAO implements FormEntryDAO {
@@ -137,14 +149,14 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select count(*) from formentry_queue");
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
+			if (rs.next()) {
 				// pass
 			}
 			formEntryQueueExists = true;
 		}
 		catch (Exception e) {
 			formEntryQueueExists = false;
-			// swallow error
+			log.trace("error while finding formentry_queue size", e);
 		}
 		
 		// migrate the formentry queue
@@ -259,10 +271,10 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		Connection conn = sessionFactory.getCurrentSession().connection();
 		PreparedStatement ps = null;
         try {
-        	ps = conn.prepareStatement("select * from formentry_archive");
+        	ps = conn.prepareStatement("select count(*) from formentry_archive");
 	        ResultSet rs = ps.executeQuery();
 			if (rs.next())
-				return true;
+				return rs.getInt(1) > 0;
 			else
 				return false;
         } catch (SQLException e) {
