@@ -136,15 +136,6 @@
 		<description>The text seen in the infopath taskpane upon first logging in</description>
 	</globalProperty>
 	<globalProperty>
-		<property>@MODULE_ID@.infopath_archive_dir</property> <!-- Must start with `moduleId.` -->
-		<defaultValue></defaultValue>
-		<description>
-			This property should point to a filesystem directory. If undefined (empty), XSNs will not be archived.
-			If the directory is defined and available, every time an XSN is uploaded the old XSN
-			will be renamed and copied to this directory.
-		</description>
-	</globalProperty>
-	<globalProperty>
 		<property>@MODULE_ID@.infopath_taskpane_refresh_sec</property> <!-- Must start with `moduleId.` -->
 		<defaultValue></defaultValue>
 		<description>
