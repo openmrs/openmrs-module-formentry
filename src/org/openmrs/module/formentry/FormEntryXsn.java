@@ -6,10 +6,10 @@ import org.openmrs.Form;
 import org.openmrs.User;
 
 /**
- * This class holds metadat about the formentry xsn
+ * This class holds metadata about the formentry xsn
  */
 public class FormEntryXsn {
-	//private Log log = LogFactory.getLog(this.getClass());
+	// private Log log = LogFactory.getLog(this.getClass());
 
 	private Integer formEntryXsnId;
 	private byte[] xsnData;
@@ -19,14 +19,13 @@ public class FormEntryXsn {
 	private Date dateCreated;
 	private User archivedBy;
 	private Date dateArchived;
-	
 
 	/**
 	 * Default constructor
 	 */
 	public FormEntryXsn() {
 	}
-	
+
 	/**
 	 * @return Returns the creator.
 	 */
@@ -35,7 +34,8 @@ public class FormEntryXsn {
 	}
 
 	/**
-	 * @param creator The creator to set.
+	 * @param creator
+	 *            The creator to set.
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
@@ -49,94 +49,101 @@ public class FormEntryXsn {
 	}
 
 	/**
-	 * @param dateCreated The dateCreated to set.
+	 * @param dateCreated
+	 *            The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	/**
-     * @return the archived
-     */
-    public Boolean getArchived() {
-    	return archived;
-    }
+	 * @return the archived
+	 */
+	public Boolean getArchived() {
+		return archived;
+	}
 
 	/**
-     * @param archived the archived to set
-     */
-    public void setArchived(Boolean archived) {
-    	this.archived = archived;
-    }
+	 * @param archived
+	 *            the archived to set
+	 */
+	public void setArchived(Boolean archived) {
+		this.archived = archived;
+	}
 
 	/**
-     * @return the formEntryXsnId
-     */
-    public Integer getFormEntryXsnId() {
-    	return formEntryXsnId;
-    }
+	 * @return the formEntryXsnId
+	 */
+	public Integer getFormEntryXsnId() {
+		return formEntryXsnId;
+	}
 
 	/**
-     * @param formEntryXsnId the formEntryXsnId to set
-     */
-    public void setFormEntryXsnId(Integer formEntryXsnId) {
-    	this.formEntryXsnId = formEntryXsnId;
-    }
+	 * @param formEntryXsnId
+	 *            the formEntryXsnId to set
+	 */
+	public void setFormEntryXsnId(Integer formEntryXsnId) {
+		this.formEntryXsnId = formEntryXsnId;
+	}
 
 	/**
-     * @return the archivedBy
-     */
-    public User getArchivedBy() {
-    	return archivedBy;
-    }
+	 * @return the archivedBy
+	 */
+	public User getArchivedBy() {
+		return archivedBy;
+	}
 
 	/**
-     * @param archivedBy the archivedBy to set
-     */
-    public void setArchivedBy(User archivedBy) {
-    	this.archivedBy = archivedBy;
-    }
+	 * @param archivedBy
+	 *            the archivedBy to set
+	 */
+	public void setArchivedBy(User archivedBy) {
+		this.archivedBy = archivedBy;
+	}
 
 	/**
-     * @return the dateArchived
-     */
-    public Date getDateArchived() {
-    	return dateArchived;
-    }
+	 * @return the dateArchived
+	 */
+	public Date getDateArchived() {
+		return dateArchived;
+	}
 
 	/**
-     * @param dateArchived the dateArchived to set
-     */
-    public void setDateArchived(Date dateArchived) {
-    	this.dateArchived = dateArchived;
-    }
+	 * @param dateArchived
+	 *            the dateArchived to set
+	 */
+	public void setDateArchived(Date dateArchived) {
+		this.dateArchived = dateArchived;
+	}
 
 	/**
-     * @return the form
-     */
-    public Form getForm() {
-    	return form;
-    }
+	 * @return the form
+	 */
+	public Form getForm() {
+		return form;
+	}
 
 	/**
-     * @param form the form to set
-     */
-    public void setForm(Form form) {
-    	this.form = form;
-    }
+	 * @param form
+	 *            the form to set
+	 */
+	public void setForm(Form form) {
+		this.form = form;
+	}
 
 	/**
-     * @return the xsnData
-     */
-    public byte[] getXsnData() {
-    	return xsnData;
-    }
+	 * @return the xsnData
+	 */
+	public byte[] getXsnData() {
+		return xsnData;
+	}
 
 	/**
-     * @param xsnData the xsnData to set
-     */
-    public void setXsnData(byte[] xsnData) {
-    	this.xsnData = xsnData;
-    }
-    
+	 * @param xsnData
+	 *            the xsnData to set
+	 */
+	public void setXsnData(byte[] xsnData) {
+		this.xsnData = xsnData;
+	}
+
 }

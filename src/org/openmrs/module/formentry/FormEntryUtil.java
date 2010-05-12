@@ -58,60 +58,63 @@ import org.openmrs.util.OpenmrsUtil;
 public class FormEntryUtil {
 
 	private static Log log = LogFactory.getLog(FormEntryUtil.class);
-	
+
 	/**
 	 * Cached directory where queue items are stored
+	 * 
 	 * @see #getFormEntryQueueDir()
 	 */
 	private static File formEntryQueueDir = null;
-	
+
 	/**
 	 * Cached directory where gp says archive items are stored
+	 * 
 	 * @see #getFormEntryArchiveDir()
 	 */
 	private static String formEntryArchiveFileName = null;
-	
 
 	/**
 	 * Expand the xsn defined by <code>xsnFileContents</code> into a temp dir
 	 * 
 	 * The file returned by this method should be deleted after use.
 	 * 
-	 * @param xsnFileContents byte array of xsn file content data
+	 * @param xsnFileContents
+	 *            byte array of xsn file content data
 	 * @return Directory in temp dir containing xsn contents
 	 * @throws IOException
 	 */
-	public static File expandXsnContents(byte[] xsnFileContents) throws IOException {
+	public static File expandXsnContents(byte[] xsnFileContents)
+			throws IOException {
 		// copy the xsn contents to a temporary directory
 		File tempXsnFromDatabaseDir = createTempDirectory("XSN-db-file");
 		if (tempXsnFromDatabaseDir == null)
-			throw new IOException("Failed to create temporary content directory");
-		
+			throw new IOException(
+					"Failed to create temporary content directory");
+
 		// copy the xsn contents to a new file
-		File tmpXsnFromDatabaseFile = new File(tempXsnFromDatabaseDir, "tempContent.xsn");
+		File tmpXsnFromDatabaseFile = new File(tempXsnFromDatabaseDir,
+				"tempContent.xsn");
 		OutputStream out = new FileOutputStream(tmpXsnFromDatabaseFile);
 		out.write(xsnFileContents);
 		out.flush();
 		out.close();
-		
+
 		String xsnFilePath = tmpXsnFromDatabaseFile.getAbsolutePath();
-		
+
 		File expandedContentsDir = null;
 		try {
 			expandedContentsDir = expandXsn(xsnFilePath);
-		}
-		finally {
+		} finally {
 			try {
 				OpenmrsUtil.deleteDirectory(tempXsnFromDatabaseDir);
-			}
-			finally {
+			} finally {
 				// pass
 			}
 		}
-		
+
 		return expandedContentsDir;
 	}
-		
+
 	/**
 	 * Expand the xsn at <code>xsnFilePath</code> into a temp dir
 	 * 
@@ -131,22 +134,26 @@ public class FormEntryUtil {
 		StringBuffer cmdBuffer = new StringBuffer();
 
 		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-			
+
 			// retrieve the cabextract path from the runtime properties
 			String cabextLocation = FormEntryConstants.FORMENTRY_CABEXTRACT_LOCATION;
 			if (cabextLocation == null)
 				cabextLocation = "/usr/local/bin/cabextract";
-			
+
 			File cabextractExecutable = new File(cabextLocation);
 			if (!cabextractExecutable.exists()) {
-				log.warn("cabextract not found at " + cabextLocation + ", using cabextract from search path. SERIOUS: This may be a security violation! Please set the formentry.cabextract_location runtime property to the proper path");
-				cabextLocation = "cabextract"; // ABK: hope to find it on the path
+				log
+						.warn("cabextract not found at "
+								+ cabextLocation
+								+ ", using cabextract from search path. SERIOUS: This may be a security violation! Please set the formentry.cabextract_location runtime property to the proper path");
+				cabextLocation = "cabextract"; // ABK: hope to find it on the
+												// path
 			}
-			
-			cmdBuffer.append(cabextLocation + " -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
+
+			cmdBuffer.append(cabextLocation + " -d ").append(
+					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
-		}
-		else {
+		} else {
 			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append(
 					"\" \"").append(tempDir.getAbsolutePath()).append("\"");
 			execCmd(cmdBuffer.toString(), null);
@@ -154,14 +161,44 @@ public class FormEntryUtil {
 
 		return tempDir;
 	}
-		
 
 	/**
-	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
-	 * to play with in Infopath.  Should be used similar to 
+	 * Finds a folder path within resources and returns it as a File
+	 * 
+	 * @should throw a FileNotFoundException if the folderPath does not exist
+	 * @should return both directories and files
+	 * 
+	 * @param resourcePath
+	 *            path to the resource
+	 * @return file handle for the resource
+	 * @throws IOException
+	 */
+	public static File getResourceFile(String resourcePath) throws IOException {
+
+		log.debug("Getting URL directory: " + resourcePath);
+
+		Class<FormEntryUtil> c = FormEntryUtil.class;
+
+		// get the location of the starter documents
+		URL url = c.getResource(resourcePath);
+		if (url == null) {
+			String err = "Could not open resource folder directory: "
+					+ resourcePath;
+			log.error(err);
+			throw new FileNotFoundException(err);
+		}
+
+		return OpenmrsUtil.url2file(url);
+	}
+
+	/**
+	 * Generates an expanded 'starter XSN'. This starter is essentially a blank
+	 * XSN template to play with in Infopath. Should be used similar to
+	 * 
 	 * <code>org.openmrs.module.formentry.FormEntryUtil.expandXsnContents(java.lang.String)</code>
 	 * Generates an expanded 'starter XSN'. This starter is essentially a blank
 	 * XSN template to play with in Infopath. Should be used similar to
+	 * 
 	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsnContents(java.lang.String)</code>
 	 * 
 	 * @return File directory holding blank xsn contents
@@ -169,47 +206,13 @@ public class FormEntryUtil {
 	 */
 	public static File getExpandedStarterXSN() throws IOException {
 
-		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
-		log.debug("Getting starter XSN contents: " + xsnFolderPath);
-
-		Class<FormEntryUtil> c = FormEntryUtil.class;
-		/*
-		URL url = c.getResource(xsnFolderPath);
-		File xsnFolder = null;
-		try {
-			log.error("url.getFile: " + url.getFile());
-			log.error("xsnFolderPath - : " + xsnFolderPath);
-			xsnFolder = OpenmrsUtil.url2file(url);
-		}
-		catch (Exception e) {
-			String err = "Unable to open starter xsn: " + xsnFolderPath + " : " + url;
-			log.error(err, e);
-			throw new IOException(err);
-		}
-		
-		if (xsnFolder == null || !xsnFolder.exists()) {
-			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			if (xsnFolder != null) err += ". Absolute path: " + xsnFolder.getAbsolutePath();
-			log.error(err);
-			throw new FileNotFoundException(err);
-		}
-		*/
-
-		// get the location of the starter documents
-		URL url = c.getResource(xsnFolderPath);
-		if (url == null) {
-			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			log.error(err);
-			throw new FileNotFoundException(err);
-		}
-		
 		// temp directory to hold the new xsn contents
 		File tempDir = FormEntryUtil.createTempDirectory("XSN-starter");
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
 
 		// iterate over and copy each file in the given folder
-		File starterDir = OpenmrsUtil.url2file(url);
+		File starterDir = getResourceFile(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH);
 		for (File f : starterDir.listFiles()) {
 			File newFile = new File(tempDir, f.getName());
 			FileChannel in = null, out = null;
@@ -224,58 +227,49 @@ public class FormEntryUtil {
 					out.close();
 			}
 		}
-		
+
 		return tempDir;
 	}
-	
+
 	/**
 	 * Gets the current xsn file for a form. If the xsn is not found, the
 	 * starter xsn is returned instead
 	 * 
 	 * The second array value in the returned object is a pointer to a temporary
-	 * directory containing the expanded xsn contents.  This folder should be 
+	 * directory containing the expanded xsn contents. This folder should be
 	 * deleted after use
 	 * 
 	 * @param form
-	 * @param defaultToStarter true/false whether or not the starter xsn is returned when no current xsn is found
-	 * @return objects array: [0]: InputStream to form's xsn file or starter xsn if none, [1]: folder containing temporary expanded xsn files
+	 * @param defaultToStarter
+	 *            true/false whether or not the starter xsn is returned when no
+	 *            current xsn is found
+	 * @return objects array: [0]: InputStream to form's xsn file or starter xsn
+	 *         if none, [1]: folder containing temporary expanded xsn files
 	 * @throws IOException
 	 */
-	public static Object[] getCurrentXSN(Form form, boolean defaultToStarter) throws IOException {
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-		
+	public static Object[] getCurrentXSN(Form form, boolean defaultToStarter)
+			throws IOException {
+		FormEntryService formEntryService = (FormEntryService) Context
+				.getService(FormEntryService.class);
+
 		// Find the form's xsn file data
 		FormEntryXsn xsn = formEntryService.getFormEntryXsn(form);
-		
+
 		// The expanded the xsn
 		File tempDir = null;
 
 		if (xsn != null) {
 			log.debug("Expanding xsn contents");
 			tempDir = FormEntryUtil.expandXsnContents(xsn.getXsnData());
-		}
-		else if (defaultToStarter == true) {
+		} else if (defaultToStarter == true) {
 			// use starter xsn as the
 			log.debug("Using starter xsn");
 			tempDir = FormEntryUtil.getExpandedStarterXSN();
-		}
-		else
-			return new Object[] {null, tempDir};
-		
-		return new Object[] {compileXSN(form, tempDir), tempDir};
-	}
+		} else
+			return new Object[] { null, tempDir };
 
-	/**
-	 * Returns a .xsn file compiled from the starter data set
-	 * 
-	 * @param form
-	 * @return .xsn file
-	 * @throws IOException
-	 */
-//	public static FileInputStream getStarterXSN(Form form) throws IOException {
-//		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
-//		return compileXSN(form, tmpXSN);
-//	}
+		return new Object[] { compileXSN(form, tempDir), tempDir };
+	}
 
 	/**
 	 * Modifies schema, template.xml, and sample data, defaults, urls in
@@ -342,9 +336,12 @@ public class FormEntryUtil {
 
 		File xsn = findFile(tempDir, "new.xsn");
 		if (xsn == null)
-			throw new IOException("MakeCab has failed because the generated 'new.xsn' file in the temp directory '" + tempDir
-					+ "' cannot be null. Compiling xsn for form " + form);
-		
+			throw new IOException(
+					"MakeCab has failed because the generated 'new.xsn' file in the temp directory '"
+							+ tempDir
+							+ "' cannot be null. Compiling xsn for form "
+							+ form);
+
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
 		return xsnInputStream;
 	}
@@ -362,17 +359,21 @@ public class FormEntryUtil {
 
 		// Special case : Linux operating sytem uses lcab utility
 		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-			
+
 			String lcabLocation = FormEntryConstants.FORMENTRY_LCAB_LOCATION;
 			if (lcabLocation == null)
 				lcabLocation = "/usr/local/bin/lcab";
-			
+
 			File lcabExecutable = new File(lcabLocation);
 			if (!lcabExecutable.exists()) {
-				log.warn("lcab not found at " + lcabLocation + ", using lcab from search path. SERIOUS: This may be a security violation! Please set the formentry.lcab_location runtime property to the proper path.");
-				lcabLocation = "lcab"; // ABK: not at the hard-coded location, so hope to find it on the path
+				log
+						.warn("lcab not found at "
+								+ lcabLocation
+								+ ", using lcab from search path. SERIOUS: This may be a security violation! Please set the formentry.lcab_location runtime property to the proper path.");
+				lcabLocation = "lcab"; // ABK: not at the hard-coded location,
+										// so hope to find it on the path
 			}
-			
+
 			cmdBuffer.append(lcabLocation + " -rn ").append(tempDir)
 					.append(" ").append(outputDirName).append("/").append(
 							outputFilename);
@@ -400,8 +401,10 @@ public class FormEntryUtil {
 	 * Convenience method to execute the given command in an environment
 	 * agnostic manner
 	 * 
-	 * @param cmd command to execute
-	 * @param wd working directory (can be null)
+	 * @param cmd
+	 *            command to execute
+	 * @param wd
+	 *            working directory (can be null)
 	 * @return command output
 	 */
 	private static String execCmd(String cmd, File wd) {
@@ -414,49 +417,50 @@ public class FormEntryUtil {
 			// (jmiranda).
 			Process p = (wd != null) ? Runtime.getRuntime().exec(cmd, null, wd)
 					: Runtime.getRuntime().exec(cmd);
-			
+
 			// get the stdout
 			out.append("Normal cmd output:\n");
 			Reader reader = new InputStreamReader(p.getInputStream());
 			BufferedReader input = new BufferedReader(reader);
 			int readChar = 0;
 			while ((readChar = input.read()) != -1) {
-				out.append((char)readChar);
-				}
+				out.append((char) readChar);
+			}
 			input.close();
 			reader.close();
-			
+
 			// get the errout
 			out.append("ErrorStream cmd output:\n");
 			reader = new InputStreamReader(p.getErrorStream());
 			input = new BufferedReader(reader);
 			readChar = 0;
 			while ((readChar = input.read()) != -1) {
-				out.append((char)readChar);
-				}
+				out.append((char) readChar);
+			}
 			input.close();
 			reader.close();
-			
+
 			// wait for the thread to finish and get the exit value
 			int exitValue = p.waitFor();
-			
+
 			if (log.isDebugEnabled())
 				log.debug("Process exit value: " + exitValue);
-			
+
 		} catch (Exception e) {
 			log.error("Error while executing command: '" + cmd + "'", e);
 		}
-		
+
 		if (log.isDebugEnabled())
 			log.debug("execCmd output: \n" + out.toString());
-		
+
 		return out.toString();
 	}
 
 	/**
 	 * Create a temporary directory with the given prefix and a random suffix
 	 * 
-	 * @param prefix String to insert before the random generated filename
+	 * @param prefix
+	 *            String to insert before the random generated filename
 	 * @return New temp directory pointer
 	 * 
 	 * @throws IOException
@@ -554,21 +558,32 @@ public class FormEntryUtil {
 	}
 
 	public static String getFormUri(Form form) {
-		return FormUtil.getFormUriWithoutExtension(form) + getFormUriExtension(form);
+		return FormUtil.getFormUriWithoutExtension(form)
+				+ getFormUriExtension(form);
 	}
 
 	public static String getFormAbsoluteUrl(Form form) {
 		// int endOfDomain = requestURL.indexOf('/', 8);
 		// String baseUrl = requestURL.substring(0, (endOfDomain > 8 ?
 		// endOfDomain : requestURL.length()));
-		String serverURL = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL, FormEntryConstants.FORMENTRY_GP_SERVER_URL + " cannot be empty");
-		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
+		String serverURL = Context.getAdministrationService()
+				.getGlobalProperty(
+						FormEntryConstants.FORMENTRY_GP_SERVER_URL,
+						FormEntryConstants.FORMENTRY_GP_SERVER_URL
+								+ " cannot be empty");
+		String baseUrl = serverURL
+				+ FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + getFormUri(form);
 	}
 
 	public static String getFormSchemaNamespace(Form form) {
-		String serverURL = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL, FormEntryConstants.FORMENTRY_GP_SERVER_URL + " cannot be empty");
-		String baseUrl = serverURL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
+		String serverURL = Context.getAdministrationService()
+				.getGlobalProperty(
+						FormEntryConstants.FORMENTRY_GP_SERVER_URL,
+						FormEntryConstants.FORMENTRY_GP_SERVER_URL
+								+ " cannot be empty");
+		String baseUrl = serverURL
+				+ FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + "schema/" + form.getFormId() + "-" + form.getBuild();
 	}
 
@@ -588,13 +603,16 @@ public class FormEntryUtil {
 		version += "." + form.getBuild();
 		return version;
 	}
-	
+
 	/**
-	 * @deprecated use org.openmrs.util#FormUtil.conceptToString(Concept, Locale)
+	 * @deprecated use org.openmrs.util#FormUtil.conceptToString(Concept,
+	 *             Locale)
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		//return org.openmrs.util.FormUtil.conceptToString(concept, locale);
-	    return concept.getConceptId() + "^" + encodeUTF8String(concept.getName(locale).getName()) + "^" + FormConstants.HL7_LOCAL_CONCEPT;
+		// return org.openmrs.util.FormUtil.conceptToString(concept, locale);
+		return concept.getConceptId() + "^"
+				+ encodeUTF8String(concept.getName(locale).getName()) + "^"
+				+ FormConstants.HL7_LOCAL_CONCEPT;
 	}
 
 	/**
@@ -603,7 +621,7 @@ public class FormEntryUtil {
 	public static String drugToString(Drug drug) {
 		return org.openmrs.util.FormUtil.drugToString(drug);
 	}
-	
+
 	// max length of HL7 message control ID is 20
 	private static final int FORM_UID_LENGTH = 20;
 
@@ -617,232 +635,261 @@ public class FormEntryUtil {
 	}
 
 	/**
-     * Gets the directory where the user specified their queues were being stored
-     * 
-     * @return directory in which to store queued items
-     */
-    public static File getFormEntryQueueDir() {
-    	
-    	if (formEntryQueueDir == null) {
-    		AdministrationService as = Context.getAdministrationService();
-    		String folderName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_DIR_DEFAULT);
-    		formEntryQueueDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
-    		if (log.isDebugEnabled())
-    			log.debug("Loaded formentry queue directory from global properties: " + formEntryQueueDir.getAbsolutePath());
-    	}
-		
+	 * Gets the directory where the user specified their queues were being
+	 * stored
+	 * 
+	 * @return directory in which to store queued items
+	 */
+	public static File getFormEntryQueueDir() {
+
+		if (formEntryQueueDir == null) {
+			AdministrationService as = Context.getAdministrationService();
+			String folderName = as.getGlobalProperty(
+					FormEntryConstants.FORMENTRY_GP_QUEUE_DIR,
+					FormEntryConstants.FORMENTRY_GP_QUEUE_DIR_DEFAULT);
+			formEntryQueueDir = OpenmrsUtil
+					.getDirectoryInApplicationDataDirectory(folderName);
+			if (log.isDebugEnabled())
+				log
+						.debug("Loaded formentry queue directory from global properties: "
+								+ formEntryQueueDir.getAbsolutePath());
+		}
+
 		return formEntryQueueDir;
-    }
-    
-    /**
-     * Gets the directory where the user specified their archives were being stored
-     * 
-     * @param optional Date to specify the folder this should possibly be sorted into 
-     * @return directory in which to store archived items
-     */
-    public static File getFormEntryArchiveDir(Date d) {
-    	// cache the global property location so we don't have to hit the db 
-    	// everytime
-    	if (formEntryArchiveFileName == null) {
-	    	AdministrationService as = Context.getAdministrationService();
-	    	formEntryArchiveFileName = as.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR, FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT);
-    	}
-    	
-    	// replace %Y %M %D in the folderName with the date
+	}
+
+	/**
+	 * Gets the directory where the user specified their archives were being
+	 * stored
+	 * 
+	 * @param optional
+	 *            Date to specify the folder this should possibly be sorted into
+	 * @return directory in which to store archived items
+	 */
+	public static File getFormEntryArchiveDir(Date d) {
+		// cache the global property location so we don't have to hit the db
+		// everytime
+		if (formEntryArchiveFileName == null) {
+			AdministrationService as = Context.getAdministrationService();
+			formEntryArchiveFileName = as.getGlobalProperty(
+					FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR,
+					FormEntryConstants.FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT);
+		}
+
+		// replace %Y %M %D in the folderName with the date
 		String folderName = replaceVariables(formEntryArchiveFileName, d);
-		
+
 		// get the file object for this potentially new file
-		File formEntryArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
-		
+		File formEntryArchiveDir = OpenmrsUtil
+				.getDirectoryInApplicationDataDirectory(folderName);
+
 		if (log.isDebugEnabled())
-			log.debug("Loaded formentry archive directory from global properties: " + formEntryArchiveDir.getAbsolutePath());
-    	
+			log
+					.debug("Loaded formentry archive directory from global properties: "
+							+ formEntryArchiveDir.getAbsolutePath());
+
 		return formEntryArchiveDir;
-    }
-    
-    /**
-     * Replaces %Y in the string with the four digit year.
-     * Replaces %M with the two digit month
-     * Replaces %D with the two digit day
-     * Replaces %w with week of the year
-     * Replaces %W with week of the month
-     * 
-     * @param str String filename containing variables to replace with date strings 
-     * @return String with variables replaced
-     */
-    public static String replaceVariables(String str, Date d) {
-    	
-    	Calendar calendar = Calendar.getInstance();
-    	if (d != null)
-    		calendar.setTime(d);
-    	
-    	int year = calendar.get(Calendar.YEAR);
-    	str = str.replace("%Y", Integer.toString(year));
-    	
-    	int month = calendar.get(Calendar.MONTH) + 1;
-    	String monthString = Integer.toString(month);
-    	if (month < 10)
-    		monthString = "0" + monthString;
-    	str = str.replace("%M", monthString);
-    	
-    	int day = calendar.get(Calendar.DATE);
-    	String dayString = Integer.toString(day);
-    	if (day < 10)
-    		dayString = "0" + dayString;
+	}
+
+	/**
+	 * Replaces %Y in the string with the four digit year. Replaces %M with the
+	 * two digit month Replaces %D with the two digit day Replaces %w with week
+	 * of the year Replaces %W with week of the month
+	 * 
+	 * @param str
+	 *            String filename containing variables to replace with date
+	 *            strings
+	 * @return String with variables replaced
+	 */
+	public static String replaceVariables(String str, Date d) {
+
+		Calendar calendar = Calendar.getInstance();
+		if (d != null)
+			calendar.setTime(d);
+
+		int year = calendar.get(Calendar.YEAR);
+		str = str.replace("%Y", Integer.toString(year));
+
+		int month = calendar.get(Calendar.MONTH) + 1;
+		String monthString = Integer.toString(month);
+		if (month < 10)
+			monthString = "0" + monthString;
+		str = str.replace("%M", monthString);
+
+		int day = calendar.get(Calendar.DATE);
+		String dayString = Integer.toString(day);
+		if (day < 10)
+			dayString = "0" + dayString;
 		str = str.replace("%D", dayString);
-    	
-    	int week = calendar.get(Calendar.WEEK_OF_YEAR);
-    	String weekString = Integer.toString(week);
-    	if (week < 10)
-    		weekString = "0" + week;
+
+		int week = calendar.get(Calendar.WEEK_OF_YEAR);
+		String weekString = Integer.toString(week);
+		if (week < 10)
+			weekString = "0" + week;
 		str = str.replace("%w", weekString);
-    	
-    	int weekmonth = calendar.get(Calendar.WEEK_OF_MONTH);
-    	String weekmonthString = Integer.toString(weekmonth);
-    	if (weekmonth < 10)
-    		weekmonthString = "0" + weekmonthString;
+
+		int weekmonth = calendar.get(Calendar.WEEK_OF_MONTH);
+		String weekmonthString = Integer.toString(weekmonth);
+		if (weekmonth < 10)
+			weekmonthString = "0" + weekmonthString;
 		str = str.replace("%W", weekmonthString);
-    	
-    	return str;
-    }
+
+		return str;
+	}
 
 	/**
-     * @deprecated this method has been moved into the OpenmrsUtil class
-     * @see org.openmrs.util.OpenmrsUtil#getOutFile(File,Date,User)
-     */
-    public static File getOutFile(File dir, Date date, User user) {
-    	return OpenmrsUtil.getOutFile(dir, date, user);
-    }
+	 * @deprecated this method has been moved into the OpenmrsUtil class
+	 * @see org.openmrs.util.OpenmrsUtil#getOutFile(File,Date,User)
+	 */
+	public static File getOutFile(File dir, Date date, User user) {
+		return OpenmrsUtil.getOutFile(dir, date, user);
+	}
 
 	/**
-     * Writes the give fileContentst to the given outFile
-     * 
-     * @param fileContents string to write to the file
-     * @param outFile File to be overwritten with the given file contents
-	 * @throws IOException on write exceptions
-     */
-    public static void stringToFile(String fileContents, File outFile) throws IOException {
-    	FileWriter writer = new FileWriter(outFile);
-    	
-    	writer.write(fileContents);
-    	
-    	writer.close();
-    }
+	 * Writes the give fileContentst to the given outFile
+	 * 
+	 * @param fileContents
+	 *            string to write to the file
+	 * @param outFile
+	 *            File to be overwritten with the given file contents
+	 * @throws IOException
+	 *             on write exceptions
+	 */
+	public static void stringToFile(String fileContents, File outFile)
+			throws IOException {
+		FileWriter writer = new FileWriter(outFile);
+
+		writer.write(fileContents);
+
+		writer.close();
+	}
 
 	/**
-     * Creates a zip file in <code>xsnDir</code> containing the <code>filesToZip</code>
-     * The name of the dir is 
-     * 
-     * @param xsnDir location to put the zip file
-     * @param zipName name of the zip file. will be prepended with a timestamp
-     * @param filesToZip list of files to zip into <code>zipName</code>
-	 * @throws IOException if the directory can't be written to
-     */
-    public static void moveToZipFile(File xsnDir, String zipName, List<File> filesToZip) throws IOException {
-	    
-    	if (filesToZip == null || filesToZip.size() < 1)
-    		return;
-    	
-    	// prepend a timestamp to the backup so we don't overwrite anything
-    	zipName = (new Date()).getTime() + zipName;
-    	
-    	if (!zipName.endsWith(".zip"))
-    		zipName = zipName + ".zip";
-    	
-    	File outFile = new File(xsnDir, zipName);
-    	if (!outFile.exists())
-    		outFile.createNewFile();
-    	
-    	FileOutputStream xsnDirOutStream = null;
-    	List<File> filesToDelete = new ArrayList<File>();
-		
-    	try {
-    		xsnDirOutStream = new FileOutputStream(outFile);
-    	
-	    	ZipOutputStream zos			= new ZipOutputStream(xsnDirOutStream);
-			ZipEntry zipEntry			= null;
-			
+	 * Creates a zip file in <code>xsnDir</code> containing the
+	 * <code>filesToZip</code> The name of the dir is
+	 * 
+	 * @param xsnDir
+	 *            location to put the zip file
+	 * @param zipName
+	 *            name of the zip file. will be prepended with a timestamp
+	 * @param filesToZip
+	 *            list of files to zip into <code>zipName</code>
+	 * @throws IOException
+	 *             if the directory can't be written to
+	 */
+	public static void moveToZipFile(File xsnDir, String zipName,
+			List<File> filesToZip) throws IOException {
+
+		if (filesToZip == null || filesToZip.size() < 1)
+			return;
+
+		// prepend a timestamp to the backup so we don't overwrite anything
+		zipName = (new Date()).getTime() + zipName;
+
+		if (!zipName.endsWith(".zip"))
+			zipName = zipName + ".zip";
+
+		File outFile = new File(xsnDir, zipName);
+		if (!outFile.exists())
+			outFile.createNewFile();
+
+		FileOutputStream xsnDirOutStream = null;
+		List<File> filesToDelete = new ArrayList<File>();
+
+		try {
+			xsnDirOutStream = new FileOutputStream(outFile);
+
+			ZipOutputStream zos = new ZipOutputStream(xsnDirOutStream);
+			ZipEntry zipEntry = null;
+
 			for (File file : filesToZip) {
-		        
+
 				try {
 					// string xsn data
 					String fileData = OpenmrsUtil.getFileAsString(file);
-					
-					byte [] uncompressedBytes = fileData.getBytes();
-			        
+
+					byte[] uncompressedBytes = fileData.getBytes();
+
 					// name this entry
-			        zipEntry = new ZipEntry(file.getName());
-		
-			        // Add ZIP entry to output stream.
-		            zos.putNextEntry(zipEntry);
-		    
-		            // Transfer bytes from the formData to the ZIP file
-		            zos.write(uncompressedBytes, 0, uncompressedBytes.length);
-			
-		            zos.closeEntry();
-		            
-		            filesToDelete.add(file);
-				}
-				catch (IOException io) {
-					log.error("Unable to zip file: " + file.getAbsolutePath(), io);
+					zipEntry = new ZipEntry(file.getName());
+
+					// Add ZIP entry to output stream.
+					zos.putNextEntry(zipEntry);
+
+					// Transfer bytes from the formData to the ZIP file
+					zos.write(uncompressedBytes, 0, uncompressedBytes.length);
+
+					zos.closeEntry();
+
+					filesToDelete.add(file);
+				} catch (IOException io) {
+					log.error("Unable to zip file: " + file.getAbsolutePath(),
+							io);
 				}
 			}
-			
+
 			zos.close();
-    	}
-    	finally {
-    		if (xsnDirOutStream != null)
-    			xsnDirOutStream.close();
-    		
-    		for (File file : filesToDelete) {
-    			if (!file.delete())
-    				file.deleteOnExit();
-    		}
-    	}
-    }
+		} finally {
+			if (xsnDirOutStream != null)
+				xsnDirOutStream.close();
+
+			for (File file : filesToDelete) {
+				if (!file.delete())
+					file.deleteOnExit();
+			}
+		}
+	}
 
 	/**
-     * The rebuilding process is basically just a download and reupload of
-     * the xsn.  
-     * 
-     * The point of rebuilding would be to get a new schema into the xsn
-     * or to get new concepts/concept answers into the form
-     * 
-     * @param form Form to rebuild the xsn for
-     */
-    public static void rebuildXSN(Form form) throws IOException {
-    	Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
+	 * The rebuilding process is basically just a download and reupload of the
+	 * xsn.
+	 * 
+	 * The point of rebuilding would be to get a new schema into the xsn or to
+	 * get new concepts/concept answers into the form
+	 * 
+	 * @param form
+	 *            Form to rebuild the xsn for
+	 */
+	public static void rebuildXSN(Form form) throws IOException {
+		Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
 		InputStream formStream = (InputStream) streamAndDir[0];
 		File tempDir = (File) streamAndDir[1];
-		
+
 		if (formStream == null)
-			throw new IOException("The formstream for form: " + form + " should not be null (but it is)");
-		
+			throw new IOException("The formstream for form: " + form
+					+ " should not be null (but it is)");
+
 		PublishInfoPath.publishXSN(formStream);
-		
+
 		try {
 			formStream.close();
-		} catch (IOException ioe) {}
+		} catch (IOException ioe) {
+		}
 		try {
 			OpenmrsUtil.deleteDirectory(tempDir);
-		} catch (IOException ioe) {}
-    }
-    
-    /**
-     * Converts utf-8 characters into unicode escape characters
-     * 
-     * @param s the string to convert 
-     * @return the string with characters converted to unicode escapes with backslashes
-     */
-    public static String encodeUTF8String(String s) {
-		
+		} catch (IOException ioe) {
+		}
+	}
+
+	/**
+	 * Converts utf-8 characters into unicode escape characters
+	 * 
+	 * @param s
+	 *            the string to convert
+	 * @return the string with characters converted to unicode escapes with
+	 *         backslashes
+	 */
+	public static String encodeUTF8String(String s) {
+
 		try {
 			BufferedReader reader = null;
 			BufferedWriter writer = null;
 			ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
 			try {
-				reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(s.getBytes("UTF-8"))));
-				writer = new BufferedWriter(new OutputStreamWriter(byteOutputStream, "ISO8859_1")); // or ASCII
+				reader = new BufferedReader(new InputStreamReader(
+						new ByteArrayInputStream(s.getBytes("UTF-8"))));
+				writer = new BufferedWriter(new OutputStreamWriter(
+						byteOutputStream, "ISO8859_1")); // or ASCII
 				int temp;
 				while ((temp = reader.read()) != -1) {
 					if (temp <= 0x7f)
@@ -850,45 +897,40 @@ public class FormEntryUtil {
 					else
 						writer.write(toEscape((char) temp));
 				}
-			}
-			catch (IOException ioe) {
+			} catch (IOException ioe) {
 				ioe.printStackTrace();
-			}
-			finally {
+			} finally {
 				try {
 					if (reader != null)
 						reader.close();
 					if (writer != null)
 						writer.close();
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					;
 				}
 			}
-			
+
 			return byteOutputStream.toString("ISO8859-1");
-		}
-		catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			log.error("Unable to convert to unicode escape characters", e);
 			return s;
 		}
 	}
-	
+
 	/**
 	 * Helper method for the encodeUTF8String method above.
 	 * 
 	 * @param c
 	 * @return
 	 */
-	private static String toEscape(char c) { //instead of this method charToHex() can be used
+	private static String toEscape(char c) { // instead of this method
+												// charToHex() can be used
 		int n = (int) c;
 		String body = Integer.toHexString(n);
-		//String body=charToHex(c);  //instead of this the above can be used
+		// String body=charToHex(c); //instead of this the above can be used
 		String zeros = "000";
 		return ("\\u" + zeros.substring(0, 4 - body.length()) + body);
-	} //end of method
+	} // end of method
 
 }
-
-

@@ -25,9 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -51,8 +49,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Form;
-import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
@@ -80,30 +76,34 @@ public class PublishInfoPath {
 	private static Log log = LogFactory.getLog(PublishInfoPath.class);
 
 	/**
-	 * A FilenameFilter for xsl files. 
+	 * A FilenameFilter for xsl files.
 	 */
 	private static FilenameFilter xslFilenameFilter = null;
-	
+
 	/**
-	 * Regex pattern for an unqualified (lacking concept name) concept specification in HL7 format.
+	 * Regex pattern for an unqualified (lacking concept name) concept
+	 * specification in HL7 format.
 	 * 
-	 * group(1) should be the single character (or HTML entity) that starts the HL7 spec
-	 * group(2) should be the concept id
-	 * group(3) should be the text of the concept
-	 * group(4) should be the single character (or HTML entity) that ends the HL7 spec
+	 * group(1) should be the single character (or HTML entity) that starts the
+	 * HL7 spec group(2) should be the concept id group(3) should be the text of
+	 * the concept group(4) should be the single character (or HTML entity) that
+	 * ends the HL7 spec
 	 */
-	public static Pattern hl7ConceptNamePattern = Pattern.compile("(\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
-	
+	public static Pattern hl7ConceptNamePattern = Pattern
+			.compile("(\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
+
 	/**
-     * Regex pattern for an unqualified (lacking concept name) concept specification in HL7 format.
-     * 
-     * group(1) should be the single character (or HTML entity) that starts the HL7 spec
-     * group(2) should be the concept id
-     * group(3) should be the text of the concept
-     * group(4) should be the single character (or HTML entity) that ends the HL7 spec
-     */
-    public static Pattern hl7ConceptNamePatternWithOldPreciseName = Pattern.compile("((\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT)\\^([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
-	
+	 * Regex pattern for an unqualified (lacking concept name) concept
+	 * specification in HL7 format.
+	 * 
+	 * group(1) should be the single character (or HTML entity) that starts the
+	 * HL7 spec group(2) should be the concept id group(3) should be the text of
+	 * the concept group(4) should be the single character (or HTML entity) that
+	 * ends the HL7 spec
+	 */
+	public static Pattern hl7ConceptNamePatternWithOldPreciseName = Pattern
+			.compile("((\"|&quot;|>)([0-9]+)\\^([^^]+)\\^99DCT)\\^([0-9]+)\\^([^^]+)\\^99DCT(\"|&quot;|<)");
+
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -118,7 +118,7 @@ public class PublishInfoPath {
 	public static Form publishXSN(File file) throws IOException {
 		return publishXSN(file, null);
 	}
-	
+
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -154,7 +154,7 @@ public class PublishInfoPath {
 	public static Form publishXSN(InputStream inputStream) throws IOException {
 		return publishXSN(inputStream, null);
 	}
-	
+
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -168,8 +168,9 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(InputStream inputStream, Form form) throws IOException {
-		
+	public static Form publishXSN(InputStream inputStream, Form form)
+			throws IOException {
+
 		File tempDir = FormEntryUtil.createTempDirectory("UPLOADEDXSN");
 
 		log.debug("Temp publish dir: " + tempDir.getAbsolutePath());
@@ -186,8 +187,7 @@ public class PublishInfoPath {
 
 		return form;
 	}
-	
-	
+
 	/**
 	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
 	 * given file is expanded into its constituents and the various URL and
@@ -201,24 +201,26 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(String xsnFilePath, Form form) throws IOException {
-		
+	public static Form publishXSN(String xsnFilePath, Form form)
+			throws IOException {
+
 		if (log.isDebugEnabled())
 			log.debug("publishing xsn at: " + xsnFilePath);
 
 		File tempDir = FormEntryUtil.expandXsn(xsnFilePath);
 		if (tempDir == null)
 			throw new IOException("Filename not found: '" + xsnFilePath + "'");
-		
+
 		if (form == null)
 			form = determineForm(tempDir);
 		else if (!form.equals(determineForm(tempDir))) {
 			modifyFormId(tempDir, form);
 		}
-		
+
 		if (form == null)
-			throw new IOException("A form matching this xsn cannot be determined from the formId attribute in this object.  Make sure a fow exists in the form table for this xsn");
-		
+			throw new IOException(
+					"A form matching this xsn cannot be determined from the formId attribute in this object.  Make sure a row exists in the form table for this xsn");
+
 		String originalFormUri = FormEntryUtil.getFormUri(form);
 		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
 
@@ -228,80 +230,97 @@ public class PublishInfoPath {
 		log.debug("solution version: " + solutionVersion);
 
 		AdministrationService adminService = Context.getAdministrationService();
-		
-		String serverUrl = adminService.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL);
-		String publishUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
-		String taskPaneCaption = adminService.getGlobalProperty("formentry.infopath_taskpane_caption"); // "Welcome!";
-		String taskPaneInitialUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH; // "http://localhost:8080/amrs/taskPane.htm";
-		String submitUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH; // "http://localhost:8080/amrs/formUpload";
+
+		String serverUrl = adminService
+				.getGlobalProperty(FormEntryConstants.FORMENTRY_GP_SERVER_URL);
+		String publishUrl = serverUrl
+				+ FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH
+				+ outputFilename;
+		String taskPaneCaption = adminService
+				.getGlobalProperty("formentry.infopath_taskpane_caption"); // "Welcome!";
+		String taskPaneInitialUrl = serverUrl
+				+ FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH; // "http://localhost:8080/amrs/taskPane.htm";
+		String submitUrl = serverUrl
+				+ FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
-		
+
 		// prepare manifest
-		prepareManifest(tempDir, publishUrl, namespace, solutionVersion, taskPaneCaption,
-		    taskPaneInitialUrl, submitUrl);
+		prepareManifest(tempDir, publishUrl, namespace, solutionVersion,
+				taskPaneCaption, taskPaneInitialUrl, submitUrl);
 
 		// set schema
 		File schema = FormEntryUtil.findFile(tempDir, schemaFilename);
 		if (schema == null)
-			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
+			throw new IOException("Schema: '" + schemaFilename
+					+ "' cannot be null");
 		String tag = "xs:schema";
 		setNamespace(schema, tag, namespace);
 
 		// Ensure that we have a template with default scripts
 		String templateWithDefaults;
 		File templateWithDefaultsFile = FormEntryUtil.findFile(tempDir,
-		    FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
+				FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
 		if (templateWithDefaultsFile == null) {
 			// if template containing defaults is missing, create one on the fly
-			templateWithDefaultsFile = new File(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
+			templateWithDefaultsFile = new File(tempDir,
+					FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
 			templateWithDefaults = new FormXmlTemplateBuilder(form, publishUrl)
-			    .getXmlTemplate(true);
+					.getXmlTemplate(true);
 			try {
 				log.debug("Writing new template with defaults to: "
-				    + templateWithDefaultsFile.getAbsolutePath());
+						+ templateWithDefaultsFile.getAbsolutePath());
 				FileWriter out = new FileWriter(templateWithDefaultsFile);
 				out.write(templateWithDefaults);
 				out.close();
+			} catch (IOException e) {
+				log.error("Could not write '"
+						+ FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME
+						+ "'", e);
 			}
-			catch (IOException e) {
-				log.error("Could not write '" + FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME
-				    + "'", e);
-			}
-		}
-		else {
-			prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME,
-			    solutionVersion, publishUrl, namespace);
+		} else {
+			prepareTemplate(tempDir,
+					FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME,
+					solutionVersion, publishUrl, namespace);
 			templateWithDefaults = readFile(templateWithDefaultsFile);
 		}
 
 		// update InfoPath solutionVersion within all XML template documents
-		prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME, solutionVersion,
-		    publishUrl, namespace);
-		prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME,
-		    solutionVersion, publishUrl, namespace);
+		prepareTemplate(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME,
+				solutionVersion, publishUrl, namespace);
+		prepareTemplate(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME,
+				solutionVersion, publishUrl, namespace);
 
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME, "\"" + serverUrl + "\"");
-		vars.put(FormEntryConstants.FORMENTRY_TASKPANE_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/module/formentry/taskpane\"");
-		vars.put(FormEntryConstants.FORMENTRY_SUBMIT_URL_VARIABLE_NAME, FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME + " + \"/moduleServlet/formentry/formUpload\"");
-		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
+		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME, "\""
+				+ serverUrl + "\"");
+		vars.put(FormEntryConstants.FORMENTRY_TASKPANE_URL_VARIABLE_NAME,
+				FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME
+						+ " + \"/module/formentry/taskpane\"");
+		vars.put(FormEntryConstants.FORMENTRY_SUBMIT_URL_VARIABLE_NAME,
+				FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME
+						+ " + \"/moduleServlet/formentry/formUpload\"");
+		setDefaultJSVariables(tempDir, vars);
 
 		updateXslFiles(tempDir);
-		
+
 		// make cab
 		// creates the file in the same temp directory
-		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(), outputFilename);
-		
+		FormEntryUtil.makeCab(tempDir, tempDir.getAbsolutePath(),
+				outputFilename);
+
 		// create and save the formentry xsn file
 		File newXsnFile = FormEntryUtil.findFile(tempDir, outputFilename);
 		byte[] xsnContents = OpenmrsUtil.getFileAsBytes(newXsnFile);
 		FormEntryXsn xsn = new FormEntryXsn();
 		xsn.setForm(form);
 		xsn.setXsnData(xsnContents);
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormEntryService formEntryService = (FormEntryService) Context
+				.getService(FormEntryService.class);
 		formEntryService.createFormEntryXsn(xsn);
-		
+
 		// clean up
 		OpenmrsUtil.deleteDirectory(tempDir);
 		if (originalFormUri != null && !originalFormUri.equals(outputFilename)) {
@@ -311,13 +330,13 @@ public class PublishInfoPath {
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
 		Context.getFormService().saveForm(form);
-		
+
 		return form;
 	}
 
 	// Prepare template file (update solutionVersion and href)
-	private static void prepareTemplate(File tempDir, String fileName, String solutionVersion,
-	    String publishUrl, String namespace) {
+	private static void prepareTemplate(File tempDir, String fileName,
+			String solutionVersion, String publishUrl, String namespace) {
 		File file = new File(tempDir, fileName);
 		if (file == null) {
 			log.warn("Missing file: '" + fileName + "'");
@@ -330,50 +349,54 @@ public class PublishInfoPath {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(file);
-			
+
 			// set namespace
 			String tag = "form";
 			Element elem = getSingleElement(doc, tag);
 			if (elem == null) {
-				log.warn("Could not locate " + tag + " element in " + file.getName());
+				log.warn("Could not locate " + tag + " element in "
+						+ file.getName());
 				return;
 			}
 			elem.setAttribute("xmlns:openmrs", namespace);
-			
+
 			Node root = doc.getDocumentElement().getParentNode();
 			NodeList children = root.getChildNodes();
 			log.debug("Scanning for processing instructions");
 			for (int i = 0; i < children.getLength(); i++) {
 				Node node = children.item(i);
 				if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE
-				    && node.getNodeName().equals("mso-infoPathSolution")) {
+						&& node.getNodeName().equals("mso-infoPathSolution")) {
 					ProcessingInstruction pi = (ProcessingInstruction) node;
 					String data = pi.getData();
 					if (log.isDebugEnabled())
 						log.debug("  found: " + data);
-					data = data.replaceAll("(\\bsolutionVersion\\s*=\\s*\")[^\"]+\"", "$1"
-					    + solutionVersion + "\"");
-					data = data.replaceAll("(\\bhref\\s*=\\s*\")[^\"]+\"", "$1" + publishUrl + "\"");
+					data = data.replaceAll(
+							"(\\bsolutionVersion\\s*=\\s*\")[^\"]+\"", "$1"
+									+ solutionVersion + "\"");
+					data = data.replaceAll("(\\bhref\\s*=\\s*\")[^\"]+\"", "$1"
+							+ publishUrl + "\"");
 					if (log.isDebugEnabled())
 						log.debug("  replacing with: " + data);
 					pi.setData(data);
 				}
 			}
 
-		}
-		catch (Exception e) {
-			log.error("Trouble with file: " + fileName + " " + solutionVersion + " " + publishUrl, e);
+		} catch (Exception e) {
+			log.error("Trouble with file: " + fileName + " " + solutionVersion
+					+ " " + publishUrl, e);
 		}
 		writeXml(doc, file.getAbsolutePath());
 	}
 
 	/**
-	 * Convenience method to find the correct OpenMRS Form object that
-	 * this xsn refers to.
+	 * Convenience method to find the correct OpenMRS Form object that this xsn
+	 * refers to.
 	 * 
-	 * Currently this is a simplistic lookup of form.id in the header 
+	 * Currently this is a simplistic lookup of form.id in the header
 	 * 
-	 * @param tempDir directory in which to look for the xsd
+	 * @param tempDir
+	 *            directory in which to look for the xsd
 	 * 
 	 * @return Form that this xsn refers to or null if none
 	 */
@@ -384,70 +407,69 @@ public class PublishInfoPath {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(xsd);
-			Element parent = getSingleElement(doc.getElementsByTagName("xs:element"), "form");
+			Element parent = getSingleElement(doc
+					.getElementsByTagName("xs:element"), "form");
 			if (parent == null) {
 				log.warn("Could not locate xs:element element in xsd!");
 				return null;
 			}
-			Element elem = getSingleElement(parent.getElementsByTagName("xs:attribute"), "id");
+			Element elem = getSingleElement(parent
+					.getElementsByTagName("xs:attribute"), "id");
 			if (elem == null) {
 				log.warn("Could not locate xs:attribute element in xsd!");
 				return null;
 			}
 
 			Integer formId = Integer.valueOf(elem.getAttribute("fixed"));
-			
+
 			FormService formService = Context.getFormService();
 			form = formService.getForm(formId);
 
-		}
-		catch (ParserConfigurationException e) {
+		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Error parsing form data", e);
 		}
 
 		return form;
 	}
-	
+
 	private static void modifyFormId(File tempDir, Form form) {
 		File xsd = FormEntryUtil.findFile(tempDir, "FormEntry.xsd");
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(xsd);
-			Element parent = getSingleElement(doc.getElementsByTagName("xs:element"), "form");
+			Element parent = getSingleElement(doc
+					.getElementsByTagName("xs:element"), "form");
 			if (parent == null) {
 				log.warn("Could not locate xs:element element in xsd!");
 			}
-			Element elem = getSingleElement(parent.getElementsByTagName("xs:attribute"), "id");
+			Element elem = getSingleElement(parent
+					.getElementsByTagName("xs:attribute"), "id");
 			if (elem == null) {
 				log.warn("Could not locate xs:attribute element in xsd!");
 			}
-			
+
 			elem.setAttribute("fixed", form.getFormId().toString());
-			
-			// save the document 
+
+			// save the document
 			OpenmrsUtil.saveDocument(doc, xsd);
-		}
-		catch (ParserConfigurationException e) {
+		} catch (ParserConfigurationException e) {
 			log.error("Error building xml document", e);
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
+			log.error("Error parsing form data", e);
+		} catch (IOException e) {
 			log.error("Error parsing form data", e);
 		}
-		catch (IOException e) {
-			log.error("Error parsing form data", e);
-		}
-		
+
 	}
 
-	private static void prepareManifest(File tempDir, String url, String namespace,
-	    String solutionVersion, String taskPaneCaption, String taskPaneInitialUrl, String submitUrl) {
+	private static void prepareManifest(File tempDir, String url,
+			String namespace, String solutionVersion, String taskPaneCaption,
+			String taskPaneInitialUrl, String submitUrl) {
 		File manifest = findManifest(tempDir);
 		if (manifest == null) {
 			log.warn("Missing manifest!");
@@ -461,7 +483,8 @@ public class PublishInfoPath {
 
 			Element elem = getSingleElement(doc, "xsf:xDocumentClass");
 			if (elem == null) {
-				log.warn("Could not locate xsf:xDocumentClass element in manifest!");
+				log
+						.warn("Could not locate xsf:xDocumentClass element in manifest!");
 				return;
 			}
 			elem.setAttribute("solutionVersion", solutionVersion);
@@ -477,9 +500,9 @@ public class PublishInfoPath {
 			if (elem != null) {
 				elem.setAttribute("caption", taskPaneCaption);
 				elem.setAttribute("href", taskPaneInitialUrl);
-			}
-			else {
-				log.warn("Could not locate xsf:taskpane element within manifest");
+			} else {
+				log
+						.warn("Could not locate xsf:taskpane element within manifest");
 			}
 
 			elem = getSingleElement(doc, "xsf:useHttpHandler");
@@ -489,14 +512,11 @@ public class PublishInfoPath {
 
 			writeXml(doc, manifest.getPath());
 
-		}
-		catch (ParserConfigurationException e) {
+		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Error parsing form data", e);
 		}
 
@@ -510,19 +530,17 @@ public class PublishInfoPath {
 
 			Element elem = getSingleElement(doc, tag);
 			if (elem == null) {
-				log.warn("Could not locate " + tag + " element in " + file.getName());
+				log.warn("Could not locate " + tag + " element in "
+						+ file.getName());
 				return;
 			}
 			elem.setAttribute("xmlns:openmrs", namespace);
 			writeXml(doc, file.getAbsolutePath());
-		}
-		catch (ParserConfigurationException e) {
+		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			log.error("Error parsing form data", e);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("Error parsing form data", e);
 		}
 	}
@@ -534,7 +552,8 @@ public class PublishInfoPath {
 	private static void writeXml(Document doc, String filename) {
 		try {
 			// Create a transformer
-			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			Transformer xformer = TransformerFactory.newInstance()
+					.newTransformer();
 
 			// Set the public and system id
 			xformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -546,36 +565,51 @@ public class PublishInfoPath {
 			xformer.transform(source, result);
 			outputStream.close();
 
-		}
-		catch (TransformerConfigurationException e) {
-		}
-		catch (TransformerException e) {
-		}
-		catch (FileNotFoundException e) {
-		}
-		catch (IOException e) {
+		} catch (TransformerConfigurationException e) {
+		} catch (TransformerException e) {
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			log.error("Error closing outputStream: '" + filename + "'", e);
 		}
 	}
 
-	private static void setVariables(File dir, String filename, Map<String, String> vars)
-	    throws IOException {
-		File file = FormEntryUtil.findFile(dir, filename);
-		String fileContent = readFile(file);
+	/**
+	 * copies the default openmrs-infopath.js file from the starter form folder
+	 * and injects custom variables where needed
+	 * 
+	 * @param dir
+	 *            the folder where the to-be-modified XSN contents reside
+	 * @param vars
+	 *            variables to be injected
+	 * @throws IOException
+	 */
+	private static void setDefaultJSVariables(File dir, Map<String, String> vars)
+			throws IOException {
+		// pull the default JS file from the starter folder to acquire updates
+		File original = FormEntryUtil
+				.findFile(
+						FormEntryUtil
+								.getResourceFile(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH),
+						FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
+		File modified = new File(dir,
+				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
+		String fileContent = readFile(original);
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
 			String regexp = "var\\s" + variableName + "\\s=[^;]*";
-			String rplcmnt = "var " + variableName + " = " + vars.get(variableName) + "";
+			String rplcmnt = "var " + variableName + " = "
+					+ vars.get(variableName) + "";
 			log.debug("replacing regexp: " + regexp + " with " + rplcmnt);
 			fileContent = fileContent.replaceAll(regexp, rplcmnt);
 		}
 		try {
-			FileWriter out = new FileWriter(file);
+			FileWriter out = new FileWriter(modified);
 			out.write(fileContent);
 			out.close();
-		}
-		catch (IOException e) {
-			log.error("Could not write '" + filename + "'", e);
+		} catch (IOException e) {
+			log.error("Could not write '"
+					+ FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME + "'",
+					e);
 		}
 	}
 
@@ -595,7 +629,8 @@ public class PublishInfoPath {
 		return elem;
 	}
 
-	private static Element getSingleElement(NodeList elemList, String nameAttrValue) {
+	private static Element getSingleElement(NodeList elemList,
+			String nameAttrValue) {
 		Element elem = null;
 		if (elemList != null) {
 			if (elemList.getLength() > 0) {
@@ -604,167 +639,189 @@ public class PublishInfoPath {
 					if (elem.getAttribute("name").equals(nameAttrValue))
 						break;
 				}
-			}
-			else {
+			} else {
 				elem = (Element) elemList.item(0);
 			}
 		}
 		return elem;
 	}
 
-    /**
-     * Scans a directory for XSL files, applying any needed updates.
-     * 
-     * @param xsnDir directory containing an expanded XSN
-     */
+	/**
+	 * Scans a directory for XSL files, applying any needed updates.
+	 * 
+	 * @param xsnDir
+	 *            directory containing an expanded XSN
+	 */
 	public static void updateXslFiles(File xsnDir) throws IOException {
-	    /* this is not actually correct behavior 
+		/*
+		 * this is not actually correct behavior if (xsnDir.isDirectory()) {
+		 * String[] xslFilenames = xsnDir.list(getXslFilenameFilter()); for
+		 * (String xslFilename : xslFilenames) {
+		 * appendConceptnamesInXsl(xslFilename, xsnDir); } }
+		 */
+		// remove any conceptnames that were done with the incorrect
+		// appendConceptnames method
 		if (xsnDir.isDirectory()) {
 			String[] xslFilenames = xsnDir.list(getXslFilenameFilter());
 			for (String xslFilename : xslFilenames) {
-				appendConceptnamesInXsl(xslFilename, xsnDir);
+				removeConceptnamesInXsl(xslFilename, xsnDir);
 			}
 		}
-		*/
-		// remove any conceptnames that were done with the incorrect appendConceptnames method
-	    if (xsnDir.isDirectory()) {
-            String[] xslFilenames = xsnDir.list(getXslFilenameFilter());
-            for (String xslFilename : xslFilenames) {
-                removeConceptnamesInXsl(xslFilename, xsnDir);
-            }
-        }
 	}
-	
-	/** 
+
+	/**
 	 * Scans an XSL file for HL7 concept specifications, appending the
-	 * appropriate concept-name specification. 
+	 * appropriate concept-name specification.
 	 * 
 	 * @param xslFilename
 	 */
-	public static void appendConceptnamesInXsl(String xslFilename, File tempDir) throws IOException {
+	public static void appendConceptnamesInXsl(String xslFilename, File tempDir)
+			throws IOException {
 		ConceptService cs = Context.getConceptService();
 		Locale defaultLocale = Context.getLocale();
-		
+
 		try {
 			File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
-			File tmpXslFile = File.createTempFile("infopath", ".xsltmp", tempDir);
-			
-			BufferedReader xslReader = new BufferedReader(new FileReader(xslFile));
-			PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(tmpXslFile));
+			File tmpXslFile = File.createTempFile("infopath", ".xsltmp",
+					tempDir);
+
+			BufferedReader xslReader = new BufferedReader(new FileReader(
+					xslFile));
+			PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(
+					tmpXslFile));
 
 			String line = xslReader.readLine();
-		    while (line != null) {
-		    	Matcher m = hl7ConceptNamePattern.matcher(line); 
-		    	if (m.find()) {
-		    		String conceptId = m.group(2);
-		    		Concept concept = cs.getConcept(new Integer(conceptId));
-		    		if (concept == null) {
-		    			throw new IOException("xsl \"" + xslFilename + "\" contains unknown concept: " + m.group(3) + "(" + conceptId + ")");
-		    		} else {
-			    		ConceptName matchingConceptName = findNameMatching(m.group(3), concept);
-			    		String appendedHl7 = "";
-			    		if (matchingConceptName != null) {
-			    			appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, matchingConceptName) + m.group(m.groupCount());
-			    		} else {
-			    			appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(m.groupCount());
-			    		}
-			    		
-			    		line = m.replaceFirst(appendedHl7);
-		    		}
-		    	} else {
-		    		tmpXslWriter.println(line);
-		    		line = xslReader.readLine();
-		    	}
-		    }
-		 
-		    tmpXslWriter.close();
-		    xslReader.close();
+			while (line != null) {
+				Matcher m = hl7ConceptNamePattern.matcher(line);
+				if (m.find()) {
+					String conceptId = m.group(2);
+					Concept concept = cs.getConcept(new Integer(conceptId));
+					if (concept == null) {
+						throw new IOException("xsl \"" + xslFilename
+								+ "\" contains unknown concept: " + m.group(3)
+								+ "(" + conceptId + ")");
+					} else {
+						ConceptName matchingConceptName = findNameMatching(m
+								.group(3), concept);
+						String appendedHl7 = "";
+						if (matchingConceptName != null) {
+							appendedHl7 = m.group(1)
+									+ FormUtil.conceptToString(concept,
+											matchingConceptName)
+									+ m.group(m.groupCount());
+						} else {
+							appendedHl7 = m.group(1)
+									+ FormUtil.conceptToString(concept,
+											defaultLocale)
+									+ m.group(m.groupCount());
+						}
 
-		    xslFile.delete();
-		    if (!tmpXslFile.renameTo(xslFile)) {
-		    	throw new IOException("Unable to rename xsl file from " + tmpXslFile.getAbsolutePath() + " to " + xslFile.getAbsolutePath());
-		    }
+						line = m.replaceFirst(appendedHl7);
+					}
+				} else {
+					tmpXslWriter.println(line);
+					line = xslReader.readLine();
+				}
+			}
+
+			tmpXslWriter.close();
+			xslReader.close();
+
+			xslFile.delete();
+			if (!tmpXslFile.renameTo(xslFile)) {
+				throw new IOException("Unable to rename xsl file from "
+						+ tmpXslFile.getAbsolutePath() + " to "
+						+ xslFile.getAbsolutePath());
+			}
 		} catch (FileNotFoundException e) {
-			log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
+			log.error("update of concept names in \"" + xslFilename
+					+ "\" failed, because: " + e);
 			e.printStackTrace();
 		} catch (IOException e) {
-			log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
+			log.error("update of concept names in \"" + xslFilename
+					+ "\" failed, because: " + e);
 			e.printStackTrace();
 		}
 	}
-	
-	
-    /** 
-     * Scans an XSL file for HL7 concept specifications, appending the
-     * appropriate concept-name specification. 
-     * 
-     * @param xslFilename
-     */
-    public static void removeConceptnamesInXsl(String xslFilename, File tempDir) throws IOException {
-        ConceptService cs = Context.getConceptService();
-        Locale defaultLocale = Context.getLocale();
-        
-        try {
-            File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
-            File tmpXslFile = File.createTempFile("infopath", ".xsltmp", tempDir);
-            
-            BufferedReader xslReader = new BufferedReader(new FileReader(xslFile));
-            PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(tmpXslFile));
 
-            removeConceptNamesInXslHelper(xslReader, tmpXslWriter);
-         
-            tmpXslWriter.close();
-            xslReader.close();
+	/**
+	 * Scans an XSL file for HL7 concept specifications, appending the
+	 * appropriate concept-name specification.
+	 * 
+	 * @param xslFilename
+	 */
+	public static void removeConceptnamesInXsl(String xslFilename, File tempDir)
+			throws IOException {
+		ConceptService cs = Context.getConceptService();
+		Locale defaultLocale = Context.getLocale();
 
-            xslFile.delete();
-            if (!tmpXslFile.renameTo(xslFile)) {
-                throw new IOException("Unable to rename xsl file from " + tmpXslFile.getAbsolutePath() + " to " + xslFile.getAbsolutePath());
-            }
-        } catch (FileNotFoundException e) {
-            log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
-            e.printStackTrace();
-        } catch (IOException e) {
-            log.error("update of concept names in \"" + xslFilename + "\" failed, because: " + e);
-            e.printStackTrace();
-        }
-    }
+		try {
+			File xslFile = new File(tempDir.getAbsolutePath(), xslFilename);
+			File tmpXslFile = File.createTempFile("infopath", ".xsltmp",
+					tempDir);
 
+			BufferedReader xslReader = new BufferedReader(new FileReader(
+					xslFile));
+			PrintWriter tmpXslWriter = new PrintWriter(new FileWriter(
+					tmpXslFile));
 
-	public static void removeConceptNamesInXslHelper(BufferedReader xslReader, PrintWriter tmpXslWriter) throws IOException {
-	    String line = xslReader.readLine();
-        while (line != null) {
-            Matcher m = hl7ConceptNamePatternWithOldPreciseName.matcher(line); 
-            if (m.find()) {
-                /*
-                String conceptId = m.group(2);
-                Concept concept = cs.getConcept(new Integer(conceptId));
-                if (concept == null) {
-                    throw new IOException("xsl \"" + xslFilename + "\" contains unknown concept: " + m.group(3) + "(" + conceptId + ")");
-                } else {
-                    ConceptName matchingConceptName = findNameMatching(m.group(3), concept);
-                    String appendedHl7 = "";
-                    if (matchingConceptName != null) {
-                        appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, matchingConceptName) + m.group(m.groupCount());
-                    } else {
-                        appendedHl7 = m.group(1) + FormUtil.conceptToString(concept, defaultLocale) + m.group(m.groupCount());
-                    }
-                    
-                    line = m.replaceFirst(appendedHl7);
-                }
-                */
-                String withoutPreciseName = m.group(1) + m.group(7);
-                log.debug("---------------");
-                for (int i = 0; i < 6; ++i)
-                    log.error(i + " -> " + m.group(i));
-                line = m.replaceFirst(withoutPreciseName);
-            } else {
-                tmpXslWriter.println(line);
-                line = xslReader.readLine();
-            }
-        }
-    }
+			removeConceptNamesInXslHelper(xslReader, tmpXslWriter);
 
-    private static ConceptName findNameMatching(String textName, Concept inConcept) {
+			tmpXslWriter.close();
+			xslReader.close();
+
+			xslFile.delete();
+			if (!tmpXslFile.renameTo(xslFile)) {
+				throw new IOException("Unable to rename xsl file from "
+						+ tmpXslFile.getAbsolutePath() + " to "
+						+ xslFile.getAbsolutePath());
+			}
+		} catch (FileNotFoundException e) {
+			log.error("update of concept names in \"" + xslFilename
+					+ "\" failed, because: " + e);
+			e.printStackTrace();
+		} catch (IOException e) {
+			log.error("update of concept names in \"" + xslFilename
+					+ "\" failed, because: " + e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void removeConceptNamesInXslHelper(BufferedReader xslReader,
+			PrintWriter tmpXslWriter) throws IOException {
+		String line = xslReader.readLine();
+		while (line != null) {
+			Matcher m = hl7ConceptNamePatternWithOldPreciseName.matcher(line);
+			if (m.find()) {
+				/*
+				 * String conceptId = m.group(2); Concept concept =
+				 * cs.getConcept(new Integer(conceptId)); if (concept == null) {
+				 * throw new IOException("xsl \"" + xslFilename +
+				 * "\" contains unknown concept: " + m.group(3) + "(" +
+				 * conceptId + ")"); } else { ConceptName matchingConceptName =
+				 * findNameMatching(m.group(3), concept); String appendedHl7 =
+				 * ""; if (matchingConceptName != null) { appendedHl7 =
+				 * m.group(1) + FormUtil.conceptToString(concept,
+				 * matchingConceptName) + m.group(m.groupCount()); } else {
+				 * appendedHl7 = m.group(1) + FormUtil.conceptToString(concept,
+				 * defaultLocale) + m.group(m.groupCount()); }
+				 * 
+				 * line = m.replaceFirst(appendedHl7); }
+				 */
+				String withoutPreciseName = m.group(1) + m.group(7);
+				log.debug("---------------");
+				for (int i = 0; i < 6; ++i)
+					log.error(i + " -> " + m.group(i));
+				line = m.replaceFirst(withoutPreciseName);
+			} else {
+				tmpXslWriter.println(line);
+				line = xslReader.readLine();
+			}
+		}
+	}
+
+	private static ConceptName findNameMatching(String textName,
+			Concept inConcept) {
 		ConceptName matchingName = null;
 		if ((textName != null) && (inConcept != null)) {
 			for (ConceptName possibleName : inConcept.getNames()) {
@@ -787,7 +844,8 @@ public class PublishInfoPath {
 			xslFilenameFilter = new FilenameFilter() {
 				public boolean accept(File dir, String name) {
 					return name.endsWith("xsl");
-				}};
+				}
+			};
 		}
 		return xslFilenameFilter;
 	}
