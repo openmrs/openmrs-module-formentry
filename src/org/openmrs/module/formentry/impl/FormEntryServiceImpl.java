@@ -343,10 +343,10 @@ public class FormEntryServiceImpl implements FormEntryService {
 		formEntryXsn.setCreator(Context.getAuthenticatedUser());
 		formEntryXsn.setDateCreated(new Date());
 		
-		// archive the matching xsn if it exists
-		FormEntryXsn oldXsn = getFormEntryXsn(formEntryXsn.getForm());
-		if (oldXsn != null)
+		// archive all old matching xsns if they exist
+		for (FormEntryXsn oldXsn : getFormEntryDAO().getAllFormEntryXsnsForForm(formEntryXsn.getForm(), false)) {
 			archiveFormEntryXsn(oldXsn);
+		}
 		
 		getFormEntryDAO().updateFormEntryXsn(formEntryXsn);
 	}
