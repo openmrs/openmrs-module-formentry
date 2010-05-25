@@ -25,6 +25,8 @@
 		<many-to-one name="archivedBy" class="org.openmrs.User" column="archived_by" />
 
 		<property name="dateArchived" type="java.util.Date" column="date_archived" length="19" />
-
+		
+		<property name="uuid" type="java.lang.String" length="38" unique="true" />
+		
 	</class>
 </hibernate-mapping>

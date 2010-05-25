@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>4.4.3</version>
+	<version>4.5</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -52,6 +52,12 @@
 		<point>org.openmrs.api.FormService</point>
 		<class>@MODULE_PACKAGE@.advice.BeforeDeleteFormAdvice</class>
 	</advice>
+	<!-- (Not used yet, depends on fix in trunk, otherwise formentry will require sync)
+	<advice>
+		<point>org.openmrs.module.sync.api.SyncIngestService</point>
+		<class>@MODULE_PACKAGE@.advice.RebuildXsnAfterSyncAdvice</class>
+	</advice>
+	-->
 	<!-- /AOP -->
 	
 	

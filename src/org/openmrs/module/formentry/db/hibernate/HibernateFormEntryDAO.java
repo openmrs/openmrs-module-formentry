@@ -27,9 +27,11 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -290,14 +292,29 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
         }
         
 	}
-
+	
+    /**
+     * @see org.openmrs.module.formentry.db.FormEntryDAO#getAllFormEntryXsnsForForm(org.openmrs.Form, boolean)
+     */
+    public List<FormEntryXsn> getAllFormEntryXsnsForForm(Form form, boolean includeArchived) {
+    	Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormEntryXsn.class);
+    	crit.add(Restrictions.eq("form", form));
+    	
+    	if (includeArchived == false)
+    		crit.add(Restrictions.eq("archived", false));
+    	
+    	return (List<FormEntryXsn>)crit.list();
+    }
+	
 	/**
      * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryXsn(java.lang.Integer)
      */
     public FormEntryXsn getFormEntryXsn(Integer formId) {
-    	Query query = sessionFactory.getCurrentSession().createQuery("from FormEntryXsn where form.formId = :formId and archived = 0");
+    	Query query = sessionFactory.getCurrentSession().createQuery("from FormEntryXsn where form.formId = :formId and archived = 0 order by formEntryXsnId desc");
 		query.setParameter("formId", formId);
-    	 
+    	query.setMaxResults(1); // do this just in case there are two xsns marked as nonarchived
+    	// the results are sorted with the newest xsns first
+    	
     	return (FormEntryXsn)query.uniqueResult();
     }
 

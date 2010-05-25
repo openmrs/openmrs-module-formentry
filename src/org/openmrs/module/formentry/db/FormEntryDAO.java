@@ -14,7 +14,9 @@
 package org.openmrs.module.formentry.db;
 
 import java.util.Collection;
+import java.util.List;
 
+import org.openmrs.Form;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryXsn;
@@ -76,6 +78,8 @@ public interface FormEntryDAO {
 	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsn(java.lang.Integer)
 	 */
 	public FormEntryXsn getFormEntryXsn(Integer formId);
+	
+	public List<FormEntryXsn> getAllFormEntryXsnsForForm(Form form, boolean includeArchived);
 
 	/**
      * @see org.openmrs.module.formentry.FormEntryService#migrateXsnsToDatabase()
