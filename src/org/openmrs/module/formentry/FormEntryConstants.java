@@ -164,6 +164,10 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH = "/formTaskpane.htm";
 	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/module/formentry/forms/starter/";
 	
+	// InfoPath widget constants should translate directly to widget resources
+	public static final String FORMENTRY_INFOPATH_WIDGET_PATH = "/org/openmrs/module/formentry/forms/widgets/";
+	public static final String FORMENTRY_INFOPATH_WIDGET_FILENAME = "widget.xsl";
+	
 	// Global properties used in the formentry module
 	public static final String FORMENTRY_GP_SERVER_URL = "formentry.infopath_server_url";
 	public static final String FORMENTRY_GP_TASKPANE_KEEPALIVE = "formentry.infopath_taskpane_keepalive_min";

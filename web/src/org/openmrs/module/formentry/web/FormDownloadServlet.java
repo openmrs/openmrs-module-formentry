@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -125,6 +126,11 @@ public class FormDownloadServlet extends HttpServlet {
 				if (otherPerson.isPatient())
 					rel.setPersonA(Context.getPatientService().getPatient(otherPerson.getPersonId()));
 			}
+		}
+		// we need at least one empty relationship in InfoPath
+		if (relationships.isEmpty()) {
+			relationships = new ArrayList();
+			relationships.add(new Relationship());
 		}
 		velocityContext.put("relationships", relationships);
 		
