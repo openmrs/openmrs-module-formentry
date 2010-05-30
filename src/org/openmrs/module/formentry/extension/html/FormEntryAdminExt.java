@@ -35,6 +35,7 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 		map.put("module/formentry/xsnUpload.form", "formentry.xsn.title");
 		map.put("module/formentry/formEntryError.list", "formentry.FormEntryError.manage");
 		map.put("module/formentry/formEntryInfo.htm", "formentry.info");
+		map.put("module/formentry/setupRelationshipSchemas.form", "formentry.relationships.manage");
 		
 		if (isQueueMigrated == false) {
 			FormEntryService fs = (FormEntryService)Context.getService(FormEntryService.class);
