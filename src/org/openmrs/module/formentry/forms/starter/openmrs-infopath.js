@@ -7,8 +7,9 @@
  *
  * author:  Burke Mamlin, MD
  * created: February 1, 2006
- * version: 1.2
+ * version: 1.3
  *
+ * 2010-04-14 (Jeremy) Added addRelationship() method
  * 2006-11-29 (Burke) Added selectLocation() method
  */
 
@@ -119,6 +120,20 @@ function selectAnswer(nodePath) {
     var conceptId = questionConcept.split("^")[0];
 	taskPaneNavigateTo('/conceptAnswer.htm?conceptId=' + conceptId
 		+ '&nodePath=' + nodePath);
+}
+
+//===============================================================
+// Add an offline (in-form only) relationship
+//===============================================================
+function addRelationship() {
+	if (XDocument.DOM.selectSingleNode("//patient/patient_relationship") == null) {
+		alert("Your schema does not include the PATIENT_RELATIONSHIPS element.");
+		return;
+	}
+	var patientId = XDocument.DOM.selectSingleNode("//patient/patient.patient_id");
+	if (patientId)
+		patientId = patientId.text;
+	taskPaneNavigateTo("/relationshipOffline.htm?patientId=" + patientId);
 }
 
 //===============================================================

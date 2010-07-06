@@ -171,6 +171,7 @@ public class FormEntryConstants {
 	// Global properties used in the formentry module
 	public static final String FORMENTRY_GP_SERVER_URL = "formentry.infopath_server_url";
 	public static final String FORMENTRY_GP_TASKPANE_KEEPALIVE = "formentry.infopath_taskpane_keepalive_min";
+	public static final String FORMENTRY_GP_RELATIONSHIP_SORT_ORDER = "formentry.infopath_taskpane.relationship_sort_order";
 	
 	public static final String FORMENTRY_GP_QUEUE_DIR = "formentry.queue_dir";
 	public static final String FORMENTRY_GP_QUEUE_DIR_DEFAULT = "formentry/queue";
