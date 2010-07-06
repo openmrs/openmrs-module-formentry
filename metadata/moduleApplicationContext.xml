@@ -9,6 +9,7 @@
     	<property name="order"><value>1</value></property>
     	<property name="mappings">
             <props>
+                <prop key="**/patientRelationship.portlet">patientRelationshipPortletController</prop>
 				<prop key="formTaskpane.htm">formTaskpaneRedirect</prop>
 				<prop key="module/formentry/formEntryError.list">formEntryErrorList</prop>
 				<prop key="module/formentry/xsnUpload.form">xsnUploadForm</prop>
@@ -109,6 +110,9 @@
 		<property name="commandClass"><value>java.util.List</value></property>
 		<property name="formView"><value>/module/formentry/taskpane/encounter</value></property>
 		<property name="successView"><value>encounter.htm</value></property>
+	</bean>
+	
+	<bean id="patientRelationshipPortletController" class="@MODULE_PACKAGE@.web.controller.PatientRelationshipPortletController">
 	</bean>
 	
 	<!-- /Controllers -->
