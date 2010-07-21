@@ -386,19 +386,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 * @see org.openmrs.module.formentry.FormEntryService#getFormsWithXsn(boolean)
 	 */
 	public List<Form> getFormsWithXsn(boolean publishedOnly) {
-		List<Form> formsWithXsns = new Vector<Form>();
-		List<Form> possibleForms = null;
-		if (publishedOnly)
-			possibleForms = Context.getFormService().getPublishedForms();
-		else
-			possibleForms = Context.getFormService().getAllForms();
-		
-		for (Form form : possibleForms) {
-			if (getFormEntryXsn(form) != null)
-				formsWithXsns.add(form);
-		}
-		
-		return formsWithXsns;
+		return getFormEntryDAO().getFormsWithXsns(publishedOnly);
 	}
 	
 }
