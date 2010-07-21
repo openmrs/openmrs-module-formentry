@@ -31,6 +31,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
@@ -451,9 +452,22 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 				log.error("Xsn archive directory is not valid: " + xsnArchiveDir.getAbsolutePath());
 			
 		}
-		
-		
-		
     }
+
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormsWithXsns(boolean)
+	 */
+	@Override
+	public List<Form> getFormsWithXsns(boolean publishedOnly) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormEntryXsn.class);
+		crit.setProjection(Projections.property("form"));
+		crit.add(Restrictions.eq("archived", false));
+		if (publishedOnly) {
+			crit.createAlias("form", "form");
+			crit.add(Restrictions.eq("form.published", true));
+		}
+    	
+    	return (List<Form>)crit.list();
+	}
 
 }

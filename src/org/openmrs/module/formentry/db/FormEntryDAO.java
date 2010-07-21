@@ -95,4 +95,12 @@ public interface FormEntryDAO {
 	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(org.openmrs.Form)
 	 */
 	public void deleteFormEntryXsn(Integer formId);
+
+	/**
+	 * Quick method to check the formentry xsn table for forms that have an unarchived xsn
+	 * 
+	 * @param publishedOnly if true, only forms that are marked as published are returned
+	 * @return list of forms
+	 */
+	public List<Form> getFormsWithXsns(boolean publishedOnly);
 }
