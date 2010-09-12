@@ -64,7 +64,7 @@ public class XsnUploadFormController extends SimpleFormController {
 			
 			// redirect to the form's schema design if a successful upload occurred
 			if (form != null)
-				view = request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId=" + form.getFormId();
+				view = request.getContextPath() + "/admin/forms/formEdit.form?formId=" + form.getFormId();
 			else
 				view = getSuccessView();
 			
