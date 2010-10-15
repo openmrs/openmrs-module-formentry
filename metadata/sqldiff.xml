@@ -176,5 +176,17 @@
 			CREATE UNIQUE INDEX formentry_xsn_uuid_index ON formentry_xsn (uuid);
 		</sql>
 	</diff>
+	
+	<diff>
+		<version>2.8</version>
+		<author>Ben Wolfe</author>
+		<date>Oct 15th 2010</date>
+		<description>
+			Adding index to archived column for xsns
+		</description>
+		<sql>
+			CREATE INDEX formentry_xsn_archived_index ON formentry_xsn (archived);
+		</sql>
+	</diff>
 
 </sqldiff>
