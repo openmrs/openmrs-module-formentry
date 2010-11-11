@@ -9,7 +9,7 @@
 <html>
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
-		<openmrs:htmlInclude file="/openmrsmessages.js" /> <%-- appendLocale=true is not on here for backwards compatibility --%>
+		<openmrs:htmlInclude file="/scripts/openmrsmessages.js" /> <%-- appendLocale=true is not on here for backwards compatibility --%>
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
