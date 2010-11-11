@@ -9,6 +9,7 @@
 <html>
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
+		<openmrs:htmlInclude file="/openmrsmessages.js" /> <%-- appendLocale=true is not on here for backwards compatibility --%>
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
@@ -29,6 +30,22 @@
 			var dwrLoadingMessage = '<spring:message code="general.loading" />';
 			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
 			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
+			
+			/* prevents users getting false dwr errors msgs when leaving pages */
+			var pageIsExiting = false;
+			$j(window).bind('beforeunload', function () { pageIsExiting = true; } );
+			
+			var handler = function(msg, ex) {
+				if (!pageIsExiting) {
+					var div = document.getElementById("openmrs_dwr_error");
+					div.style.display = ""; // show the error div
+					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
+					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
+				}
+				
+			};
+			dwr.engine.setErrorHandler(handler);
+			dwr.engine.setWarningHandler(handler);
 		</script>
 
 		<openmrs:htmlInclude file="/moduleResources/formentry/taskpane.css" />
