@@ -259,6 +259,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 	public void createFormEntryError(FormEntryError formEntryError) {
 		formEntryError.setCreator(Context.getAuthenticatedUser());
 		formEntryError.setDateCreated(new Date());
+		if (formEntryError.getFormData().length() > 16777214) { // size of mediumtext - 1
+			formEntryError.setFormData(formEntryError.getFormData().substring(0, 16777214));
+		}
 		getFormEntryDAO().createFormEntryError(formEntryError);
 	}
 	
