@@ -16,8 +16,6 @@
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
 <script type="text/javascript">
-	var lastSearch;
-	
 	$j(document).ready(function() {
 		new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
 				[{fieldName:"name", header:" "}],
@@ -35,7 +33,6 @@
 	
 	//searchHandler for the Search widget
 	function doLocationSearch(text, resultHandler, getMatchCount, opts) {
-		lastSearch = text;
 		DWREncounterService.findCountAndLocations(text, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 </script>

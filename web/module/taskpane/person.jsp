@@ -24,8 +24,6 @@
 
 <script type="text/javascript">
 
-	var lastSearch;
-		
 	$j(document).ready(function() {
 		new OpenmrsSearch("findPerson", false, doPersonSearch, doSelectionHandler, 
 				[{fieldName:"givenName", header:" "}, {fieldName:"familyName", header:" "}, {fieldName:"systemId", header:" "}],
@@ -46,7 +44,6 @@
 	
 	//searchHandler for the Search widget
 	function doPersonSearch(text, resultHandler, getMatchCount, opts) {
-		lastSearch = text;
 		DWRPersonService.findCountAndPeople(text, opts.includeVoided, "Provider", opts.start, opts.length, getMatchCount, resultHandler);
 	}
 	//custom render, appends an arrow and preferredName it exists
