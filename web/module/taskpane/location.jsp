@@ -13,57 +13,39 @@
 	</c:otherwise>
 </c:choose>
 
+<openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
+
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
-	dojo.require("dojo.widget.openmrs.EncounterSearch");
+	var lastSearch;
+	
+	$j(document).ready(function() {
+		new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
+				[{fieldName:"name", header:" "}],
+				{searchLabel: ' '});
+	});
 	
 	function miniObject(o) {
 		this.key = o.locationId;
 		this.value = o.name;
 	}
 	
-	var searchWidget;
+	function doSelectionHandler(index, data) {
+		setObj('${nodePath}', new miniObject(data));
+	}
 	
-	dojo.addOnLoad( function() {
-		
-		searchWidget = dojo.widget.manager.getWidgetById("eSearch");			
-		
-		dojo.event.topic.subscribe("eSearch/select", 
-			function(msg) {
-				setObj('${nodePath}', new miniObject(msg.objs[0]));
-			}
-		);
-		
-		dojo.event.topic.subscribe("eSearch/objectsFound", 
-			function(msg) {
-				if (msg.objs.length == 1 && typeof msg.objs[0] == 'string')
-					msg.objs.push('<p class="no_hit"><spring:message code="Location.missing" /></p>');
-			}
-		);
-		
-		searchWidget.doFindObjects = function(phrase) {
-			DWREncounterService.findLocations(phrase, searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
-			return false;
-		};
-		
-		searchWidget.getCellContent = function(loc) {
-			if (typeof loc == 'string') return loc;
-				return loc.name;
-		}
-		
-		searchWidget.showHeaderRow = false;
-		
-		searchWidget.inputNode.focus();
-		searchWidget.inputNode.select();
-		
-		// prefill locations on page load
-		DWREncounterService.getLocations(searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
-		
-	});
-
+	//searchHandler for the Search widget
+	function doLocationSearch(text, resultHandler, getMatchCount, opts) {
+		lastSearch = text;
+		DWREncounterService.findCountAndLocations(text, opts.start, opts.length, getMatchCount, resultHandler);
+	}
 </script>
 
-<div dojoType="OpenmrsSearch" widgetId="eSearch" inputWidth="10em" useOnKeyDown="true"></div>
+<div>
+	<div class="searchWidgetContainer">
+		<div id="findLocation"></div>
+	</div>
+</div>
+
 <br />
 <small><em><spring:message code="general.search.hint"/></em></small>
 
