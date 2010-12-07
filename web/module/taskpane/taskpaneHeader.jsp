@@ -56,7 +56,10 @@
 		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/util.js" />
-
+		<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+		<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+		<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
+		
 		<meta http-equiv="msthemecompatible" content="yes" />
 		<meta http-equiv="pragma" content="no-cache" />
 		<meta http-equiv="expires" content="-1" />
