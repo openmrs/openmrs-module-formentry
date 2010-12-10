@@ -18,8 +18,7 @@
 <script type="text/javascript">
 	$j(document).ready(function() {
 		new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
-				[{fieldName:"name", header:" "}],
-				{searchLabel: ' '});
+				[{fieldName:"name", header:" "}]);
 	});
 	
 	function miniObject(o) {
