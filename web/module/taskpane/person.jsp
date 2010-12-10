@@ -27,8 +27,7 @@
 	$j(document).ready(function() {
 		new OpenmrsSearch("findPerson", false, doPersonSearch, doSelectionHandler, 
 				[{fieldName:"givenName", header:" "}, {fieldName:"familyName", header:" "}, {fieldName:"systemId", header:" "}],
-				{searchLabel: ' ',
-				columnRenderers: [nameColumnRenderer, null, null], 
+				{columnRenderers: [nameColumnRenderer, null, null], 
 				columnVisibility: [true, false, false]
 				});
 	});
