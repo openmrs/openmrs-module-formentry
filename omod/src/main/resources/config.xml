@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd">
+
+<module configVersion="1.0">
+	
+	<!-- Base Module Properties -->
+	<id>@MODULE_ID@</id>
+	<name>@MODULE_NAME@</name>
+	<version>@MODULE_VERSION@</version>
+	<package>@MODULE_PACKAGE@</package>
+	<author>Ben Wolfe</author>
+	<description>
+			Allows for designing and submitting Microsoft Infopath forms to OpenMRS.
+	</description>
+	<activator>@MODULE_PACKAGE@.FormEntryActivator</activator>
+
+	<updateURL>https://dev.openmrs.org/modules/download/formentry/update.rdf</updateURL>
+	<!-- /Base Module Properties -->
+	
+	<require_version>1.8.0</require_version>
+	
+	<!-- Extensions -->
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryAdminExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formHeader</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formRow</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormRowsExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formListHeader</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryFormListHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.module.web.extension.FormEntryHandler</point>
+		<class>@MODULE_PACKAGE@.extension.html.FormEntryEncountersTabExt</class>
+	</extension>
+	<!-- /Extensions -->
+	
+	
+	<!-- AOP -->
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>@MODULE_PACKAGE@.advice.DuplicateFormAdvisor</class>
+	</advice>
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>@MODULE_PACKAGE@.advice.BeforeDeleteFormAdvice</class>
+	</advice>
+	<!-- (Not used yet, depends on fix in trunk, otherwise formentry will require sync)
+	<advice>
+		<point>org.openmrs.module.sync.api.SyncIngestService</point>
+		<class>@MODULE_PACKAGE@.advice.RebuildXsnAfterSyncAdvice</class>
+	</advice>
+	-->
+	<!-- /AOP -->
+	
+	
+	<!-- Required Privileges -->
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to access Form Entry pages/functions</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to upload/overwrite the XSNs defined for forms</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to view the Forms tab on the patient dashboard</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to upload and edit the xsns stored on the server</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to add a queue item to database</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows user to view the queue items</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to edit the formentry queue</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to delete formentry queue items</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to view the formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to add the formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to edit a formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows the user to delete a formentry archive</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows a user to view a formentry error</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows a user to add a formentry error item</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows a user to edit a formentry error item</description>
+	</privilege>
+	<privilege>
+		<name>@MODULE_NAME@</name>
+		<description>Allows a user to delete a formentry error item</description>
+	</privilege>
+	<!-- /Required Privileges -->
+
+
+	<!-- Required Global Properties -->
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_server_url</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description> When uploading an XSN, this url is used as the "base path".  (Should be something like http://localhost:8080/openmrs)</description>
+	</globalProperty>
+	<globalProperty>
+		<!--  TODO This property is stupid.  Remove this in favor of a message bundle -->
+		<property>@MODULE_ID@.infopath_taskpane_caption</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>Welcome!</defaultValue>
+		<description>The text seen in the infopath taskpane upon first logging in</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_taskpane_refresh_sec</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			The number of seconds between taskpane refreshes.  This keeps the taskpane from
+			logging people out on longer forms
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_taskpane_keepalive_min</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			The number of minutes to keep refreshing the taskpane before allowing 
+			the login to lapse
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.patientForms.goBackOnEntry</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>false</defaultValue>
+		<description>
+			'true' means have the browser go back to the find patient page after picking a form
+			from the patientForms tab on the patient dashboard page
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.queue_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/queue</defaultValue>
+		<description>
+			Directory containing the formentry queue items. This will contain xml files submitted by
+			infopath.  These items are awaiting processing to be turned into hl7 queue items
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.queue_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/archive/%Y/%M</defaultValue>
+		<description>
+			Directory containing the formentry archive items.  This will contain xml files that have
+			been submitted by infopath and then processed sucessfully into hl7.
+			Certain date parameters will be replaced with the current date:
+			%Y = four digit year
+			%M = two digit month
+			%D = two digit date of the month
+			%w = week of the year
+     		%W = week of the month
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_taskpane.showAllUsersOnLoad</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>true</defaultValue>
+		<description>
+			When you view the 'users.htm' page in the taskpane, i.e. by clicking on the Choose a Provider
+			button, should the system automatically preload a list of all users? 
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.infopath_taskpane.relationship_sort_order</property> <!-- Must start with `moduleId.` -->
+		<defaultValue></defaultValue>
+		<description>
+			A comma-separated sorted list of relationship sides that should appear
+			first in the InfoPath taskpane widget. Relationship sides should be
+			spelled exactly as shown in the system; i.e. Parent,
+			Doctor, Child
+		</description>
+	</globalProperty>
+	
+	<!-- /Required Global Properties -->
+	
+
+	<dwr>
+		<allow>
+			<create creator="new" javascript="DWRFormEntryService">
+				<param name="class" value="@MODULE_PACKAGE@.web.DWRFormEntryService"/>
+				<include method="enterForm"/>
+			</create>
+		</allow>
+
+		<signatures>
+			<![CDATA[
+			import @MODULE_PACKAGE@.web.DWRFormEntryService;
+			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
+			]]>
+		</signatures>	
+	</dwr>
+	
+	
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
+	<servlet>
+		<servlet-name>formDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>forms</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.XsnDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>formUpload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormUploadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>formEntryErrorDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormEntryErrorDownloadServlet</servlet-class>
+	</servlet>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<servlet>
+		<servlet-name>formEntryQueueProcessor</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FormEntryQueueProcessorServlet</servlet-class>
+	</servlet>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<!-- /Servlets -->
+	
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+	
+	<mappingFiles>
+		${omodHbmConfig}
+	</mappingFiles>
+	
+</module>
