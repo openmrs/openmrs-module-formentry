@@ -115,7 +115,6 @@ public class PatientRelationshipPortletController extends PortletController {
 		 * 
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
-		@Override
 		public int compare(String arg0, String arg1) {
 			// compare relationship side strings; if the string appears in the
 			// official ordering list, it comes first ... if both exist in the

@@ -9,6 +9,6 @@ public class FormEntryUtilTest {
 	
 	@Test
 	public void shouldEncodeUtf8() throws Exception {
-		Assert.assertEquals("HEIGHT a\\u00c2a\\u00c2a (CM)^", FormEntryUtil.encodeUTF8String("HEIGHT aÃaÃa (CM)^"));
+		Assert.assertEquals("HEIGHT - \\u00d0 - (CM)^", FormEntryUtil.encodeUTF8String("HEIGHT - Ð - (CM)^"));
 	}
 }
