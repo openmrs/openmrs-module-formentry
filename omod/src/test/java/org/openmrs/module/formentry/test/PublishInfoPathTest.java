@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -21,6 +22,7 @@ import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.formentry.PublishInfoPath;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
@@ -200,9 +202,10 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldUpdateXslFile() throws Exception {
-		executeDataSet("org/openmrs/module/formentry/test/include/standardTestDataset.xml");
-		InputStream xslFileInputStream = this.getClass().getClassLoader().getResourceAsStream("org/openmrs/module/formentry/test/include/pre1.4.xsn");
+	public void shouldUpdateXslFileButKeepNamesAsTriplets() throws Exception {
+		executeDataSet("org/openmrs/include/standardTestDataset.xml");
+		executeDataSet("org/openmrs/module/formentry/test/include/extraConcepts.xml");
+		InputStream xslFileInputStream = getClass().getClassLoader().getResourceAsStream("org/openmrs/module/formentry/test/include/pre1.4.xsn");
 		Form form = PublishInfoPath.publishXSN(xslFileInputStream);
 		
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
@@ -214,8 +217,10 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		String xslString = OpenmrsUtil.getFileAsString(xsl);
 		
 		// the concept names should have been inserted into the xsl file
-		assertFalse(xslString.contains("xd:onValue=\"1142^MTCT STAFF^99DCT\""));
-		assertFalse(xslString.contains("\"obs/pay_category/value=&quot;1142^MTCT STAFF^99DCT&quot;\""));
+		System.out.println("xslString: " + xslString);
+		TestUtil.printOutTableContents(getConnection(), "concept_name");
+		assertTrue(xslString.contains("xd:onValue=\"1142^MTCT STAFF^99DCT\""));
+		assertTrue(xslString.contains("\"obs/pay_category/value=&quot;1142^MTCT STAFF^99DCT&quot;\""));
 		tempDir.delete();
 	}
 }

@@ -33,7 +33,6 @@ public class RebuildXsnAfterSyncAdvice implements AfterReturningAdvice {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	@Override
 	public void afterReturning(Object returnValue, Method m,
 			Object[] args, Object target) throws Throwable {
 		

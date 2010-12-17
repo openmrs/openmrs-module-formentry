@@ -793,21 +793,6 @@ public class PublishInfoPath {
 		while (line != null) {
 			Matcher m = hl7ConceptNamePatternWithOldPreciseName.matcher(line);
 			if (m.find()) {
-				/*
-				 * String conceptId = m.group(2); Concept concept =
-				 * cs.getConcept(new Integer(conceptId)); if (concept == null) {
-				 * throw new IOException("xsl \"" + xslFilename +
-				 * "\" contains unknown concept: " + m.group(3) + "(" +
-				 * conceptId + ")"); } else { ConceptName matchingConceptName =
-				 * findNameMatching(m.group(3), concept); String appendedHl7 =
-				 * ""; if (matchingConceptName != null) { appendedHl7 =
-				 * m.group(1) + FormUtil.conceptToString(concept,
-				 * matchingConceptName) + m.group(m.groupCount()); } else {
-				 * appendedHl7 = m.group(1) + FormUtil.conceptToString(concept,
-				 * defaultLocale) + m.group(m.groupCount()); }
-				 * 
-				 * line = m.replaceFirst(appendedHl7); }
-				 */
 				String withoutPreciseName = m.group(1) + m.group(7);
 				log.debug("---------------");
 				for (int i = 0; i < 6; ++i)

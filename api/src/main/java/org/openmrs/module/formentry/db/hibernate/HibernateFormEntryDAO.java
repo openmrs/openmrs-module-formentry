@@ -457,7 +457,6 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	/**
 	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormsWithXsns(boolean)
 	 */
-	@Override
 	public List<Form> getFormsWithXsns(boolean publishedOnly) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormEntryXsn.class);
 		crit.setProjection(Projections.property("form"));

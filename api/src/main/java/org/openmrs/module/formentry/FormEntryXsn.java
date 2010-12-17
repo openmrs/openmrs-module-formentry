@@ -160,12 +160,10 @@ public class FormEntryXsn extends BaseOpenmrsObject {
 		this.xsnData = xsnData;
 	}
 
-	@Override
 	public Integer getId() {
 		return getFormEntryXsnId();
 	}
 
-	@Override
 	public void setId(Integer id) {
 		setFormEntryXsnId(id);
 	}
