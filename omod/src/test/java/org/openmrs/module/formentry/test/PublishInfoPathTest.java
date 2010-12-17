@@ -200,9 +200,10 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	public void shouldUpdateXslFile() throws Exception {
-		executeDataSet("org/openmrs/module/formentry/test/include/standardTestDataset.xml");
-		InputStream xslFileInputStream = this.getClass().getClassLoader().getResourceAsStream("org/openmrs/module/formentry/test/include/pre1.4.xsn");
+	public void shouldUpdateXslFileButKeepNamesAsTriplets() throws Exception {
+		executeDataSet("org/openmrs/include/standardTestDataset.xml");
+		executeDataSet("org/openmrs/module/formentry/test/include/extraConcepts.xml");
+		InputStream xslFileInputStream = getClass().getClassLoader().getResourceAsStream("org/openmrs/module/formentry/test/include/pre1.4.xsn");
 		Form form = PublishInfoPath.publishXSN(xslFileInputStream);
 		
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
@@ -214,8 +215,8 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		String xslString = OpenmrsUtil.getFileAsString(xsl);
 		
 		// the concept names should have been inserted into the xsl file
-		assertFalse(xslString.contains("xd:onValue=\"1142^MTCT STAFF^99DCT\""));
-		assertFalse(xslString.contains("\"obs/pay_category/value=&quot;1142^MTCT STAFF^99DCT&quot;\""));
+		assertTrue(xslString.contains("xd:onValue=\"1142^MTCT STAFF^99DCT\""));
+		assertTrue(xslString.contains("\"obs/pay_category/value=&quot;1142^MTCT STAFF^99DCT&quot;\""));
 		tempDir.delete();
 	}
 }

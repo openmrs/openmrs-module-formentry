@@ -11,7 +11,7 @@
 			<generator class="native" />
 		</id>
 
-		<property name="xsnData" type="binary" not-null="true" column="xsn_data" />
+		<property name="xsnData" type="binary" length="-1" not-null="true" column="xsn_data" />
 		
 		<many-to-one name="form" class="org.openmrs.Form" not-null="true" column="form_id" />
 
