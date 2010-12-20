@@ -23,8 +23,12 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -586,14 +590,13 @@ public class PublishInfoPath {
 	private static void setDefaultJSVariables(File dir, Map<String, String> vars)
 			throws IOException {
 		// pull the default JS file from the starter folder to acquire updates
-		File original = FormEntryUtil
-				.findFile(
-						FormEntryUtil
-								.getResourceFile(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH),
-						FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
-		File modified = new File(dir,
-				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
-		String fileContent = readFile(original);
+		String filename = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH + File.separator + FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME;
+		InputStream original = PublishInfoPath.class.getResourceAsStream(filename);
+		
+		File modified = new File(dir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
+		
+		String fileContent = getStringFromInputStream(original);
+		
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
 			String regexp = "var\\s" + variableName + "\\s=[^;]*";
@@ -610,6 +613,40 @@ public class PublishInfoPath {
 			log.error("Could not write '"
 					+ FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME + "'",
 					e);
+		}
+	}
+	
+	/**
+	 * Convert the given input stream to a string
+	 * 
+	 * @param is inputstream (is closed in this method)
+	 * @return the String result or an empty string if invalid InputStream
+	 * @throws IOException
+	 */
+	public static String getStringFromInputStream(InputStream is) throws IOException {
+		/*
+		 * To convert the InputStream to String we use the Reader.read(char[]
+		 * buffer) method. We iterate until the Reader return -1 which means
+		 * there's no more data to read. We use the StringWriter class to
+		 * produce the string.
+		 */
+		if (is != null) {
+			Writer writer = new StringWriter();
+
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(is,
+						"UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					writer.write(buffer, 0, n);
+				}
+			} finally {
+				OpenmrsUtil.closeStream(is);
+			}
+			return writer.toString();
+		} else {
+			return "";
 		}
 	}
 

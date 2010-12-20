@@ -56,7 +56,6 @@ import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.util.StringUtils;
 
 /**
  *
@@ -168,15 +167,11 @@ public class FormEntryUtil {
 
 			cmdBuffer.append(cabextLocation + " -d ").append(
 					tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
-			String output = execCmd(cmdBuffer.toString(), tempDir);
-			if (StringUtils.hasText(output))
-				log.warn("cabextract output: " + output);
+			execCmd(cmdBuffer.toString(), tempDir);
 		} else {
 			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append(
 					"\" \"").append(tempDir.getAbsolutePath()).append("\"");
-			String output = execCmd(cmdBuffer.toString(), null);
-			if (StringUtils.hasText(output))
-				log.warn("cabextract output: " + output);
+			execCmd(cmdBuffer.toString(), null);
 		}
 
 		return tempDir;
@@ -207,7 +202,7 @@ public class FormEntryUtil {
 			log.error(err);
 			throw new FileNotFoundException(err);
 		}
-
+		
 		return OpenmrsUtil.url2file(url);
 	}
 
