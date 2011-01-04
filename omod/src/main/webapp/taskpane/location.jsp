@@ -35,7 +35,7 @@
 	
 	//searchHandler for the Search widget
 	function doLocationSearch(text, resultHandler, getMatchCount, opts) {
-		DWREncounterService.findCountAndLocations(text, opts.start, opts.length, getMatchCount, resultHandler);
+		DWREncounterService.findCountAndLocations(text, false, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 </script>
 
