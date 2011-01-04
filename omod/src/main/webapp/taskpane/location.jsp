@@ -17,8 +17,11 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
-				[{fieldName:"name", header:" "}]);
+		DWREncounterService.getLocations(function(locations){
+			new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
+					[{fieldName:"name", header:" "}],
+					{initialData:locations});
+		});
 	});
 	
 	function miniObject(o) {
