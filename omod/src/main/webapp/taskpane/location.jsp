@@ -16,8 +16,8 @@
 <openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
 
 <script type="text/javascript">
-	$j(document).ready(function() {
-		DWREncounterService.getLocations(function(locations){
+	DWREncounterService.getLocations(function(locations){
+		$j(document).ready(function() {
 			new OpenmrsSearch("findLocation", false, doLocationSearch, doSelectionHandler, 
 					[{fieldName:"name", header:" "}],
 					{initialData:locations});
