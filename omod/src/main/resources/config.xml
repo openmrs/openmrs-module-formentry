@@ -63,67 +63,67 @@
 	
 	<!-- Required Privileges -->
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Form Entry</name>
 		<description>Allows user to access Form Entry pages/functions</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Upload XSN</name>
 		<description>Allows user to upload/overwrite the XSNs defined for forms</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Patient Dashboard - View Forms Section</name>
 		<description>Allows user to view the Forms tab on the patient dashboard</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Manage FormEntry XSN</name>
 		<description>Allows user to upload and edit the xsns stored on the server</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Add FormEntry Queue</name>
 		<description>Allows user to add a queue item to database</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>View FormEntry Queue</name>
 		<description>Allows user to view the queue items</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Edit FormEntry Queue</name>
 		<description>Allows the user to edit the formentry queue</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Delete FormEntry Queue</name>
 		<description>Allows the user to delete formentry queue items</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>View FormEntry Archive</name>
 		<description>Allows the user to view the formentry archive</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Add FormEntry Archive</name>
 		<description>Allows the user to add the formentry archive</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Edit FormEntry Archive</name>
 		<description>Allows the user to edit a formentry archive</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Delete FormEntry Archive</name>
 		<description>Allows the user to delete a formentry archive</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>View FormEntry Error</name>
 		<description>Allows a user to view a formentry error</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Add FormEntry Error</name>
 		<description>Allows a user to add a formentry error item</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Edit FormEntry Error</name>
 		<description>Allows a user to edit a formentry error item</description>
 	</privilege>
 	<privilege>
-		<name>@MODULE_NAME@</name>
+		<name>Delete FormEntry Error</name>
 		<description>Allows a user to delete a formentry error item</description>
 	</privilege>
 	<!-- /Required Privileges -->
