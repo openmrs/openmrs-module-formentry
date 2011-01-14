@@ -590,7 +590,7 @@ public class PublishInfoPath {
 	private static void setDefaultJSVariables(File dir, Map<String, String> vars)
 			throws IOException {
 		// pull the default JS file from the starter folder to acquire updates
-		String filename = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH + File.separator + FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME;
+		String filename = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH + FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME;
 		InputStream original = PublishInfoPath.class.getResourceAsStream(filename);
 		
 		File modified = new File(dir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME);
