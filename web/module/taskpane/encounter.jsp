@@ -11,9 +11,9 @@
         <c:if test="${!firstEnc}">, </c:if><c:if test="${firstEnc}"><c:set var="firstEnc" value="false"/></c:if>'${enc.encounterId}': {
             'datetime': '<openmrs:formatDate date="${enc.encounterDatetime}" format="yyyy-MM-dd" />'
             , 'providerId': ${enc.provider.personId}
-            , 'providerName': '${enc.provider.givenName} ${enc.provider.familyName} (${enc.provider.personId})'
+            , 'providerName': '<spring:escapeBody javaScriptEscape="true">${enc.provider.givenName} ${enc.provider.familyName} (${enc.provider.personId})</spring:escapeBody>'
             , 'locationId': ${enc.location.locationId}
-            , 'locationName': '${enc.location.name}'
+            , 'locationName': '<spring:escapeBody javaScriptEscape="true">${enc.location.name}</spring:escapeBody>'
         }
     </c:forEach>
     }
