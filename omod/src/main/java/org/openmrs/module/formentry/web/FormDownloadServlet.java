@@ -244,6 +244,7 @@ public class FormDownloadServlet extends HttpServlet {
 			catch (IOException e) {
 				log.warn("Unable to rebuild xsn", e);
 				response.sendError(500);
+				return;
 			}
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsn.rebuild.success");

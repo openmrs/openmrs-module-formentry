@@ -4,12 +4,12 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry</artifactId>
-	<version>5.0.1</version>
+	<version>5.0.2</version>
 	<packaging>pom</packaging>
 	<name>FormEntry</name>
 	<description>Parent project for FormEntry</description>
 
-	<url>http://openmrs.org</url>
+	<url>http://wiki.openmrs.org/display/docs/FormEntry+Module</url>
 
 	<scm>
 		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</connection>
