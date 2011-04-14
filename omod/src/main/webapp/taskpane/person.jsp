@@ -20,53 +20,67 @@
 	</c:otherwise>
 </c:choose>
 
-<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" ></openmrs:htmlInclude>
 
 <script type="text/javascript">
-
-	$j(document).ready(function() {
-		new OpenmrsSearch("findPerson", false, doPersonSearch, doSelectionHandler, 
-				[{fieldName:"givenName", header:" "}, {fieldName:"familyName", header:" "}, {fieldName:"systemId", header:" "}],
-				{columnRenderers: [nameColumnRenderer, null, null], 
-				columnVisibility: [true, false, false]
-				});
-	});
-
+	dojo.require("dojo.widget.openmrs.PersonSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
+	
 	function miniObject(o) {
 		this.key = o.personId;
-		this.value = getName(o);
+		this.value = searchWidget.getName(o);
 	}
 	
-	function doSelectionHandler(index, data) {
-		setObj('${nodePath}', new miniObject(data));
-	}
+	var searchWidget;
 	
-	//searchHandler for the Search widget
-	function doPersonSearch(text, resultHandler, getMatchCount, opts) {
-		DWRPersonService.findCountAndPeople(text, opts.includeVoided, "Provider", opts.start, opts.length, getMatchCount, resultHandler);
-	}
-	//custom render, appends an arrow and preferredName it exists
-	function nameColumnRenderer(oObj){
-		return oObj.aData[0]+" "+oObj.aData[1]+" ("+oObj.aData[2]+")";
-	}
-	
-	function getName(o) {
-		if (typeof o == 'string') return o;
-		str = ''
-		str += o.givenName + " ";
-		str += o.familyName;
-		if (o.systemId)
-			str += " (" + o.systemId + ")";
-		return str;
-	};
+	dojo.addOnLoad( function() {
+		
+		searchWidget = dojo.widget.manager.getWidgetById("pSearch");
+		
+		dojo.event.topic.subscribe("pSearch/select", 
+			function(msg) {
+				setObj('${nodePath}', new miniObject(msg.objs[0]));
+			}
+		);
+		
+		dojo.event.topic.subscribe("pSearch/objectsFound", 
+			function(msg) {
+				if (msg.objs.length == 1 && typeof msg.objs[0] == 'string')
+					msg.objs.push('<p class="no_hit"><spring:message code="provider.missing" /></p>');
+			}
+		);
+		
+		searchWidget.getName = function(o) {
+			if (typeof o == 'string') return o;
+			str = ''
+			str += o.givenName + " ";
+			str += o.familyName;
+			if (o.systemId)
+				str += " (" + o.systemId + ")";
+			return str;
+		};
+		
+		searchWidget.getCellFunctions = function() {
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getName"));
+			return arr;
+		};
+		
+		searchWidget.showHeaderRow = false;
+		
+		searchWidget.allowAutoJump = function() {
+			return this.text && this.text.length > 1;
+		};
+
+		searchWidget.inputNode.focus();
+		searchWidget.inputNode.select();
+
+	});
+
 </script>
 
-<div>
-	<div class="searchWidgetContainer">
-		<div id="findPerson"></div>
-	</div>
-</div>
-
+<div dojoType="PersonSearch" widgetId="pSearch" inputWidth="10em" useOnKeyDown="true" canAddNewPerson="false" roles='<request:existsParameter name="role"><request:parameters id="r" name="role"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/></request:parameterValues></request:parameters></request:existsParameter>'></div>
 <br />
 <small><em><spring:message code="general.search.hint"/></em></small>
 
