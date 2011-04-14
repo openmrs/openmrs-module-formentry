@@ -7,7 +7,9 @@
 		<c:set var="nodePath" value="${param.nodePath}"/>
 	</c:when>
 	<c:otherwise>
-		alert("You must provide the nodePath query parameter with the node to fill in (e.g. nodePath=//encounter.provider_id)");
+		<script type="text/javascript">
+			alert("You must provide the nodePath query parameter with the node to fill in (e.g. nodePath='//encounter.provider_id)')");
+		</script>
 	</c:otherwise>
 </c:choose>
 

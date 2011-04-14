@@ -24,7 +24,6 @@
 		<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 		
 		<%-- These are imported here because IE doesn't like our import js from js and dwr doesn't get loaded properly --%>
-
 		<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
@@ -49,12 +48,9 @@
 			
 			var handler = function(msg, ex) {
 				if (!pageIsExiting) {
-					var div = document.getElementById("openmrs_dwr_error");
-					div.style.display = ""; // show the error div
-					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
-					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
+					$j("#openmrs_dwr_error_msg").html('<spring:message code="error.dwr"/> <b>' + msg + '</b>');
+					$j("#openmrs_dwr_error").show();
 				}
-				
 			};
 
 			dwr.engine.setErrorHandler(handler);
@@ -70,5 +66,12 @@
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+	<div id="openmrs_dwr_error" style="display:none" class="error">
+		<div id="openmrs_dwr_error_msg"></div>
+		<div id="openmrs_dwr_error_close" class="smallMessage">
+			<i><spring:message code="error.dwr.stacktrace"/></i> 
+			<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><spring:message code="error.dwr.hide"/></a>
+		</div>
+	</div>
 	<div id="pageBody">
 		<div id="contentMinimal">

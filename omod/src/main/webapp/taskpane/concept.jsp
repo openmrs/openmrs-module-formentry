@@ -30,29 +30,29 @@
 	function miniConcept(n) {
 		this.conceptId = "<%= org.openmrs.util.OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER %>";
 		if (n == null)
-			this.name = $('proposedText').innerHTML;
+			this.name = $j('#proposedText').html();
 		else
 			this.name = n;
 	}
 	
 	function showProposeConceptForm() {
-		$('searchForm').style.display = "none";
-		$('proposeConceptForm').style.display = "block";
-		txt = $('proposedText');
+		$j('#searchForm').hide();
+		$j('#proposeConceptForm').show();
+		txt = document.getElementById('proposedText');
 		txt.value = "";
 		insertContent(txt, searchWidget.lastPhraseSearched);
 		return false;
 	}
 	
 	function proposeConcept() {
-		var box = $('proposedText');
+		var box = document.getElementById('proposedText');
 		if (box.text == '')  {
 			alert("Proposed Concept text must be entered");
 			box.focus();
 		}
 		else {
-			$('proposeConceptForm').style.display = "none";
-			$('searchForm').style.display = "";
+			$j('#proposeConceptForm').hide();
+			$j('#searchForm').show();
 			DWRConceptService.findProposedConcepts(box.value, preProposedConcepts);
 		}
 	}
@@ -63,8 +63,8 @@
 		}
 		else {
 			//display a box telling them to pick a preposed concept:
-			$("preProposedAlert").style.display = "block";
-			$('searchForm').style.display = "";
+			$j('#preProposedAlert').show();
+			$j('#searchForm').show();
 			searchWidget.doObjectsFound(concepts);
 		}
 	}
@@ -168,7 +168,7 @@
 			function(msg) {
 				<%-- Do not allow proposed concepts if there is 'extra' information --%>
 				<c:if test="${empty param.extraNodePath}">
-					if ($("preProposedAlert").style.display != "block")
+					if (document.getElementById("preProposedAlert").style.display != "block")
 						msg.objs.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
 				</c:if>
 			}
