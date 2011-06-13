@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry</artifactId>
-	<version>5.0.3</version>
+	<version>5.0.4</version>
 	<packaging>pom</packaging>
 	<name>FormEntry</name>
 	<description>Parent project for FormEntry</description>
@@ -12,9 +11,9 @@
 	<url>http://wiki.openmrs.org/display/docs/FormEntry+Module</url>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs-modules/formentry/trunk/</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</developerConnection>
+		<url>http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</url>
 	</scm>
 
 	<modules>
@@ -76,7 +75,7 @@
 	</dependencyManagement>
 
 	<properties>
-		<openMRSVersion>1.8.0-SNAPSHOT</openMRSVersion>
+		<openMRSVersion>1.8.0-alpha</openMRSVersion>
 	</properties>
 
 	<build>
