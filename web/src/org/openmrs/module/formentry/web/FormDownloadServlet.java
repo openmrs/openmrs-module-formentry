@@ -77,12 +77,21 @@ public class FormDownloadServlet extends HttpServlet {
 			patientId = Integer.parseInt(request.getParameter("patientId"));
 		}
 		catch (NumberFormatException e) {
-			log.warn("Invalid patientId parameter: formId: \""
-			    + request.getParameter("formId") + "\" patientId: "
-			    + request.getParameter("patientId") + "\"", e);
-			return;
+			
+			try {
+				
+			// fall back to using the person id parameter
+			patientId = Integer.parseInt(request.getParameter("personId"));
+			
+			} catch (NumberFormatException e2) {
+				log.warn("No valid patientId or personid parameter found for: formId: \""
+				    + request.getParameter("formId") + "\" patientId: "
+				    + request.getParameter("patientId") + "\"" + "\" personId: "
+				    + request.getParameter("personId") + "\"", e2);
+				return;
+			}
 		}
-
+		
 		PatientService ps = Context.getPatientService();
 		Patient patient = ps.getPatient(patientId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
