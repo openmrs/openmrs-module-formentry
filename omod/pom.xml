@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>formentry</artifactId>
-		<version>5.0.3</version>
+		<version>5.0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry-omod</artifactId>

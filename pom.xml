@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry</artifactId>
-	<version>5.0.3</version>
+	<version>5.0.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>FormEntry</name>
 	<description>Parent project for FormEntry</description>
