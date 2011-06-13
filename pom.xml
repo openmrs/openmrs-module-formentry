@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry</artifactId>
-	<version>5.0.4</version>
+	<version>5.0.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>FormEntry</name>
 	<description>Parent project for FormEntry</description>
@@ -11,9 +11,9 @@
 	<url>http://wiki.openmrs.org/display/docs/FormEntry+Module</url>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</developerConnection>
-		<url>http://svn.openmrs.org/openmrs-modules/formentry/tags/5.0.4</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</developerConnection>
+		<url>http://svn.openmrs.org/openmrs-modules/formentry/trunk/</url>
 	</scm>
 
 	<modules>
