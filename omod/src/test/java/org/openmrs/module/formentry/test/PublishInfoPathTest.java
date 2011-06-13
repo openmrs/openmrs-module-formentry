@@ -199,6 +199,11 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * Requires that the host system know how to compile/publish xsn files.
+	 * If on linux, install cabextract and lcab.
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldUpdateXslFileButKeepNamesAsTriplets() throws Exception {
 		executeDataSet("org/openmrs/include/standardTestDataset.xml");
