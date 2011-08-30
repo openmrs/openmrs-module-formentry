@@ -20,6 +20,7 @@ import java.util.SortedMap;
 import org.openmrs.Form;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.module.formentry.db.FormEntryDAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -258,5 +259,44 @@ public interface FormEntryService {
 	 * @param publishedOnly if true, only fetches forms marked as published
 	 * @return list of forms that have an xsn defined
 	 */
+	@Transactional(readOnly = true)
 	public List<Form> getFormsWithXsn(boolean publishedOnly);
+	
+	/**
+	 * Gets all Form Entry XSNs regardless of archived status, grouped by
+	 * associated forms
+	 * 
+	 * @return a map of forms to lists of XNSs
+	 */
+	@Transactional(readOnly = true)
+	public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata();
+
+	/**
+	 * Gets a Form Entry XSN by its id
+	 * 
+	 * @param xsnId
+	 *            the id of the XSN to get
+	 * @return the XSN
+	 */
+	@Transactional(readOnly = true)
+	public FormEntryXsn getFormEntryXsnById(Integer xsnId);
+
+	/**
+	 * Deletes a Form Entry XSN object
+	 * 
+	 * @param xsn
+	 *            the Form Entry XSN object to be deleted
+	 */
+	@Authorized({ PrivilegeConstants.MANAGE_FORMS })
+	public void deleteFormEntryXsn(FormEntryXsn xsn);
+
+	/**
+	 * Migrates a Form Entry XSN object to the filesystem, deleting the
+	 * original. Only works on archived XSNs.
+	 * 
+	 * @param xsn
+	 *            the Form Entry XSN object be migrated
+	 */
+	@Authorized({ PrivilegeConstants.MANAGE_FORMS })
+	public void migrateFormEntryXsnToFilesystem(FormEntryXsn xsn);
 }

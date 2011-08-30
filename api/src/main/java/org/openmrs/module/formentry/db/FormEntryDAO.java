@@ -20,6 +20,7 @@ import org.openmrs.Form;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.formentry.FormEntryError;
 import org.openmrs.module.formentry.FormEntryXsn;
+import org.openmrs.module.formentry.FormEntryXsnMetadata;
 
 public interface FormEntryDAO {
 
@@ -103,4 +104,26 @@ public interface FormEntryDAO {
 	 * @return list of forms
 	 */
 	public List<Form> getFormsWithXsns(boolean publishedOnly);
+
+    /**
+     * return all Form Entry XSNs
+     * 
+     * @return all existing Form Entry XSNs
+     */
+    public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata();
+
+    /**
+     * delete (permanently remove) a Form Entry XSN
+     *
+     * @param xsn the XSN to be deleted
+     */
+    public void deleteFormEntryXsn(FormEntryXsn xsn);
+
+    /**
+     * get a Form Entry XSN by its id
+     * 
+     * @param xsnId the id of the Form Entry XSN
+     * @return the Form Entry XSN
+     */
+    public FormEntryXsn getFormEntryXsnById(Integer xsnId);
 }
