@@ -205,6 +205,13 @@
 			Doctor, Child
 		</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.xsn_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/xsns</defaultValue>
+		<description>
+			Directory containing old Form Entry XSNs that have been archived to the file system.
+		</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 	
