@@ -177,6 +177,7 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_GP_QUEUE_DIR_DEFAULT = "formentry/queue";
 	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR = "formentry.queue_archive_dir";
 	public static final String FORMENTRY_GP_QUEUE_ARCHIVE_DIR_DEFAULT = "formentry/archive/%Y/%M";
+	public static final String FORMENTRY_GP_XSN_ARCHIVE_DIR = "formentry.xsn_archive_dir";
 	
 	/**
 	 * @deprecated As of 2.6, xsns are stored in the formentry_xsn table

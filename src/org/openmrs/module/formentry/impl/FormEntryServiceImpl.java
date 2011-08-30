@@ -14,6 +14,7 @@
 package org.openmrs.module.formentry.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -28,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryArchive;
 import org.openmrs.module.formentry.FormEntryConstants;
@@ -37,9 +39,11 @@ import org.openmrs.module.formentry.FormEntryQueue;
 import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
+import org.openmrs.module.formentry.FormEntryXsnMetadata;
 import org.openmrs.module.formentry.FormSchemaBuilder;
 import org.openmrs.module.formentry.db.FormEntryDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Default implementation of the FormEntryService
@@ -387,6 +391,94 @@ public class FormEntryServiceImpl implements FormEntryService {
 	 */
 	public List<Form> getFormsWithXsn(boolean publishedOnly) {
 		return getFormEntryDAO().getFormsWithXsns(publishedOnly);
+	}
+
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#getAllFormEntryXsnMetadata() 
+     */
+    public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata() {
+        return dao.getAllFormEntryXsnMetadata();
+    }
+
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(FormEntryXsn)
+     */
+    public void deleteFormEntryXsn(FormEntryXsn xsn) {
+        dao.deleteFormEntryXsn(xsn);
+    }
+
+    /**
+     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsnById(Integer)
+     */
+    public FormEntryXsn getFormEntryXsnById(Integer xsnId) {
+        return dao.getFormEntryXsnById(xsnId);
+    }
+
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryXsnToFilesystem(FormEntryXsn)
+	 */
+	public void migrateFormEntryXsnToFilesystem(FormEntryXsn xsn) throws APIException {
+		if (xsn == null)
+			return;
+
+		// get the directory
+		String dir = Context.getAdministrationService().getGlobalProperty(
+				FormEntryConstants.FORMENTRY_GP_XSN_ARCHIVE_DIR, null);
+
+		if (dir != null) {
+			File xsnDir = OpenmrsUtil
+					.getDirectoryInApplicationDataDirectory(dir);
+			if (xsnDir.exists() && xsnDir.isDirectory()) {
+
+				// directory exists, create the file
+				File xsnFile = new File(xsnDir, generateXsnFileName(xsn));
+				FileOutputStream fos = null;
+
+				try {
+
+					// write the file
+					xsnFile.createNewFile();
+					fos = new FileOutputStream(xsnFile);
+					fos.write(xsn.getXsnData());
+					fos.flush();
+
+					// delete the XSN
+					FormEntryService service = Context
+							.getService(FormEntryService.class);
+					service.deleteFormEntryXsn(xsn);
+
+				} catch (IOException e) {
+					throw new APIException(
+							"could not write XSN to file system", e);
+				} finally {
+					try {
+						if (fos != null)
+							fos.close();
+					} catch (IOException e) {
+						// pass
+					}
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * generate a unique filename name for a Form Entry XSN
+	 * 
+	 * @param xsn
+	 *            the XSN used to create the filename
+	 * @return the filename
+	 */
+	private String generateXsnFileName(FormEntryXsn xsn) {
+		if (xsn == null)
+			return null;
+
+		String filename = xsn.getForm().getFormId() + "-"
+				+ xsn.getForm().getVersion() + "-" 
+				+ xsn.getFormEntryXsnId() + ".xsn";
+
+		return filename;
 	}
 	
 }

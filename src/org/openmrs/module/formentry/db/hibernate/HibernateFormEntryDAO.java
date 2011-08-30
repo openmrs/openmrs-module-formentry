@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,6 +45,7 @@ import org.openmrs.module.formentry.FormEntryQueue;
 import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
+import org.openmrs.module.formentry.FormEntryXsnMetadata;
 import org.openmrs.module.formentry.db.FormEntryDAO;
 import org.openmrs.module.formentry.migration.MigrateFormEntryQueueThread;
 import org.openmrs.util.OpenmrsUtil;
@@ -468,6 +470,34 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		}
     	
     	return (List<Form>)crit.list();
+	}
+
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getAllFormEntryXsnMetadata()
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata() {
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"select new org.openmrs.module.formentry.FormEntryXsnMetadata(xsn) " +
+						"from FormEntryXsn xsn order by form asc, archived asc, dateCreated desc");
+		return query.list();
+	}
+
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#deleteFormEntryXsn(FormEntryXsn)
+	 */
+	public void deleteFormEntryXsn(FormEntryXsn xsn) {
+		sessionFactory.getCurrentSession().delete(xsn);
+	}
+
+	/**
+	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getFormEntryXsnById(Integer)
+	 */
+	public FormEntryXsn getFormEntryXsnById(Integer xsnId) {
+		return (FormEntryXsn) sessionFactory.getCurrentSession().get(
+				FormEntryXsn.class, xsnId);
 	}
 
 }

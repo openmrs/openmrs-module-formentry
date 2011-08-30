@@ -33,6 +33,14 @@
 		</li>
 	</openmrs:hasPrivilege>
 	
+	<openmrs:hasPrivilege privilege="Manage Forms">
+		<li <c:if test='<%= request.getRequestURI().contains("formentry/manageXsnArchives") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/module/formentry/manageXsnArchives.htm">
+				<spring:message code="formentry.xsnarchives.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+
 	<openmrs:extensionPoint pointId="org.openmrs.admin.formentry.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >

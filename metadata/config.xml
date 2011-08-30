@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>formentry</id>
 	<name>FormEntry</name>
-	<version>4.5.9.2</version>
+	<version>4.5.9.3</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Ben Wolfe</author>
 	<description>
@@ -203,6 +203,13 @@
 			first in the InfoPath taskpane widget. Relationship sides should be
 			spelled exactly as shown in the system; i.e. Parent,
 			Doctor, Child
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.xsn_archive_dir</property> <!-- Must start with `moduleId.` -->
+		<defaultValue>formentry/xsns</defaultValue>
+		<description>
+			Directory containing old Form Entry XSNs that have been archived to the file system.
 		</description>
 	</globalProperty>
 	
