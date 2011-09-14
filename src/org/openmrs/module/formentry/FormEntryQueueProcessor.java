@@ -24,6 +24,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7Source;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -76,6 +77,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		String formData = formEntryQueue.getFormData();
 		FormService formService = Context.getFormService();
 		Integer formId = null;
+        HL7Source hl7Source = null;
 		String hl7SourceKey = null;
 		String errorDetails = null;
 
@@ -108,6 +110,12 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 			setFatalError(formEntryQueue, "The form id: " + formId + " does not exist in the form table!", errorDetails);
 			return;
 		}
+
+        // Get the HL7 source based on the form's encounter type
+        hl7Source = Context.getHL7Service().getHL7SourceByName(
+                Context.getAdministrationService().getGlobalProperty(
+                    FormEntryConstants.FORMENTRY_GP_DEFAULT_HL7_SOURCE,
+                    FormEntryConstants.FORMENTRY_DEFAULT_HL7_SOURCE_NAME));
 
 		// If source key not provided, use FormEntryQueue.formEntryQueueId
 		if (hl7SourceKey == null || hl7SourceKey.length() < 1)
@@ -149,7 +157,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 		// current FormEntry queue item into the archive.
 		HL7InQueue hl7InQueue = new HL7InQueue();
 		hl7InQueue.setHL7Data(out.toString());
-		hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
+		hl7InQueue.setHL7Source(hl7Source);
 		hl7InQueue.setHL7SourceKey(hl7SourceKey);
 		Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 
