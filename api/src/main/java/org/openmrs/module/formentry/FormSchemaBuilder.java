@@ -73,8 +73,7 @@ public class FormSchemaBuilder {
 			schema.append("      <xs:element name=\"" + sectionTag
 					+ "\" type=\"" + sectionTypeTag + "\" />\n");
 		}
-		schema
-				.append("      <xs:element name=\"other\" type=\"_other_section\" />\n");
+		schema.append("      <xs:element name=\"other\" type=\"_other_section\" />\n");
 		schema.append(FormSchemaFragment.closeForm(form));
 		schema.append(FormSchemaFragment.predefinedTypes());
 

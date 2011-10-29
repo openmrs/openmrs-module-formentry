@@ -2,9 +2,7 @@ package org.openmrs.module.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -24,7 +22,6 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -231,6 +228,7 @@ public class FormXmlTemplateBuilder {
 				Concept concept = field.getConcept();
 				String hl7Abbr = concept.getDatatype().getHl7Abbreviation();
 				xml.append(" openmrs_concept=\"");
+                // TODO make this use UUID / mapping instead of 99DCT
 				xml.append(FormEntryUtil.conceptToString(concept, Context
 						.getLocale()));
 				xml.append("\" openmrs_datatype=\"");
