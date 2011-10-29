@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>formentry</artifactId>
-	<version>5.0.6-SNAPSHOT</version>
+	<version>5.0.7-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>FormEntry</name>
 	<description>Parent project for FormEntry</description>
@@ -75,7 +75,7 @@
 	</dependencyManagement>
 
 	<properties>
-		<openMRSVersion>1.8.0-alpha</openMRSVersion>
+		<openMRSVersion>1.8.2</openMRSVersion>
 	</properties>
 
 	<build>
