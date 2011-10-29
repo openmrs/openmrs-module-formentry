@@ -214,7 +214,7 @@ public class PublishInfoPath {
 		if (form == null)
 			form = determineForm(tempDir);
 		else if (!form.equals(determineForm(tempDir))) {
-			modifyFormId(tempDir, form);
+        modifyFormId(tempDir, form);
 		}
 
 		if (form == null)
@@ -413,18 +413,30 @@ public class PublishInfoPath {
 				log.warn("Could not locate xs:element element in xsd!");
 				return null;
 			}
-			Element elem = getSingleElement(parent
-					.getElementsByTagName("xs:attribute"), "id");
-			if (elem == null) {
-				log.warn("Could not locate xs:attribute element in xsd!");
-				return null;
-			}
 
-			Integer formId = Integer.valueOf(elem.getAttribute("fixed"));
+            FormService formService = Context.getFormService();
 
-			FormService formService = Context.getFormService();
-			form = formService.getForm(formId);
-
+            // first, look for the UUID
+            Element elem = getSingleElement(parent.getElementsByTagName("xs:attribute"), "uuid");
+            if (elem == null || !OpenmrsUtil.nullSafeEquals(elem.getAttribute("name"), "uuid")) {
+                log.warn("Could not locate form uuid attribute in xsd!");
+                // settle for the ID if UUID is not found
+                elem = getSingleElement(parent.getElementsByTagName("xs:attribute"), "id");
+                if (elem == null) {
+                    log.warn("Could not locate form id attribute in xsd!");
+                    return null;
+                }
+                Integer formId = Integer.parseInt(elem.getAttribute("fixed"));
+                form = formService.getForm(formId);
+                if (log.isDebugEnabled())
+                    log.debug("found form by formId #" + formId);
+            } else {
+                String formUuid = elem.getAttribute("fixed");
+                form = formService.getFormByUuid(formUuid);
+                if (log.isDebugEnabled()) {
+                    log.debug("found form by uuid " + formUuid);
+                }
+            }
 		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
 		} catch (SAXException e) {
@@ -447,13 +459,33 @@ public class PublishInfoPath {
 			if (parent == null) {
 				log.warn("Could not locate xs:element element in xsd!");
 			}
-			Element elem = getSingleElement(parent
+			Element uuidElem = getSingleElement(parent
+					.getElementsByTagName("xs:attribute"), "uuid");
+
+            Element idElem = getSingleElement(parent
 					.getElementsByTagName("xs:attribute"), "id");
-			if (elem == null) {
-				log.warn("Could not locate xs:attribute element in xsd!");
+
+			if (uuidElem == null || !OpenmrsUtil.nullSafeEquals(uuidElem.getAttribute("name"), "uuid")) {
+				log.warn("could not find uuid element in xsd");
+                // create a new UUID element
+                Element newElem = doc.createElement("xs:attribute");
+                newElem.setAttribute("name", "uuid");
+                newElem.setAttribute("type", "xs:string");
+                newElem.setAttribute("use", "required");
+                Node realParent = idElem.getParentNode();
+                realParent.appendChild(newElem);
+                // try again to get it
+                uuidElem = getSingleElement(parent
+					.getElementsByTagName("xs:attribute"), "uuid");
+			}
+            uuidElem.setAttribute("fixed", form.getUuid().toString());
+
+			if (idElem == null) {
+				log.warn("Could not locate form id attribute in xsd!");
 			}
 
-			elem.setAttribute("fixed", form.getFormId().toString());
+			idElem.setAttribute("type", "xs:string");
+			idElem.setAttribute("fixed", form.getFormId().toString());
 
 			// save the document
 			OpenmrsUtil.saveDocument(doc, xsd);
@@ -631,19 +663,17 @@ public class PublishInfoPath {
 
 	private static Element getSingleElement(NodeList elemList,
 			String nameAttrValue) {
-		Element elem = null;
 		if (elemList != null) {
 			if (elemList.getLength() > 0) {
 				for (Integer i = 0; i < elemList.getLength(); i++) {
-					elem = (Element) elemList.item(0);
+					Element elem = (Element) elemList.item(i);
 					if (elem.getAttribute("name").equals(nameAttrValue))
-						break;
+						return elem;
 				}
-			} else {
-				elem = (Element) elemList.item(0);
 			}
+            return (Element) elemList.item(0);
 		}
-		return elem;
+		return null;
 	}
 
 	/**

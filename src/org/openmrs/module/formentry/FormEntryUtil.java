@@ -625,6 +625,7 @@ public class FormEntryUtil {
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
 		// return org.openmrs.util.FormUtil.conceptToString(concept, locale);
+        // TODO undeprecate this or change the name of the method to reflect the tuple it is generating
 		return concept.getConceptId() + "^"
 				+ encodeUTF8String(concept.getName(locale).getName()) + "^"
 				+ FormConstants.HL7_LOCAL_CONCEPT;
