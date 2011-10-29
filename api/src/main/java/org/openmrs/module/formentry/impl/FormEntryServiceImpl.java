@@ -477,9 +477,9 @@ public class FormEntryServiceImpl implements FormEntryService {
 		if (xsn == null)
 			return null;
 
-		String filename = xsn.getForm().getFormId() + "-"
-				+ xsn.getForm().getVersion() + "-" 
-				+ xsn.getFormEntryXsnId() + ".xsn";
+        String filename = xsn.getForm().getUuid() + "-v"
+                + xsn.getForm().getVersion() + "-"
+                + xsn.getFormEntryXsnId() + ".xsn";
 
 		return filename;
 	}

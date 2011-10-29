@@ -15,6 +15,7 @@
       <xs:element name="other" type="_other_type" />
     </xs:sequence>
     <xs:attribute name="id" type="xs:positiveInteger" fixed="1" use="required" />
+    <xs:attribute name="uuid" type="xs:string" fixed="" use="required" />
     <xs:attribute name="name" type="xs:string" fixed="Basic Form" use="required" />
     <xs:attribute name="version" type="xs:string" fixed="0.1" use="required" />
   </xs:complexType>

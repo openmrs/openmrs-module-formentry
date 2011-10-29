@@ -64,6 +64,9 @@ public class FormSchemaFragment {
 				+ "    <xs:attribute name=\"id\" type=\"xs:positiveInteger\" fixed=\""
 				+ form.getFormId()
 				+ "\" use=\"required\" />\n"
+				+ "    <xs:attribute name=\"uuid\" type=\"xs:string\" fixed=\""
+				+ form.getUuid()
+				+ "\" use=\"required\" />\n"
 				+ "    <xs:attribute name=\"name\" type=\"xs:string\" fixed=\""
 				+ form.getName()
 				+ "\" use=\"required\" />\n"
