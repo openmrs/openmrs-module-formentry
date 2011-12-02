@@ -128,8 +128,8 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <tasks>
-                                <copy file="../omod/target/formentry-omod-${formentryOmodVersion}.omod"
-                                      tofile="target/${openMRSVersion}/webapp/WEB-INF/bundledModules/formentry-omod-${formentryOmodVersion}.omod"/>
+                                <copy file="../omod/target/formentry-${formentryOmodVersion}.omod"
+                                      tofile="target/${openMRSVersion}/webapp/WEB-INF/bundledModules/formentry-${formentryOmodVersion}.omod"/>
                             </tasks>
                         </configuration>
                         <goals>
