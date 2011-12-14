@@ -1,5 +1,7 @@
 package org.openmrs;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.util.StringUtils;
@@ -22,10 +24,16 @@ import java.util.Properties;
  */
 
 public class ModuleStory  {
+    private static final Log log = LogFactory.getLog(ModuleStory.class);
+
     public static void main(String args[]) throws IOException, InterruptedException {
         if(!skipDatabaseSetupPage()){
+        String databaseUserName =  System.getProperty("database_user_name", "root");
+        String databaseRootPassword = System.getProperty("database_root_password","password");
         Runtime runtime = Runtime.getRuntime();
-        runtime.exec("curl http://localhost:8080/openmrs/AUTO_RUN_OPENMRS?local=en&remember=true");
+        runtime.exec("curl http://localhost:8080/openmrs/auto_run_openmrs?local=en&remember=true" +
+                "&database_user_name="+databaseUserName+"&database_root_password="+databaseRootPassword);
+        log.info("Waiting 10 minutes for OpenMRS installation to complete!!");
         Thread.sleep(1000*60*10);  //Waiting 10 minutes for installation to complete
         }
     }
