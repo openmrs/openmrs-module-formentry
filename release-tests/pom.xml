@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.openmrs</groupId>
             <artifactId>openmrs-release-test</artifactId>
-            <version>${openMRSReleaseTestVersion}</version>
+            <version>${openMRSVersion}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -112,9 +112,9 @@
                                 <artifactItem>
                                     <groupId>org.openmrs</groupId>
                                     <artifactId>openmrs-release-test</artifactId>
-                                    <version>${openMRSReleaseTestVersion}</version>
+                                    <version>${openMRSVersion}</version>
                                     <type>jar</type>
-                                    <outputDirectory>target/${openMRSReleaseTestVersion}</outputDirectory>
+                                    <outputDirectory>target/${openMRSVersion}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -156,6 +156,16 @@
                         <configuration>
                             <webApp>${basedir}/target/${openMRSVersion}/webapp</webApp>
                             <contextPath>/${webapp.name}</contextPath>
+                            <systemProperties>
+                                <systemProperty>
+                                    <name>FUNCTIONAL_TEST_MODE</name>
+                                    <value>true</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <name>OPENMRS_VERSION</name>
+                                    <value>${openMRSVersion}</value>
+                                </systemProperty>
+                            </systemProperties>
                         </configuration>
                         <executions>
                             <execution>
@@ -181,7 +191,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                     <plugin>
                         <groupId>org.jbehave</groupId>
                         <artifactId>jbehave-maven-plugin</artifactId>
@@ -216,7 +225,6 @@
                                         <exclude>**/stories/AinstallationWizard.java</exclude>
                                     </excludes>
                                     <includes>
-                                        <include>target/${openMRSReleaseTestVersion}/**/stories/AinstallationWizard.class</include>
                                         <include>**/stories/${test}.java</include>
                                     </includes>
                                 </configuration>
@@ -292,9 +300,6 @@
                                 <id>run-stories</id>
                                 <phase>integration-test</phase>
                                 <configuration>
-                                    <!--<sourceDirectory>-->
-                                        <!--target/classes-->
-                                    <!--</sourceDirectory>-->
                                     <includes>
                                         <include>**/stories/*.java</include>
                                     </includes>
@@ -348,7 +353,24 @@
                             </execution>
                         </executions>
                     </plugin>
-
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.openmrs.ModuleStory</mainClass>
+                                    <classpathScope>test</classpathScope>
+                                    <executable>java</executable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 
                 </plugins>
             </build>
@@ -358,7 +380,6 @@
         <webapp.name>openmrs</webapp.name>
         <openMRSVersion>1.10.0-SNAPSHOT</openMRSVersion>
         <formentryOmodVersion>${parent.version}</formentryOmodVersion>
-        <openMRSReleaseTestVersion>1.10.0-SNAPSHOT</openMRSReleaseTestVersion>
     </properties>
 
 </project>
