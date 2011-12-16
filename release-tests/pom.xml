@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.openmrs</groupId>
             <artifactId>openmrs-release-test</artifactId>
-            <version>${openMRSVersion}</version>
+            <version>${openMRSReleaseTestVersion}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -112,9 +112,9 @@
                                 <artifactItem>
                                     <groupId>org.openmrs</groupId>
                                     <artifactId>openmrs-release-test</artifactId>
-                                    <version>${openMRSVersion}</version>
+                                    <version>${openMRSReleaseTestVersion}</version>
                                     <type>jar</type>
-                                    <outputDirectory>target/${openMRSVersion}</outputDirectory>
+                                    <outputDirectory>target/${openMRSReleaseTestVersion}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -379,6 +379,7 @@
     <properties>
         <webapp.name>openmrs</webapp.name>
         <openMRSVersion>1.10.0-SNAPSHOT</openMRSVersion>
+        <openMRSReleaseTestVersion>1.10.0-SNAPSHOT</openMRSReleaseTestVersion>
         <formentryOmodVersion>${parent.version}</formentryOmodVersion>
     </properties>
 
