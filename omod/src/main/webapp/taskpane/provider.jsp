@@ -20,14 +20,16 @@
 		<c:set var="nodePath" value="//encounter.provider_id"/>
 	</c:otherwise>
 </c:choose>
-		
+
+<h3><spring:message code="provider.title"/></h3>
+
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
+
 <script type="text/javascript">
-	function processSelection(formFieldId, providerObj){
-		if (typeof providerObj == 'string')
-			return;
-		setObj('${nodePath}', new miniObject(providerObj));
-	}
-			
+	dojo.require("dojo.widget.openmrs.PersonSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
+	
 	function miniObject(p) {
 		str = '';
 		str += p.identifier;
@@ -37,7 +39,72 @@
 		this.key = p.providerId;
 		this.value = str;
 	}
+	
+	var searchWidget;
+	
+	dojo.addOnLoad( function() {
+		
+		searchWidget = dojo.widget.manager.getWidgetById("pSearch");
+		
+		dojo.event.topic.subscribe("pSearch/select", 
+			function(msg) {
+				setObj('${nodePath}', new miniObject(msg.objs[0]));
+			}
+		);
+		
+		dojo.event.topic.subscribe("pSearch/objectsFound", 
+			function(msg) {
+				if (msg.objs.length == 1 && typeof msg.objs[0] == 'string')
+					msg.objs.push('<p class="no_hit"><spring:message code="provider.missing" /></p>');
+			}
+		);
+		
+		searchWidget.postCreate = function() {
+			if (this.personId != "")
+				DWRProviderService.getProvider(personId, this.simpleClosure(this, "select"));
+		};
+		
+		searchWidget.doFindObjects = function(text) {
+			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
+			DWRProviderService.findProvider(text, tmpIncludedVoided, 0, null, this.simpleClosure(this, "doObjectsFound"));
+            
+			return false;
+		};
+		
+		searchWidget.getDisplayName = function(p) {
+			if (typeof p == 'string') return p;
+			str = '';
+			str += p.identifier;
+			if (p.displayName)
+				str += " (" + p.displayName + ")";
+					
+			return str;
+		};
+		
+		searchWidget.getCellFunctions = function() {
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getDisplayName"));
+			return arr;
+		};
+		
+		searchWidget.showHeaderRow = false;
+		
+		searchWidget.allowAutoJump = function() {
+			return this.text && this.text.length > 1;
+		};
+
+		searchWidget.inputNode.focus();
+		searchWidget.inputNode.select();
+
+	});
+
 </script>
 
-<h3><spring:message code="provider.title"/></h3>
-<openmrs_tag:providerField formFieldName="providerId" callback="processSelection" />
+<div dojoType="PersonSearch" widgetId="pSearch" inputWidth="10em" useOnKeyDown="true" canAddNewPerson="false" roles='<request:existsParameter name="role"><request:parameters id="r" name="role"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/></request:parameterValues></request:parameters></request:existsParameter>'></div>
+<br />
+<small><em><spring:message code="general.search.hint"/></em></small>
+
+<br/><br/>
+
+<%@ include file="/WEB-INF/template/footer.jsp" %>
