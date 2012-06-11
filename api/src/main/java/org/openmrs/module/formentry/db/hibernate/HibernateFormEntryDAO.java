@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -35,6 +34,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Form;
+import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -475,14 +475,39 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	/**
 	 * @see org.openmrs.module.formentry.db.FormEntryDAO#getAllFormEntryXsnMetadata()
 	 */
-	@SuppressWarnings("unchecked")
 	public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata() {
-		Query query = sessionFactory
+		Criteria crit = sessionFactory
 				.getCurrentSession()
-				.createQuery(
-						"select new org.openmrs.module.formentry.FormEntryXsnMetadata(xsn) " +
-						"from FormEntryXsn xsn order by form asc, archived asc, dateCreated desc");
-		return query.list();
+				.createCriteria(FormEntryXsn.class)
+				.setProjection(
+					Projections.projectionList().add(
+						Projections.property("formEntryXsnId")).add(
+						Projections.property("form.id")).add(
+						Projections.property("archived")).add(
+						Projections.property("dateCreated")).add(
+						Projections.property("dateArchived")))
+				.addOrder(Order.asc("form.id"))
+				.addOrder(Order.asc("archived"))
+				.addOrder(Order.desc("dateCreated"));
+
+		List<Object[]> xsns = crit.list();
+		List<FormEntryXsnMetadata> res = new ArrayList<FormEntryXsnMetadata>();
+		
+		for (Object[] metadata : xsns) {
+			try {
+				FormEntryXsnMetadata md = new FormEntryXsnMetadata();
+				md.setFormEntryXsnId((Integer) metadata[0]);
+				md.setFormId((Integer) metadata[1]);
+				md.setArchived((Boolean) metadata[2]);
+				md.setDateCreated((Date) metadata[3]);
+				md.setDateArchived((Date) metadata[4]);
+				res.add(md);
+			} catch (NumberFormatException ex) {
+				throw new APIException("could not cast " + metadata[0] + " to an Integer.", ex);
+			}
+		}
+		
+		return res;
 	}
 
 	/**
