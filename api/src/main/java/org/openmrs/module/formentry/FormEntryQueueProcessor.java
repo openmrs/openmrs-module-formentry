@@ -123,7 +123,7 @@ public class FormEntryQueueProcessor /* implements Runnable */{
 
 		// Now that we've determined the form used to create the XML data,
 		// we can obtain the associated XSLT to perform the transform to HL7.
-		String xsltDoc = form.getXslt();
+		String xsltDoc = FormEntryUtil.getFormXslt(form);
 
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(new StringReader(formData), "UTF-8");

@@ -14,6 +14,7 @@
 package org.openmrs.module.formentry;
 
 import java.util.Hashtable;
+
 import org.openmrs.util.FormConstants;
 
 /**
@@ -206,5 +207,9 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_RP_LCAB_LOCATION = "formentry.lcab_location";
 	public static String FORMENTRY_CABEXTRACT_LOCATION = null; // value of the runtime property loaded at startup
 	public static String FORMENTRY_LCAB_LOCATION = null; // value of the runtime property loaded at startup
+	
+	public static final String FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX = ".formentry.formXslt";
+	
+	public static final String FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX = ".formentry.formTemplate";
 	
 }

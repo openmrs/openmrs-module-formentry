@@ -148,7 +148,7 @@ public class FormDownloadServlet extends HttpServlet {
 		ec.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(ec);
 
-		String template = form.getTemplate();
+		String template = FormEntryUtil.getFormTemplate(form);
 		// just in case template has not been assigned, generate it on the fly
 		if (template == null)
 			template = new FormXmlTemplateBuilder(form, url).getXmlTemplate(true);
