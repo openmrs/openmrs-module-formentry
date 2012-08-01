@@ -96,8 +96,7 @@ public class FormXmlTemplateBuilder {
 		String template = null;
 		try {
 			StringWriter w = new StringWriter();
-			ve.evaluate(velocityContext, w, this.getClass().getName(),
-					form.getTemplate());
+			ve.evaluate(velocityContext, w, this.getClass().getName(), FormEntryUtil.getFormTemplate(form));
 			template = w.toString();
 		} catch (Exception e) {
 			log.error("Error evaluating default values for form "

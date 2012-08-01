@@ -284,7 +284,13 @@ public class PublishInfoPath {
 		}
 		
 		// update template, solution version, and build number on server
-		form.setTemplate(templateWithDefaults);
+		try {
+			form.setTemplate(templateWithDefaults);
+		}
+		catch (UnsupportedOperationException e) {
+			FormEntryUtil.saveFormResource(form, templateWithDefaults,
+			    FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX);
+		}
 		Context.getFormService().saveForm(form);
 		
 		return form;
