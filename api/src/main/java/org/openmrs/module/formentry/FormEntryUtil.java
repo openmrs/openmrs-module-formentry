@@ -32,7 +32,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -45,23 +44,22 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
+import org.openmrs.FormResource;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  *
@@ -94,7 +92,7 @@ public class FormEntryUtil {
 	 */
 	public static Pattern endOfXSLPattern = Pattern.compile("(</body>)");
 	
-	public static Class<?> formResourceClass;
+	private static String defaultXslt;
 	
 	/**
 	 * Expand the xsn defined by <code>xsnFileContents</code> into a temp dir The file returned by
@@ -818,6 +816,7 @@ public class FormEntryUtil {
 	 * 
 	 * @param s the string to convert
 	 * @return the string with characters converted to unicode escapes with backslashes
+	 * @should encode Utf8 string
 	 */
 	public static String encodeUTF8String(String s) {
 		
@@ -1001,42 +1000,30 @@ public class FormEntryUtil {
 	}
 	
 	/**
-	 * Convenience method that returns the form's xslt in a way that is compatible with the
-	 * introduction of FormResources in 1.9 and above
+	 * Convenience method that returns the form's xslt
 	 * 
 	 * @param form the {@link Form} object
 	 * @return the xslt text
+	 * @should return the xslt for the form
+	 * @should return the default xslt if the form has no custom one
 	 */
 	public static String getFormXslt(Form form) {
-		String xslt = null;
-		try {
-			xslt = form.getXslt();
-		}
-		catch (UnsupportedOperationException e) {
-			//This is 1.9 and above, use xslt form resources
-			xslt = getFormResource(form, FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
-		}
+		String xslt = getFormResource(form, FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
+		if (StringUtils.isNotBlank(xslt))
+			return xslt;
 		
-		return xslt;
+		return getDefaultXslt();
 	}
 	
 	/**
-	 * Convenience method that returns the form's template in a way that is compatible with the
-	 * introduction of FormResources in 1.9 and above
+	 * Convenience method that returns the form's template
 	 * 
 	 * @param form the {@link Form} object
 	 * @return the template text
+	 * @should return null if the form has no template resource
 	 */
 	public static String getFormTemplate(Form form) {
-		String template = null;
-		try {
-			template = form.getTemplate();
-		}
-		catch (UnsupportedOperationException e) {
-			template = getFormResource(form, FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX);
-		}
-		
-		return template;
+		return getFormResource(form, FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX);
 	}
 	
 	/**
@@ -1045,68 +1032,59 @@ public class FormEntryUtil {
 	 * @param form the {@link Form} object
 	 * @param resource the resource to save
 	 * @param resourceNameSuffix the resource name suffix
+	 * @should not add an xslt that is the same as the default
 	 */
 	public static void saveFormResource(Form form, String resource, String resourceNameSuffix) {
-		if (formResourceClass == null) {
-			try {
-				formResourceClass = Context.loadClass("org.openmrs.FormResource");
-			}
-			catch (ClassNotFoundException e) {
-				log.error("Failed to load class: org.openmrs.FormResource");
-			}
+		//If this is an xslt and is the same as the default, ignore it
+		if (FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX.equals(resourceNameSuffix)
+		        && StringUtils.isNotBlank(resource) && resource.equals(getDefaultXslt())) {
+			return;
 		}
 		
-		if (formResourceClass != null) {
-			Method saveFormResourceMethod = getMethodInFormService("saveFormResource", new Class<?>[] { Form.class,
-			        String.class });
-			if (saveFormResourceMethod != null) {
-				try {
-					Object formResource = formResourceClass.newInstance();
-					BeanUtils.setProperty(formResource, "form", form);
-					BeanUtils.setProperty(formResource, "name", form.getName() + resourceNameSuffix);
-					BeanUtils.setProperty(formResource, "valueReference", resource);
-					
-					ReflectionUtils.invokeMethod(saveFormResourceMethod, formResourceClass, new Object[] { formResource });
-				}
-				catch (Exception e) {
-					log.error("Error while saving form resource:", e);
-				}
-			}
+		try {
+			FormResource formResource = new FormResource();
+			formResource.setForm(form);
+			formResource.setName(FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
+			formResource.setValueReferenceInternal(resource);
+			Context.getFormService().saveFormResource(formResource);
+		}
+		catch (Exception e) {
+			log.error("Error while saving form resource:", e);
 		}
 	}
 	
 	/**
-	 * Gets a form resource with the specified resource name suffix, the method prepends the form's
-	 * name to the suffix to construct the full resource
+	 * Gets the default xslt
+	 * 
+	 * @return the xslt text
+	 * @should return the default xslt
+	 */
+	public static String getDefaultXslt() {
+		if (defaultXslt == null) {
+			try {
+				defaultXslt = IOUtils.toString(FormEntryUtil.class.getClassLoader().getResourceAsStream("default.xslt"));
+			}
+			catch (IOException e) {
+				throw new APIException("Failed to load the default xslt:", e);
+			}
+		}
+		
+		return defaultXslt;
+	}
+	
+	/**
+	 * Gets a form resource with the specified resource name suffix
 	 * 
 	 * @param form the form
 	 * @param resourceNameSuffix the resource name suffix
 	 * @return the resource
 	 */
 	private static String getFormResource(Form form, String resourceNameSuffix) {
-		Method getFormResourceMethod = getMethodInFormService("getFormResource", new Class<?>[] { Form.class, String.class });
-		Object formResource = ReflectionUtils.invokeMethod(getFormResourceMethod, Context.getFormService(), new Object[] {
-		        form, form.getName() + resourceNameSuffix });
-		if (formResource != null) {
-			Method valueMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValue", (Class<?>) null);
-			if (valueMethod != null)
-				return (String) ReflectionUtils.invokeMethod(valueMethod, formResource);
-		}
-		return null;
-	}
-	
-	/**
-	 * Finds a method in the FormService with the specified name and parameter types
-	 * 
-	 * @param methodName the name of the method to find
-	 * @param paramTypes the types of the parameters the method takes
-	 * @return
-	 */
-	private static Method getMethodInFormService(String methodName, Class<?>... paramTypes) {
-		Method method = ClassUtils.getMethodIfAvailable(FormService.class, methodName, paramTypes);
-		if (method == null)
-			throw new APIException("Cannot find method: " + methodName + " in class:" + FormService.class.getName());
+		FormResource resource = Context.getFormService().getFormResource(form,
+		    FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
+		if (resource != null)
+			return resource.getValueReference();
 		
-		return method;
+		return null;
 	}
 }

@@ -79,9 +79,6 @@ public class FormEntryActivator implements Activator {
 		// stop the migration xsn thread if its running
 		MigrateFormEntryXsnsThread.setActive(false);
 		
-		//nullify it so that the class and its classloader get Garbage collected
-		FormEntryUtil.formResourceClass = null;
-		
 	}
 	
 }
