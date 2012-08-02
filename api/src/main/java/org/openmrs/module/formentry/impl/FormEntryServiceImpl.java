@@ -75,12 +75,12 @@ public class FormEntryServiceImpl implements FormEntryService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
 		
 		TreeMap<String, String> systemVariables = new TreeMap<String, String>();
-		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String
-		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String
-		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String
-		        .valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH",
+		    String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH",
+		    String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH",
+		    String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
 		systemVariables.put("FORMENTRY_GP_QUEUE_DIR", FormEntryUtil.getFormEntryQueueDir().getAbsolutePath());
 		systemVariables.put("FORMENTRY_GP_QUEUE_ARCHIVE_DIR", FormEntryUtil.getFormEntryArchiveDir(null).getAbsolutePath());
 		
@@ -395,92 +395,90 @@ public class FormEntryServiceImpl implements FormEntryService {
 	public List<Form> getFormsWithXsn(boolean publishedOnly) {
 		return getFormEntryDAO().getFormsWithXsns(publishedOnly);
 	}
-
-    /**
-     * @see org.openmrs.module.formentry.FormEntryService#getAllFormEntryXsnMetadata() 
-     */
-    public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata() {
-        return dao.getAllFormEntryXsnMetadata();
-    }
-
-    /**
-     * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(FormEntryXsn)
-     */
-    public void deleteFormEntryXsn(FormEntryXsn xsn) {
-        dao.deleteFormEntryXsn(xsn);
-    }
-
-    /**
-     * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsnById(Integer)
-     */
-    public FormEntryXsn getFormEntryXsnById(Integer xsnId) {
-        return dao.getFormEntryXsnById(xsnId);
-    }
-
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getAllFormEntryXsnMetadata()
+	 */
+	public List<FormEntryXsnMetadata> getAllFormEntryXsnMetadata() {
+		return dao.getAllFormEntryXsnMetadata();
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#deleteFormEntryXsn(FormEntryXsn)
+	 */
+	public void deleteFormEntryXsn(FormEntryXsn xsn) {
+		dao.deleteFormEntryXsn(xsn);
+	}
+	
+	/**
+	 * @see org.openmrs.module.formentry.FormEntryService#getFormEntryXsnById(Integer)
+	 */
+	public FormEntryXsn getFormEntryXsnById(Integer xsnId) {
+		return dao.getFormEntryXsnById(xsnId);
+	}
+	
 	/**
 	 * @see org.openmrs.module.formentry.FormEntryService#migrateFormEntryXsnToFilesystem(FormEntryXsn)
 	 */
 	public void migrateFormEntryXsnToFilesystem(FormEntryXsn xsn) throws APIException {
 		if (xsn == null)
 			return;
-
+		
 		// get the directory
-		String dir = Context.getAdministrationService().getGlobalProperty(
-				FormEntryConstants.FORMENTRY_GP_XSN_ARCHIVE_DIR, null);
-
+		String dir = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_XSN_ARCHIVE_DIR,
+		    null);
+		
 		if (dir != null) {
-			File xsnDir = OpenmrsUtil
-					.getDirectoryInApplicationDataDirectory(dir);
+			File xsnDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(dir);
 			if (xsnDir.exists() && xsnDir.isDirectory()) {
-
+				
 				// directory exists, create the file
 				File xsnFile = new File(xsnDir, generateXsnFileName(xsn));
 				FileOutputStream fos = null;
-
+				
 				try {
-
+					
 					// write the file
 					xsnFile.createNewFile();
 					fos = new FileOutputStream(xsnFile);
 					fos.write(xsn.getXsnData());
 					fos.flush();
-
+					
 					// delete the XSN
-					FormEntryService service = Context
-							.getService(FormEntryService.class);
+					FormEntryService service = Context.getService(FormEntryService.class);
 					service.deleteFormEntryXsn(xsn);
-
-				} catch (IOException e) {
-					throw new APIException(
-							"could not write XSN to file system", e);
-				} finally {
+					
+				}
+				catch (IOException e) {
+					throw new APIException("could not write XSN to file system", e);
+				}
+				finally {
 					try {
-                        if (fos != null)
-    						fos.close();
-					} catch (IOException e) {
+						if (fos != null)
+							fos.close();
+					}
+					catch (IOException e) {
 						// pass
 					}
 				}
 			}
 		}
-
+		
 	}
-
+	
 	/**
 	 * generate a unique filename name for a Form Entry XSN
 	 * 
-	 * @param xsn
-	 *            the XSN used to create the filename
+	 * @param xsn the XSN used to create the filename
 	 * @return the filename
 	 */
 	private String generateXsnFileName(FormEntryXsn xsn) {
 		if (xsn == null)
 			return null;
-
-        String filename = xsn.getForm().getUuid() + "-v"
-                + xsn.getForm().getVersion() + "-"
-                + xsn.getFormEntryXsnId() + ".xsn";
-
+		
+		String filename = xsn.getForm().getUuid() + "-v" + xsn.getForm().getVersion() + "-" + xsn.getFormEntryXsnId()
+		        + ".xsn";
+		
 		return filename;
 	}
 	
