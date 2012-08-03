@@ -44,22 +44,22 @@ import org.openmrs.util.VelocityExceptionHandler;
 import org.openmrs.web.WebConstants;
 
 /**
- * Provides form download services, including download of the form template to
- * trigger the form application (e.g., Microsoft&reg; InfoPath&trade;) on the
- * client, download of an empty template, and download of a form schema.
+ * Provides form download services, including download of the form template to trigger the form
+ * application (e.g., Microsoft&reg; InfoPath&trade;) on the client, download of an empty template,
+ * and download of a form schema.
  * 
  * @version 1.0
  */
 public class FormDownloadServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 123423L;
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private VelocityEngine ve;
 	
 	/**
-	 * Serve up the xml file for filling out a form 
+	 * Serve up the xml file for filling out a form
 	 * 
 	 * @param request
 	 * @param response
@@ -68,11 +68,11 @@ public class FormDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, 
-			HttpSession httpSession, Form form) throws ServletException, IOException {
+	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, HttpSession httpSession,
+	                              Form form) throws ServletException, IOException {
 		
 		Integer patientId = null;
-
+		
 		try {
 			patientId = Integer.parseInt(request.getParameter("patientId"));
 		}
@@ -80,14 +80,15 @@ public class FormDownloadServlet extends HttpServlet {
 			
 			try {
 				
-			// fall back to using the person id parameter
-			patientId = Integer.parseInt(request.getParameter("personId"));
-			
-			} catch (NumberFormatException e2) {
-				log.warn("No valid patientId or personid parameter found for: formId: \""
-				    + request.getParameter("formId") + "\" patientId: "
-				    + request.getParameter("patientId") + "\"" + "\" personId: "
-				    + request.getParameter("personId") + "\"", e2);
+				// fall back to using the person id parameter
+				patientId = Integer.parseInt(request.getParameter("personId"));
+				
+			}
+			catch (NumberFormatException e2) {
+				log.warn(
+				    "No valid patientId or personid parameter found for: formId: \"" + request.getParameter("formId")
+				            + "\" patientId: " + request.getParameter("patientId") + "\"" + "\" personId: "
+				            + request.getParameter("personId") + "\"", e2);
 				return;
 			}
 		}
@@ -95,12 +96,12 @@ public class FormDownloadServlet extends HttpServlet {
 		PatientService ps = Context.getPatientService();
 		Patient patient = ps.getPatient(patientId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
-
+		
 		String title = form.getName() + "(" + FormUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
-
+		
 		initializeVelocity();
-
+		
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("form", form);
 		velocityContext.put("url", url);
@@ -129,8 +130,7 @@ public class FormDownloadServlet extends HttpServlet {
 				otherPerson = rel.getPersonB();
 				if (otherPerson.isPatient())
 					rel.setPersonB(Context.getPatientService().getPatient(otherPerson.getPersonId()));
-			}
-			else {
+			} else {
 				otherPerson = rel.getPersonA();
 				if (otherPerson.isPatient())
 					rel.setPersonA(Context.getPatientService().getPatient(otherPerson.getPersonId()));
@@ -147,12 +147,12 @@ public class FormDownloadServlet extends HttpServlet {
 		EventCartridge ec = new EventCartridge();
 		ec.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(ec);
-
+		
 		String template = FormEntryUtil.getFormTemplate(form);
 		// just in case template has not been assigned, generate it on the fly
 		if (template == null)
 			template = new FormXmlTemplateBuilder(form, url).getXmlTemplate(true);
-
+		
 		String xmldoc = null;
 		try {
 			StringWriter w = new StringWriter();
@@ -160,15 +160,14 @@ public class FormDownloadServlet extends HttpServlet {
 			xmldoc = w.toString();
 		}
 		catch (Exception e) {
-			log.error("Error evaluating default values for form " + form.getName() + "["
-			    + form.getFormId() + "]", e);
+			log.error("Error evaluating default values for form " + form.getName() + "[" + form.getFormId() + "]", e);
 			throw new ServletException("Error while evaluating velocity defaults", e);
 		}
-
+		
 		// set up keepalive for formentry 
 		// first remove a pre-existing keepalive
 		// it's ok if they are working with multiple forms, too
-		if ( httpSession.getAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE) != null ) {
+		if (httpSession.getAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE) != null) {
 			httpSession.removeAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE);
 		}
 		
@@ -179,37 +178,33 @@ public class FormDownloadServlet extends HttpServlet {
 		response.getOutputStream().print(xmldoc);
 	}
 	
-	
 	/**
-	 * A utility method to initialize Velocity. This could be
-	 * called in the constructor, but putting it in a separate
-	 * method like this allows for late-initialization only
-	 * when someone actually uses this servlet.
+	 * A utility method to initialize Velocity. This could be called in the constructor, but putting
+	 * it in a separate method like this allows for late-initialization only when someone actually
+	 * uses this servlet.
 	 */
 	private void initializeVelocity() {
 		if (ve == null) {
 			ve = new VelocityEngine();
-
-			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
-			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
-					"formentry_velocity");
+			
+			ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+			    "org.apache.velocity.runtime.log.CommonsLogLogChute");
+			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "formentry_velocity");
 			try {
 				ve.init();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.error("velocity init failed", e);
-			}		
+			}
 		}
 	}
-
-
+	
 	/**
-	 * Sort out the multiple options for formDownload.  This servlet does things like
-	 * the formEntry xsn template download, the xsn/schema/template download, and xsn rebuliding
+	 * Sort out the multiple options for formDownload. This servlet does things like the formEntry
+	 * xsn template download, the xsn/schema/template download, and xsn rebuliding
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	    throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		Form form = null;
 		Integer formId = null;
 		String target = request.getParameter("target");
@@ -229,7 +224,7 @@ public class FormDownloadServlet extends HttpServlet {
 		catch (NumberFormatException e) {
 			// pass.  Error throwing is done in the if statements
 		}
-
+		
 		if ("formentry".equals(target)) {
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
@@ -239,8 +234,7 @@ public class FormDownloadServlet extends HttpServlet {
 			else
 				log.warn("formId cannot be null");
 			
-		}
-		else if ("rebuild".equals(target)) {
+		} else if ("rebuild".equals(target)) {
 			if (form == null) {
 				log.warn("formId must point to a valid form");
 				return;
@@ -259,8 +253,7 @@ public class FormDownloadServlet extends HttpServlet {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsn.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
 			
-		}
-		else if ("rebuildAll".equals(target)) {
+		} else if ("rebuildAll".equals(target)) {
 			// Download all XSNs and upload them again
 			Integer count = 0;
 			for (Form formObj : formService.getForms(false, false)) {
@@ -272,72 +265,71 @@ public class FormDownloadServlet extends HttpServlet {
 					count = count + 1;
 					try {
 						OpenmrsUtil.deleteDirectory(tempDir);
-					} catch (IOException ioe) {}
-				
+					}
+					catch (IOException ioe) {}
+					
 					try {
 						formStream.close();
-					} catch (IOException ioe) {}
+					}
+					catch (IOException ioe) {}
 				}
 			}
 			log.debug(count + " xsn(s) rebuilt");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "formentry.xsns.rebuild.success");
 			response.sendRedirect(request.getHeader("referer"));
-		}
-		else {
+		} else {
 			if (form == null) {
 				log.warn("formId must point to a valid form");
 				return;
 			}
 			// Downloading from openmrs/admin/forms/form(Edit|SchemaDesign).form
 			response.setHeader("Content-Type", "application/octect-stream; charset=utf-8");
-
+			
 			// Load form object and default form url
 			String url = FormEntryUtil.getFormAbsoluteUrl(form);
-
+			
 			// Payload to return if desired form is string conversion capable
 			String payload = null;
 			if ("schema".equalsIgnoreCase(target)) {
 				payload = new FormSchemaBuilder(form).getSchema();
 				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME);
-			}
-			else if ("template".equalsIgnoreCase(target)) {
+			} else if ("template".equalsIgnoreCase(target)) {
 				payload = new FormXmlTemplateBuilder(form, url).getXmlTemplate(false);
 				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME);
-			}
-			else if ("xsn".equalsIgnoreCase(target)) {
+			} else if ("xsn".equalsIgnoreCase(target)) {
 				// Download full xsn for editing (if exists) Otherwise, get
 				// starter XSN. Inserts new template and schema
-
+				
 				// Set the form filename in the response
 				String filename = FormEntryUtil.getFormUri(form);
-				log.debug("Download of XSN for form #" + form.getFormId() + " (" + filename
-				    + ") requested");
-
+				log.debug("Download of XSN for form #" + form.getFormId() + " (" + filename + ") requested");
+				
 				// generate the filename if they haven't defined a URI
 				if (filename == null || filename.equals(""))
 					filename = "starter_template.xsn";
-
+				
 				setFilename(response, filename);
-
+				
 				Object[] streamAndDir = FormEntryUtil.getCurrentXSN(form, true);
-				FileInputStream formStream = (FileInputStream)streamAndDir[0];
-				File tempDir = (File)streamAndDir[1];
-
+				FileInputStream formStream = (FileInputStream) streamAndDir[0];
+				File tempDir = (File) streamAndDir[1];
+				
 				if (formStream != null) {
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 					try {
 						formStream.close();
-					} catch (IOException ioe) {}
+					}
+					catch (IOException ioe) {}
 					try {
 						OpenmrsUtil.deleteDirectory(tempDir);
-					} catch (IOException ioe) {}
+					}
+					catch (IOException ioe) {}
 				} else {
 					log.error("Could not return an xsn");
 					response.sendError(500);
 				}
-
-			}
-			else if (target == null) {
+				
+			} else if (target == null) {
 				// Download full xsn for formentry (if exists)
 				// Does not alter the xsn at all
 				try {
@@ -345,26 +337,24 @@ public class FormDownloadServlet extends HttpServlet {
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 				}
 				catch (FileNotFoundException e) {
-					log
-					    .error(
-					    	"The XSN for form '"
+					log.error(
+					    "The XSN for form '"
 					            + form.getFormId()
 					            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in form administration).",
-					        e);
+					    e);
 				}
-
-			}
-			else {
+				
+			} else {
 				log.warn("Invalid target parameter: \"" + target + "\"");
 				return;
 			}
-
+			
 			// If the stream wasn't directly written to, print the payload
 			if (payload != null)
 				response.getOutputStream().print(payload);
 		}
 	}
-
+	
 	private void setFilename(HttpServletResponse response, String filename) {
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 	}
