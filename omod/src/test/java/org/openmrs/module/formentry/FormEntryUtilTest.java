@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
@@ -45,6 +46,15 @@ public class FormEntryUtilTest extends BaseModuleContextSensitiveTest {
 	@Before
 	public void setup() throws IOException {
 		service = Context.getFormService();
+	}
+	
+	/**
+	 * @see {@link FormEntryUtil#encodeUTF8String(String)}
+	 */
+	@Test
+	@Verifies(value = "should encode Utf8 string", method = "encodeUTF8String(String)")
+	public void encodeUTF8String_shouldEncodeUtf8String() throws Exception {
+		Assert.assertEquals("HEIGHT - \\u00d0 - (CM)^", FormEntryUtil.encodeUTF8String("HEIGHT - Ð - (CM)^"));
 	}
 	
 	/**
@@ -97,28 +107,37 @@ public class FormEntryUtilTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link FormEntryUtil#saveFormResource(Form,String,String)}
+	 * @see {@link FormEntryUtil#saveXsltorTemplateFormResource(Form,String,String, CustomDatatypeHandler)}
 	 */
 	@Test
-	@Verifies(value = "should not add an xslt that is the same as the default", method = "saveFormResource(Form,String,String)")
-	public void saveFormResource_shouldNotAddAnXsltThatIsTheSameAsTheDefault() throws Exception {
+	@Verifies(value = "should not add an xslt that is the same as the default", method = "saveXsltorTemplateFormResource(Form,String,String)")
+	public void saveXsltorTemplateFormResource_shouldNotAddAnXsltThatIsTheSameAsTheDefault() throws Exception {
 		executeDataSet(EXTRA_FORM_AND_RESOURCES);
 		final Form form = service.getForm(1);
 		final String originalXlst = FormEntryUtil.getFormXslt(form);
 		//sanity check
 		Assert.assertNotSame(defaultXslt, originalXlst);
 		
-		FormEntryUtil.saveFormResource(form, defaultXslt, FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
+		FormEntryUtil.saveXsltorTemplateFormResource(form, defaultXslt,
+		    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX, null);
 		//shouldn't have changed
 		Assert.assertNotSame(defaultXslt, FormEntryUtil.getFormXslt(form));
 	}
 	
 	/**
-	 * @see {@link FormEntryUtil#encodeUTF8String(String)}
+	 * @see {@link FormEntryUtil#saveXsltorTemplateFormResource(Form,String,String, CustomDatatypeHandler)}
 	 */
 	@Test
-	@Verifies(value = "should encode Utf8 string", method = "encodeUTF8String(String)")
-	public void encodeUTF8String_shouldEncodeUtf8String() throws Exception {
-		Assert.assertEquals("HEIGHT - \\u00d0 - (CM)^", FormEntryUtil.encodeUTF8String("HEIGHT - Ð - (CM)^"));
+	@Verifies(value = "should save the form resource to the database", method = "saveXsltorTemplateFormResource(Form,String,String)")
+	public void saveXsltorTemplateFormResource_shouldSaveTheFormResourceToTheDatabase() throws Exception {
+		executeDataSet(EXTRA_FORM_AND_RESOURCES);
+		final Form form = service.getForm(10);
+		//sanity check to ensure the form has no existing custom xslt resource
+		Assert.assertSame(defaultXslt, FormEntryUtil.getFormXslt(form));
+		String newXslt = "New test xslt";
+		FormEntryUtil.saveXsltorTemplateFormResource(form, newXslt,
+		    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX, null);
+		//shouldn't have changed
+		Assert.assertSame(newXslt, FormEntryUtil.getFormXslt(form));
 	}
 }
