@@ -139,6 +139,7 @@ public class FormEntryConstants {
 	public static final String PRIV_DELETE_FORMENTRY_ERROR = "Delete FormEntry Error";
 	public static final String PRIV_MANAGE_FORMENTRY_XSN = "Manage FormEntry XSN";
 	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
+	public static final String PRIV_MANAGE_FORMENTRY_XSLT = "Manage FormEntry Xslt";
 	
 	/* FormEntry Queue status values for entries in the queue */
 	public static final int FORMENTRY_QUEUE_STATUS_PENDING = 0;
