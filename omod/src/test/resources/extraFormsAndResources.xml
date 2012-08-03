@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <dataset>
 	<form form_id="10" name="Testing Form" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2012-08-01 00:00:00.0" retired="0" uuid="e9218f76-6c39-45f4-8efa-4c5c6c199f51" />
-	<form_Resource form_Resource_id="1" form_id="1" name="formentry.Basic Form-xslt" value_Reference="z9218f76-6c39-45f4-8efa-4c5c6c199f59" uuid="c9218f76-6c39-45f4-8efa-4c5c6c199f53" datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype" />
-	<form_Resource form_Resource_id="2" form_id="1" name="formentry.Basic Form-template" value_Reference="y9218f76-6c39-45f4-8efa-4c5c6c199f58" uuid="f9218f76-6c39-45f4-8efa-4c5c6c199f54" datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype" />
+	<form_Resource form_Resource_id="1" form_id="1" name="formentry.xslt" value_Reference="z9218f76-6c39-45f4-8efa-4c5c6c199f59" uuid="c9218f76-6c39-45f4-8efa-4c5c6c199f53" datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype" />
+	<form_Resource form_Resource_id="2" form_id="1" name="formentry.template" value_Reference="y9218f76-6c39-45f4-8efa-4c5c6c199f58" uuid="f9218f76-6c39-45f4-8efa-4c5c6c199f54" datatype="org.openmrs.customdatatype.datatype.LongFreeTextDatatype" />
 	<clob_datatype_storage id="1" uuid="z9218f76-6c39-45f4-8efa-4c5c6c199f59" value="xslt text" />
 	<clob_datatype_storage id="2" uuid="y9218f76-6c39-45f4-8efa-4c5c6c199f58" value="template text" />
 </dataset>

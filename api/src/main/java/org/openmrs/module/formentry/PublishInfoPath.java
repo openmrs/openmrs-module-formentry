@@ -289,7 +289,7 @@ public class PublishInfoPath {
 		}
 		catch (UnsupportedOperationException e) {
 			FormEntryUtil.saveXsltorTemplateFormResource(form, templateWithDefaults,
-			    FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX, null);
+			    FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME, null);
 		}
 		Context.getFormService().saveForm(form);
 		
