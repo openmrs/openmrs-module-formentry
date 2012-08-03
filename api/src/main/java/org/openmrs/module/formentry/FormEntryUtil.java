@@ -1041,18 +1041,19 @@ public class FormEntryUtil {
 	 * @should save the form resource to the database
 	 * @should not add an xslt that is the same as the default
 	 */
-	public static void saveXsltorTemplateFormResource(Form form, String resource, String resourceNameSuffix,
+	@SuppressWarnings("rawtypes")
+	public static void saveXsltorTemplateFormResource(Form form, String resource, String resourceName,
 	                                                  CustomDatatypeHandler handler) {
 		//If this is an xslt and is the same as the default, ignore it
-		if (FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX.equals(resourceNameSuffix)
-		        && StringUtils.isNotBlank(resource) && resource.equals(getDefaultXslt())) {
+		if (FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME.equals(resourceName) && StringUtils.isNotBlank(resource)
+		        && resource.equals(getDefaultXslt())) {
 			return;
 		}
 		
 		try {
 			FormResource formResource = new FormResource();
 			formResource.setForm(form);
-			formResource.setName(FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
+			formResource.setName(resourceName);
 			formResource.setDatatypeClassname(LongFreeTextDatatype.class.getName());
 			if (handler == null)
 				formResource.setPreferredHandlerClassname(LongFreeTextFileUploadHandler.class.getName());
@@ -1074,7 +1075,7 @@ public class FormEntryUtil {
 		if (defaultXslt == null) {
 			try {
 				defaultXslt = IOUtils.toString(FormEntryUtil.class.getClassLoader().getResourceAsStream(
-				    FormEntryConstants.DEFAULT_XSLT_FILENAME));
+				    FormEntryConstants.FORMENTRY_DEFAULT_XSLT_FILENAME));
 			}
 			catch (IOException e) {
 				throw new APIException("Failed to load the default xslt:", e);
@@ -1093,11 +1094,10 @@ public class FormEntryUtil {
 	 */
 	@SuppressWarnings({ "rawtypes" })
 	private static String getXsltOrTemplate(Form form, boolean getXslt) {
-		String resourceNameSuffix = (getXslt) ? FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX
-		        : FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX;
+		String resourceName = (getXslt) ? FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME
+		        : FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME;
 		
-		FormResource resource = Context.getFormService().getFormResource(form,
-		    FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
+		FormResource resource = Context.getFormService().getFormResource(form, resourceName);
 		if (resource != null) {
 			CustomDatatype datatype = CustomDatatypeUtil.getDatatype(resource);
 			if (datatype != null) {

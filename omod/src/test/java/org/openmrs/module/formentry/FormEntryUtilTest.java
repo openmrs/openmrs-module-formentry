@@ -119,7 +119,7 @@ public class FormEntryUtilTest extends BaseModuleContextSensitiveTest {
 		Assert.assertNotSame(defaultXslt, originalXlst);
 		
 		FormEntryUtil.saveXsltorTemplateFormResource(form, defaultXslt,
-		    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX, null);
+		    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME, null);
 		//shouldn't have changed
 		Assert.assertNotSame(defaultXslt, FormEntryUtil.getFormXslt(form));
 	}
@@ -135,8 +135,8 @@ public class FormEntryUtilTest extends BaseModuleContextSensitiveTest {
 		//sanity check to ensure the form has no existing custom xslt resource
 		Assert.assertSame(defaultXslt, FormEntryUtil.getFormXslt(form));
 		String newXslt = "New test xslt";
-		FormEntryUtil.saveXsltorTemplateFormResource(form, newXslt,
-		    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX, null);
+		FormEntryUtil.saveXsltorTemplateFormResource(form, newXslt, FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME,
+		    null);
 		//shouldn't have changed
 		Assert.assertSame(newXslt, FormEntryUtil.getFormXslt(form));
 	}

@@ -208,12 +208,12 @@ public class FormEntryConstants {
 	public static String FORMENTRY_CABEXTRACT_LOCATION = null; // value of the runtime property loaded at startup
 	public static String FORMENTRY_LCAB_LOCATION = null; // value of the runtime property loaded at startup
 	
-	public static final String FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX = "-xslt";
-	
-	public static final String FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX = "-template";
-	
 	public static final String MODULE_ID = "formentry";
 	
-	public static final String DEFAULT_XSLT_FILENAME = "default.xslt";
+	public static final String FORMENTRY_XSLT_FORM_RESOURCE_NAME = MODULE_ID+".xslt";
+	
+	public static final String FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME = MODULE_ID+".template";
+	
+	public static final String FORMENTRY_DEFAULT_XSLT_FILENAME = "default.xslt";
 	
 }

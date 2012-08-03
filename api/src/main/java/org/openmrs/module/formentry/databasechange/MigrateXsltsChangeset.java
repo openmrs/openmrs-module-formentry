@@ -64,7 +64,9 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 				rs = selectStmt.getResultSet();
 				insertClobsStmt = connection.prepareStatement("INSERT INTO clob_datatype_storage (value, uuid) VALUES(?,?)");
 				insertResourcesStmt = connection
-				        .prepareStatement("INSERT INTO form_resource (form_id, name, value_reference, datatype, preferred_handler, uuid) VALUES (?,?,?,'"
+				        .prepareStatement("INSERT INTO form_resource (form_id, name, value_reference, datatype, preferred_handler, uuid) VALUES (?,'"
+				                + FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME
+				                + "',?,'"
 				                + LongFreeTextDatatype.class.getName()
 				                + "','"
 				                + LongFreeTextFileUploadHandler.class.getName() + "',?)");
@@ -85,10 +87,8 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 						
 						//set the resource column values
 						insertResourcesStmt.setInt(1, rs.getInt("form_id"));
-						insertResourcesStmt.setString(2, FormEntryConstants.MODULE_ID + "." + rs.getString("name")
-						        + FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
-						insertResourcesStmt.setString(3, clobUuid);
-						insertResourcesStmt.setString(4, UUID.randomUUID().toString());
+						insertResourcesStmt.setString(2, clobUuid);
+						insertResourcesStmt.setString(3, UUID.randomUUID().toString());
 						insertResourcesStmt.addBatch();
 					}
 				}
