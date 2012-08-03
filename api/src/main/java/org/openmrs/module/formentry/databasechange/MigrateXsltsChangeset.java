@@ -32,7 +32,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.openmrs.module.formentry.FormEntryConstants;
+import org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler;
 
 /**
  * Creates form resources from existing xslts in the form table.
@@ -48,7 +50,8 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 	public void execute(Database database) throws CustomChangeException {
 		final JdbcConnection connection = (JdbcConnection) database.getConnection();
 		Statement selectStmt = null;
-		PreparedStatement pStmt = null;
+		PreparedStatement insertResourcesStmt = null;
+		PreparedStatement insertClobsStmt = null;
 		Boolean originalAutoCommit = null;
 		ResultSet rs = null;
 		
@@ -59,8 +62,12 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 			        .execute("SELECT form_id, name, xslt FROM form WHERE xslt IS NOT NULL AND xslt != ''");
 			if (hasResults) {
 				rs = selectStmt.getResultSet();
-				pStmt = connection
-				        .prepareStatement("INSERT INTO form_resource (form_id, name, value_reference, uuid) VALUES (?,?,?,?)");
+				insertClobsStmt = connection.prepareStatement("INSERT INTO clob_datatype_storage (value, uuid) VALUES(?,?)");
+				insertResourcesStmt = connection
+				        .prepareStatement("INSERT INTO form_resource (form_id, name, value_reference, datatype, preferred_handler, uuid) VALUES (?,?,?,'"
+				                + LongFreeTextDatatype.class.getName()
+				                + "','"
+				                + LongFreeTextFileUploadHandler.class.getName() + "',?)");
 				
 				String defaultXslt = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("default.xslt"));
 				//intentionally didn't check for NULL so the exception halts the changeset
@@ -70,34 +77,58 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 					String xslt = rs.getString("xslt");
 					//if the form has an xslt and it differs from the default one
 					if (StringUtils.isNotBlank(xslt) && !xslt.trim().equals(defaultXslt)) {
-						pStmt.setInt(1, rs.getInt("form_id"));
-						pStmt.setString(2, FormEntryConstants.MODULE_ID + "." + rs.getString("name")
-						        + FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
-						pStmt.setString(3, xslt);
-						pStmt.setString(4, UUID.randomUUID().toString());
+						//set the clob storage values
+						String clobUuid = UUID.randomUUID().toString();
+						insertClobsStmt.setString(1, xslt);
+						insertClobsStmt.setString(2, clobUuid);
+						insertClobsStmt.addBatch();
 						
-						pStmt.addBatch();
+						//set the resource column values
+						insertResourcesStmt.setInt(1, rs.getInt("form_id"));
+						insertResourcesStmt.setString(2, FormEntryConstants.MODULE_ID + "." + rs.getString("name")
+						        + FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
+						insertResourcesStmt.setString(3, clobUuid);
+						insertResourcesStmt.setString(4, UUID.randomUUID().toString());
+						insertResourcesStmt.addBatch();
 					}
 				}
 				
-				int[] insertCounts = pStmt.executeBatch();
-				if (insertCounts != null) {
-					boolean commit = false;
-					for (int i = 0; i < insertCounts.length; i++) {
-						if (insertCounts[i] > -1) {
-							commit = true;
-							log.debug("Successfully executed: insert count=" + insertCounts[i]);
-						} else if (insertCounts[i] == Statement.SUCCESS_NO_INFO) {
-							commit = true;
-							log.debug("Successfully executed; No Success info");
-						} else if (insertCounts[i] == Statement.EXECUTE_FAILED) {
-							log.warn("Failed to execute batch statement");
+				boolean successfullyAddedClobs = false;
+				int[] clobInsertCounts = insertClobsStmt.executeBatch();
+				if (clobInsertCounts != null) {
+					for (int i = 0; i < clobInsertCounts.length; i++) {
+						if (clobInsertCounts[i] > -1) {
+							successfullyAddedClobs = true;
+							log.debug("Successfully inserted resource clobs: insert count=" + clobInsertCounts[i]);
+						} else if (clobInsertCounts[i] == Statement.SUCCESS_NO_INFO) {
+							successfullyAddedClobs = true;
+							log.debug("Successfully inserted resource clobs; No Success info");
+						} else if (clobInsertCounts[i] == Statement.EXECUTE_FAILED) {
+							log.warn("Failed to insert resource clobs");
 						}
 					}
-					
-					if (commit) {
-						log.debug("Committing inserts...");
-						connection.commit();
+				}
+				
+				if (successfullyAddedClobs) {
+					int[] resourceInsertCounts = insertResourcesStmt.executeBatch();
+					if (resourceInsertCounts != null) {
+						boolean commit = false;
+						for (int i = 0; i < resourceInsertCounts.length; i++) {
+							if (resourceInsertCounts[i] > -1) {
+								commit = true;
+								log.debug("Successfully inserted xslt resources: insert count=" + resourceInsertCounts[i]);
+							} else if (resourceInsertCounts[i] == Statement.SUCCESS_NO_INFO) {
+								commit = true;
+								log.debug("Successfully inserted xslt resources; No Success info");
+							} else if (resourceInsertCounts[i] == Statement.EXECUTE_FAILED) {
+								log.warn("Failed to insert xslt resources");
+							}
+						}
+						
+						if (commit) {
+							log.debug("Committing xslt resource inserts...");
+							connection.commit();
+						}
 					}
 				}
 			}
@@ -135,7 +166,8 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 			}
 			
 			closeStatementQuietly(selectStmt);
-			closeStatementQuietly(pStmt);
+			closeStatementQuietly(insertClobsStmt);
+			closeStatementQuietly(insertResourcesStmt);
 		}
 	}
 	

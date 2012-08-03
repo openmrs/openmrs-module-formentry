@@ -56,10 +56,15 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.customdatatype.CustomDatatype;
+import org.openmrs.customdatatype.CustomDatatypeHandler;
+import org.openmrs.customdatatype.CustomDatatypeUtil;
+import org.openmrs.customdatatype.datatype.LongFreeTextDatatype;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler;
 
 /**
  *
@@ -1008,7 +1013,7 @@ public class FormEntryUtil {
 	 * @should return the default xslt if the form has no custom one
 	 */
 	public static String getFormXslt(Form form) {
-		String xslt = getFormResource(form, FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX);
+		String xslt = getXsltOrTemplate(form, true);
 		if (StringUtils.isNotBlank(xslt))
 			return xslt;
 		
@@ -1023,7 +1028,7 @@ public class FormEntryUtil {
 	 * @should return null if the form has no template resource
 	 */
 	public static String getFormTemplate(Form form) {
-		return getFormResource(form, FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX);
+		return getXsltOrTemplate(form, false);
 	}
 	
 	/**
@@ -1032,9 +1037,12 @@ public class FormEntryUtil {
 	 * @param form the {@link Form} object
 	 * @param resource the resource to save
 	 * @param resourceNameSuffix the resource name suffix
+	 * @param handler TODO
+	 * @should save the form resource to the database
 	 * @should not add an xslt that is the same as the default
 	 */
-	public static void saveFormResource(Form form, String resource, String resourceNameSuffix) {
+	public static void saveXsltorTemplateFormResource(Form form, String resource, String resourceNameSuffix,
+	                                                  CustomDatatypeHandler handler) {
 		//If this is an xslt and is the same as the default, ignore it
 		if (FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX.equals(resourceNameSuffix)
 		        && StringUtils.isNotBlank(resource) && resource.equals(getDefaultXslt())) {
@@ -1045,7 +1053,10 @@ public class FormEntryUtil {
 			FormResource formResource = new FormResource();
 			formResource.setForm(form);
 			formResource.setName(FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
-			formResource.setValueReferenceInternal(resource);
+			formResource.setDatatypeClassname(LongFreeTextDatatype.class.getName());
+			if (handler == null)
+				formResource.setPreferredHandlerClassname(LongFreeTextFileUploadHandler.class.getName());
+			formResource.setValue(resource);
 			Context.getFormService().saveFormResource(formResource);
 		}
 		catch (Exception e) {
@@ -1062,7 +1073,8 @@ public class FormEntryUtil {
 	public static String getDefaultXslt() {
 		if (defaultXslt == null) {
 			try {
-				defaultXslt = IOUtils.toString(FormEntryUtil.class.getClassLoader().getResourceAsStream("default.xslt"));
+				defaultXslt = IOUtils.toString(FormEntryUtil.class.getClassLoader().getResourceAsStream(
+				    FormEntryConstants.DEFAULT_XSLT_FILENAME));
 			}
 			catch (IOException e) {
 				throw new APIException("Failed to load the default xslt:", e);
@@ -1073,17 +1085,25 @@ public class FormEntryUtil {
 	}
 	
 	/**
-	 * Gets a form resource with the specified resource name suffix
+	 * Gets a an xslt or template form resource with the specified resource name suffix, the for
 	 * 
 	 * @param form the form
-	 * @param resourceNameSuffix the resource name suffix
+	 * @param getXslt specifies if we are getting an xslt or template
 	 * @return the resource
 	 */
-	private static String getFormResource(Form form, String resourceNameSuffix) {
+	@SuppressWarnings({ "rawtypes" })
+	private static String getXsltOrTemplate(Form form, boolean getXslt) {
+		String resourceNameSuffix = (getXslt) ? FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME_SUFFIX
+		        : FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME_SUFFIX;
+		
 		FormResource resource = Context.getFormService().getFormResource(form,
 		    FormEntryConstants.MODULE_ID + "." + form.getName() + resourceNameSuffix);
-		if (resource != null)
-			return resource.getValueReference();
+		if (resource != null) {
+			CustomDatatype datatype = CustomDatatypeUtil.getDatatype(resource);
+			if (datatype != null) {
+				return ((LongFreeTextDatatype) datatype).fromReferenceString(resource.getValueReference());
+			}
+		}
 		
 		return null;
 	}

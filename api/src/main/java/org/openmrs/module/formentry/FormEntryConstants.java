@@ -214,4 +214,6 @@ public class FormEntryConstants {
 	
 	public static final String MODULE_ID = "formentry";
 	
+	public static final String DEFAULT_XSLT_FILENAME = "default.xslt";
+	
 }
