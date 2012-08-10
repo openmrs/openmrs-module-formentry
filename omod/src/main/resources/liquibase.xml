@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
     
-	<changeSet id="formentry-20120801-1320" author="wyclif">
+	<changeSet id="formentry-20120801-1410" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<sqlCheck expectedResult="0">
@@ -14,9 +14,9 @@
 			</not>
 		</preConditions>
         <comment>
-        	Converting form xslts to form resources
+        	Converting form xslts and templates to form resources
         </comment>
-		<customChange class="org.openmrs.module.formentry.databasechange.MigrateXsltsChangeset" />
+		<customChange class="org.openmrs.module.formentry.databasechange.MigrateXsltsAndTemplatesChangeset" />
     </changeSet>
         
 </databaseChangeLog>
