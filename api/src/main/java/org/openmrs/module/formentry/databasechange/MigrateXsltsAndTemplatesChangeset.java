@@ -39,7 +39,7 @@ import org.openmrs.web.attribute.handler.LongFreeTextFileUploadHandler;
 /**
  * Creates form resources from existing xslts in the form table.
  */
-public class MigrateXsltsChangeset implements CustomTaskChange {
+public class MigrateXsltsAndTemplatesChangeset implements CustomTaskChange {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -49,23 +49,31 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 	@Override
 	public void execute(Database database) throws CustomChangeException {
 		final JdbcConnection connection = (JdbcConnection) database.getConnection();
+		migrateResources(connection, true);//move xslts
+		migrateResources(connection, false);//move templates
+	}
+	
+	private void migrateResources(JdbcConnection connection, boolean isXslt) throws CustomChangeException {
 		Statement selectStmt = null;
 		PreparedStatement insertResourcesStmt = null;
 		PreparedStatement insertClobsStmt = null;
 		Boolean originalAutoCommit = null;
 		ResultSet rs = null;
+		String resourceName = (isXslt) ? FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME
+		        : FormEntryConstants.FORMENTRY_TEMPLATE_FORM_RESOURCE_NAME;
+		String columnName = (isXslt) ? "xslt" : "template";
 		
 		try {
 			originalAutoCommit = connection.getAutoCommit();
 			selectStmt = connection.createStatement();
-			boolean hasResults = selectStmt
-			        .execute("SELECT form_id, name, xslt FROM form WHERE xslt IS NOT NULL AND xslt != ''");
+			boolean hasResults = selectStmt.execute("SELECT form_id, " + columnName + " FROM form WHERE " + columnName
+			        + " IS NOT NULL AND " + columnName + " != ''");
 			if (hasResults) {
 				rs = selectStmt.getResultSet();
 				insertClobsStmt = connection.prepareStatement("INSERT INTO clob_datatype_storage (value, uuid) VALUES(?,?)");
 				insertResourcesStmt = connection
 				        .prepareStatement("INSERT INTO form_resource (form_id, name, value_reference, datatype, preferred_handler, uuid) VALUES (?,'"
-				                + FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME
+				                + resourceName
 				                + "',?,'"
 				                + LongFreeTextDatatype.class.getName()
 				                + "','"
@@ -76,12 +84,12 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 				defaultXslt = defaultXslt.trim();
 				
 				while (rs.next()) {
-					String xslt = rs.getString("xslt");
+					String resourceValue = rs.getString(columnName);
 					//if the form has an xslt and it differs from the default one
-					if (StringUtils.isNotBlank(xslt) && !xslt.trim().equals(defaultXslt)) {
+					if (StringUtils.isNotBlank(resourceValue) && (!isXslt || !resourceValue.trim().equals(defaultXslt))) {
 						//set the clob storage values
 						String clobUuid = UUID.randomUUID().toString();
-						insertClobsStmt.setString(1, xslt);
+						insertClobsStmt.setString(1, resourceValue.trim());
 						insertClobsStmt.setString(2, clobUuid);
 						insertClobsStmt.addBatch();
 						
@@ -116,17 +124,18 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 						for (int i = 0; i < resourceInsertCounts.length; i++) {
 							if (resourceInsertCounts[i] > -1) {
 								commit = true;
-								log.debug("Successfully inserted xslt resources: insert count=" + resourceInsertCounts[i]);
+								log.debug("Successfully inserted " + columnName + " resources: insert count="
+								        + resourceInsertCounts[i]);
 							} else if (resourceInsertCounts[i] == Statement.SUCCESS_NO_INFO) {
 								commit = true;
-								log.debug("Successfully inserted xslt resources; No Success info");
+								log.debug("Successfully inserted " + columnName + " resources; No Success info");
 							} else if (resourceInsertCounts[i] == Statement.EXECUTE_FAILED) {
-								log.warn("Failed to insert xslt resources");
+								log.warn("Failed to insert " + columnName + " resources");
 							}
 						}
 						
 						if (commit) {
-							log.debug("Committing xslt resource inserts...");
+							log.debug("Committing " + columnName + " resource inserts...");
 							connection.commit();
 						}
 					}
@@ -134,7 +143,7 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 			}
 		}
 		catch (Exception e) {
-			log.warn("Error generated while processsing generation of xslt form resources", e);
+			log.warn("Error generated while processsing generation of " + columnName + " form resources", e);
 			
 			try {
 				if (connection != null) {
@@ -192,7 +201,7 @@ public class MigrateXsltsChangeset implements CustomTaskChange {
 	 */
 	@Override
 	public String getConfirmationMessage() {
-		return "Finished generating xslt form resources";
+		return "Finished generating xslt and template form resources";
 	}
 	
 	/**
