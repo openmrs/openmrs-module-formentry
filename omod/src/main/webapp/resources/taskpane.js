@@ -44,7 +44,7 @@ function getConceptNodeValue(obj) {
 	
 	// if the obj has a name key in it, make the triplet into a sextuplet
 	if (obj.nameKey)
-		str = str +  "^" + obj.nameKey + "^" + obj.value + "^99NAM";
+		str = str +  "^" + obj.nameKey + "^" + obj.nameValue + "^99NAM";
 	
 	return str;
 }
