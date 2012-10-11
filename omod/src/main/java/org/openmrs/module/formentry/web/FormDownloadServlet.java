@@ -9,7 +9,9 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +28,7 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
@@ -142,6 +145,14 @@ public class FormDownloadServlet extends HttpServlet {
 			relationships.add(new Relationship());
 		}
 		velocityContext.put("relationships", relationships);
+		
+		String prefix = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_PREFIX_LOOKUP, "");
+		List<GlobalProperty> globalPropertiesByPrefix = Context.getAdministrationService().getGlobalPropertiesByPrefix(prefix);
+		Map<String, String> mapByPrefix = new HashMap<String, String>();
+		for (GlobalProperty gp : globalPropertiesByPrefix) {
+			mapByPrefix.put(gp.getProperty(), gp.getPropertyValue());
+		}
+		velocityContext.put("globalProperties", mapByPrefix);
 		
 		// add the error handler
 		EventCartridge ec = new EventCartridge();

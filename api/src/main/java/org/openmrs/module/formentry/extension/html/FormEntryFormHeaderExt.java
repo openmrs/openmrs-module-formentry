@@ -45,9 +45,8 @@ public class FormEntryFormHeaderExt extends Extension {
 				FormResource xsltResource = Context.getFormService().getFormResource(form,
 				    FormEntryConstants.FORMENTRY_XSLT_FORM_RESOURCE_NAME);
 				if (xsltResource != null) {
-					CustomValueDescriptor descriptor = xsltResource.getDescriptor();
-					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(descriptor);
-					CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(descriptor);
+					CustomDatatype<?> datatype = CustomDatatypeUtil.getDatatype(xsltResource.getDescriptor());
+					CustomDatatypeHandler handler = CustomDatatypeUtil.getHandler(xsltResource.getDescriptor());
 					if (datatype != null && handler != null) {
 						map.put("admin/forms/downloadCustomValue.form?datatype=" + datatype.getClass().getName()
 						        + "&handler=" + handler.getClass().getName() + "&value=" + xsltResource.getValueReference(),
