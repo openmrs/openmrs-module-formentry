@@ -207,4 +207,6 @@ public class FormEntryConstants {
 	public static String FORMENTRY_CABEXTRACT_LOCATION = null; // value of the runtime property loaded at startup
 	public static String FORMENTRY_LCAB_LOCATION = null; // value of the runtime property loaded at startup
 	
+	public static final String FORMENTRY_GP_PREFIX_LOOKUP = "formentry.gp_prefix_for_forms";
+
 }

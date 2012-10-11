@@ -2,7 +2,9 @@ package org.openmrs.module.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -21,6 +23,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Relationship;
 import org.openmrs.User;
@@ -86,6 +89,14 @@ public class FormXmlTemplateBuilder {
 			
 			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
 			velocityContext.put("relationships", relationships);
+
+			String prefix = Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_PREFIX_LOOKUP, "");
+			List<GlobalProperty> globalPropertiesByPrefix = Context.getAdministrationService().getGlobalPropertiesByPrefix(prefix);
+			Map<String, String> mapByPrefix = new HashMap<String, String>();
+			for (GlobalProperty gp : globalPropertiesByPrefix) {
+				mapByPrefix.put(gp.getProperty(), gp.getPropertyValue());
+			}
+			velocityContext.put("globalProperties", mapByPrefix);
 		}
 		
 		// adding the error handler for velocity
