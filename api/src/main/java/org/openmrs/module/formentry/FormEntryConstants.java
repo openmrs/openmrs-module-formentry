@@ -206,6 +206,8 @@ public class FormEntryConstants {
 	// these are not global properties as they could be a security risk for demo sites
 	public static final String FORMENTRY_RP_CABEXTRACT_LOCATION = "formentry.cabextract_location";
 	public static final String FORMENTRY_RP_LCAB_LOCATION = "formentry.lcab_location";
+
+	public static final String FORMENTRY_GP_PREFIX_LOOKUP = "formentry.gp_prefix_for_forms";
 	public static String FORMENTRY_CABEXTRACT_LOCATION = null; // value of the runtime property loaded at startup
 	public static String FORMENTRY_LCAB_LOCATION = null; // value of the runtime property loaded at startup
 	

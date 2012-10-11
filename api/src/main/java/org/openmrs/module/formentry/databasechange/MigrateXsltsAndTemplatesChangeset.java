@@ -46,7 +46,6 @@ public class MigrateXsltsAndTemplatesChangeset implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
-	@Override
 	public void execute(Database database) throws CustomChangeException {
 		final JdbcConnection connection = (JdbcConnection) database.getConnection();
 		migrateResources(connection, true);//move xslts
@@ -199,7 +198,6 @@ public class MigrateXsltsAndTemplatesChangeset implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
-	@Override
 	public String getConfirmationMessage() {
 		return "Finished generating xslt and template form resources";
 	}
@@ -207,21 +205,18 @@ public class MigrateXsltsAndTemplatesChangeset implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
-	@Override
 	public void setUp() throws SetupException {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.resource.ResourceAccessor)
 	 */
-	@Override
 	public void setFileOpener(ResourceAccessor resourceAccessor) {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
-	@Override
 	public ValidationErrors validate(Database database) {
 		return null;
 	}
