@@ -11,9 +11,9 @@
 	<url>http://wiki.openmrs.org/display/docs/FormEntry+Module</url>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/formentry/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs-modules/formentry/trunk/</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-module-formentry/</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-module-formentry/</developerConnection>
+		<url>https://github.com/openmrs/openmrs-module-formentry/</url>
 	</scm>
 
 	<modules>
