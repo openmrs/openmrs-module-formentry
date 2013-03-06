@@ -125,6 +125,8 @@ public class FormEntryConstants {
 	public static final int INDENT_SIZE = FormConstants.INDENT_SIZE;
 
 	/* FormEntry Queue baked-in prileges */
+	public static final String PRIV_MANAGE_FORMENTRY = "Manage Form Entry";
+	public static final String PRIV_UPLOAD_XSN = "Upload XSN";
 	public static final String PRIV_VIEW_FORMENTRY_QUEUE = "View FormEntry Queue";
 	public static final String PRIV_ADD_FORMENTRY_QUEUE = "Add FormEntry Queue";
 	public static final String PRIV_EDIT_FORMENTRY_QUEUE = "Edit FormEntry Queue";

@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
+import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.module.formentry.FormEntryService;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
 import org.openmrs.util.InsertedOrderComparator;
@@ -25,7 +26,7 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 	}
 	
 	public String getRequiredPrivilege() {
-		return "Upload XSN,Manage Form Entry";
+		return FormEntryConstants.PRIV_UPLOAD_XSN + "," + FormEntryConstants.PRIV_MANAGE_FORMENTRY;
 	}
 	
 	public Map<String, String> getLinks() {
