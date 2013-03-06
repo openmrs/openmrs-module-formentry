@@ -26,7 +26,7 @@ public class FormEntryAdminExt extends AdministrationSectionExt {
 	}
 	
 	public String getRequiredPrivilege() {
-		return FormEntryConstants.PRIV_UPLOAD_XSN + "," + FormEntryConstants.PRIV_MANAGE_FORMENTRY;
+		return FormEntryConstants.PRIV_UPLOAD_XSN + "," + FormEntryConstants.PRIV_MANAGE_FORMENTRY + "," + FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR;
 	}
 	
 	public Map<String, String> getLinks() {
