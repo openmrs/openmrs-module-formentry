@@ -14,10 +14,7 @@ public class FormEntryFormListHeaderExt extends Extension {
 		return Extension.MEDIA_TYPE.html;
 	}
 	
-	
-	
 	public Map<String, String> getLinks() {
-		
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
 		if (Context.hasPrivilege(FormEntryConstants.PRIV_MANAGE_FORMENTRY_XSN)) {
