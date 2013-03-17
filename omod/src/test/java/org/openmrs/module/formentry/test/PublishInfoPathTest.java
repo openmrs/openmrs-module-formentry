@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
@@ -23,6 +24,7 @@ import org.openmrs.module.formentry.PublishInfoPath;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
+@Ignore
 public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 
 	static FileFilter NO_DOT_FILES;
@@ -204,6 +206,7 @@ public class PublishInfoPathTest extends BaseModuleContextSensitiveTest {
 	 * If on linux, install cabextract and lcab.
 	 * @throws Exception
 	 */
+	@Ignore
 	@Test
 	public void shouldUpdateXslFileButKeepNamesAsTriplets() throws Exception {
 		executeDataSet("org/openmrs/include/standardTestDataset.xml");
