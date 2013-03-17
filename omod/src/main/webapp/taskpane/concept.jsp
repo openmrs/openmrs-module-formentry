@@ -46,7 +46,7 @@
 	
 	function proposeConcept() {
 		var box = document.getElementById('proposedText');
-		if (box.text == '')  {
+		if (!box.value)  {
 			alert("Proposed Concept text must be entered");
 			box.focus();
 		}
