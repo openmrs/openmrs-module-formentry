@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.tasks.AbstractTask;
 
 /**
@@ -59,6 +61,13 @@ public class ProcessFormEntryQueueTask extends AbstractTask {
 	public void shutdown() {
 		log.debug("Shutting down ProcessFormEntryQueue task ...");
 		processor = null;
+		
+		//Stop ProcessFormEntryQueueTask on shutdown
+	    TaskDefinition task = Context.getSchedulerService().getTaskByName("Process Form Entry Queue");  
+	    try {
+	      Context.getSchedulerService().shutdownTask(task);
+	    } catch (SchedulerException e) {
+	      e.printStackTrace();
+	    }
 	}
-
 }
