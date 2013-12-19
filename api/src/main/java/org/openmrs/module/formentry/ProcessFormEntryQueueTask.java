@@ -67,7 +67,7 @@ public class ProcessFormEntryQueueTask extends AbstractTask {
 	    try {
 	      Context.getSchedulerService().shutdownTask(task);
 	    } catch (SchedulerException e) {
-	      e.printStackTrace();
+	    	log.error(e);
 	    }
 	}
 }
