@@ -2,8 +2,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%-- Convert version numbers in this form: 1.8 -> 18, 1.9 -> 19, 1.10 -> 110 for comparison --%>
-<c:if test="<%=Integer.valueOf(OpenmrsConstants.OPENMRS_VERSION.substring(0, 
-	OpenmrsConstants.OPENMRS_VERSION.indexOf(".", 2)).replace(".", "")) < 19 %>">
+<c:if test='<%=Integer.valueOf(OpenmrsConstants.OPENMRS_VERSION.substring(0,
+	OpenmrsConstants.OPENMRS_VERSION.indexOf(".", 2)).replace(".", "")) < 19 %>'>
 	
 	<c:redirect url="/module/formentry/taskpane/person.htm?${pageContext.request.queryString}&role=Provider&title=provider.title"/>
 </c:if>
