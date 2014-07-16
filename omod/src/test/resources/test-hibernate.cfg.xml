@@ -5,6 +5,9 @@
 
 <hibernate-configuration>
 	<session-factory>
-		${hbmConfig}
+		<mapping resource="FormEntryError.hbm.xml"/>
+        <mapping resource="FormEntryArchive.hbm.xml"/>
+        <mapping resource="FormEntryQueue.hbm.xml"/>
+        <mapping resource="FormEntryXsn.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>

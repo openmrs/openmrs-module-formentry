@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping package="@MODULE_PACKAGE@">
+<hibernate-mapping package="org.openmrs.module.formentry">
 
 	<class name="FormEntryQueue" table="formentry_queue">
 

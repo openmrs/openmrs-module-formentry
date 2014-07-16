@@ -9,10 +9,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.util.OpenmrsUtil;
 
+import javax.persistence.*;
+
+@Entity
 public class FormEntryQueue {
-	
+	@Transient
 	private Log log = LogFactory.getLog(this.getClass());
-	
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	private int formEntryQueueId;
 	private String formData;
 	private User creator;
