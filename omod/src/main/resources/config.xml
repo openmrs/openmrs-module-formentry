@@ -289,9 +289,13 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-	
-	<mappingFiles>
-		${omodHbmConfig}
+
+    <!-- Maps hibernate files, if present -->
+    <mappingFiles>
+        FormEntryArchive.hbm.xml
+        FormEntryError.hbm.xml
+        FormEntryQueue.hbm.xml
+        FormEntryXsn.hbm.xml
 	</mappingFiles>
 	
 </module>

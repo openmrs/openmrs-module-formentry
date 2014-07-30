@@ -9,10 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
 public class FormEntryError {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer formEntryErrorId;
 	private String formData;
 	private String error;
