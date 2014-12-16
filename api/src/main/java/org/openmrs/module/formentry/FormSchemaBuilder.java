@@ -1,6 +1,7 @@
 package org.openmrs.module.formentry;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -13,6 +14,8 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.SerializableComplexObsHandler;
 import org.openmrs.util.FormUtil;
 
 /**
@@ -119,6 +122,14 @@ public class FormSchemaBuilder {
 								.selectSingle(token, concept, answers,
 										required, Context.getLocale()));
 				}
+			}
+		}
+		
+		//Include all segments from all serializable complex obs handlers
+		Map<String, ComplexObsHandler> handlers = Context.getObsService().getHandlers();
+		for (ComplexObsHandler handler : handlers.values()) {
+			if (handler instanceof SerializableComplexObsHandler) {
+				schema.append(((SerializableComplexObsHandler)handler).getSchema("application/xml"));
 			}
 		}
 
